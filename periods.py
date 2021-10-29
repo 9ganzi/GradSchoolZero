@@ -125,9 +125,9 @@ class Period:
 
 
 # for testing
-p1 = [datetime.date(2022, 9, 1), datetime.date(2022, 9, 2)]
-p2 = [datetime.date(2022, 9, 2), datetime.date(2022, 9, 4)]
-p3 = [datetime.date(2022, 9, 5), datetime.date(2022, 9, 6)]
-p4 = [datetime.date(2022, 9, 7), datetime.date(2022, 9, 8)]
-period = Period(p1, p2, p3, p4)
-print(period.course_registration)
+# p1 = [datetime.date(2022, 9, 1), datetime.date(2022, 9, 2)]
+# p2 = [datetime.date(2022, 9, 2), datetime.date(2022, 9, 4)]
+# p3 = [datetime.date(2022, 9, 5), datetime.date(2022, 9, 6)]
+# p4 = [datetime.date(2022, 9, 7), datetime.date(2022, 9, 8)]
+# period = Period(p1, p2, p3, p4)
+# print(period.course_registration)
