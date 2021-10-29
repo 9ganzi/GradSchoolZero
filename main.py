@@ -1,5 +1,10 @@
 import sys
 import csv
+import user
+import schedule
+import time
+from periods import Period
+import datetime
 import os
 import random
 import string
@@ -923,3 +928,8 @@ app = QApplication(sys.argv)
 window = mainWindow()
 window.show()
 app.exec_()
+
+# plan
+# buttons always exist, but if you are in the right period, they will function as they should,
+# if you are not, they won't function and give you warning messages (use schedule module)
+# use schedule module to play with buttons
