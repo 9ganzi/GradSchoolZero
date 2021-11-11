@@ -1,3 +1,7 @@
+class Visitor:
+    pass
+
+
 class Registrar:
     pass
 

@@ -12,17 +12,11 @@ class Period:
     """
 
     def __init__(self, class_set_up, course_registration, class_running, grading):
-        if self.check(class_set_up, course_registration, class_running, grading) == -1:
-            # self.__del__()
-            return
-        else:
-            self.class_set_up = class_set_up
-            self.course_registration = course_registration
-            self.class_running = class_running
-            self.grading = grading
-
-    # def __del__(self):
-    #     print("Destructor called, Period deleted.")
+        self.check(class_set_up, course_registration, class_running, grading)
+        self.class_set_up = class_set_up
+        self.course_registration = course_registration
+        self.class_running = class_running
+        self.grading = grading
 
     def check(self, class_set_up, course_registration, class_running, grading):
         """
@@ -42,15 +36,13 @@ class Period:
                 or (not isinstance(x[0], datetime.date))
                 or (not isinstance(x[1], datetime.date))
             ):
-                print(
+                raise Exception(
                     "All periods should be a list of datetime of length 2. Update/initilization failed!"
                 )
-                return -1
             if x[0] >= x[1]:
-                print(
+                raise Exception(
                     "End date of a period should come after start date of a period. Update/initilization failed!"
                 )
-                return -1
         # check for overlaps
         if (
             (class_set_up[1] >= course_registration[0])
@@ -61,10 +53,9 @@ class Period:
             # p3 = [datetime.date(2022, 9, 5), datetime.date(2022, 9, 6)]
             # p4 = [datetime.date(2022, 9, 7), datetime.date(2022, 9, 8)]
         ):
-            print(
+            raise Exception(
                 "There is one or more overlap in the periods. Update/initilization failed!"
             )
-            return -1
         return 1
 
     def set_class_set_up(self, new_class_set_up):
@@ -130,4 +121,7 @@ class Period:
 # p3 = [datetime.date(2022, 9, 5), datetime.date(2022, 9, 6)]
 # p4 = [datetime.date(2022, 9, 7), datetime.date(2022, 9, 8)]
 # period = Period(p1, p2, p3, p4)
+# print(period.class_set_up)
 # print(period.course_registration)
+# print(period.class_running)
+# print(period.grading)
