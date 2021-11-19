@@ -1,5 +1,11 @@
+import sqlite3
 import sys
 import csv
+import user
+import schedule
+import time
+from periods import Period
+import datetime
 import os
 import random
 import string
@@ -844,46 +850,29 @@ class mainWindow(QMainWindow):
         global acc_type
         global name
         global email
-        try:
-            with open("users.csv", "r") as CSVr:
-                csv_reader = csv.reader(CSVr)
-                lines = []
-                for i in csv_reader:
-                    lines.append(i)
-                with open("users.csv", "w", newline="") as CSVw:
-                    csv_writer = csv.writer(CSVw)
-                    id = self.create_id()
-                    list = [
-                        str(self.nameBOX.text()),
-                        str(self.emailBOX.text()),
-                        str(self.passwordBOX.text()),
-                        id,
-                        str(self.combo.currentText()),
-                    ]
-                    for i in lines:
-                        if i != []:
-                            csv_writer.writerow(i)
-                    csv_writer.writerow(list)
-        except:
-            with open("users.csv", "w"):
-                csv_reader = csv.reader(CSVr)
-                lines = []
-                for i in csv_reader:
-                    lines.append(i)
-                with open("users.csv", "w", newline="") as CSVw:
-                    csv_writer = csv.writer(CSVw)
-                    id = self.create_id()
-                    list = [
-                        str(self.nameBOX.text()),
-                        str(self.emailBOX.text()),
-                        str(self.passwordBOX.text()),
-                        id,
-                        str(self.combo.currentText()),
-                    ]
-                    for i in lines:
-                        if i != []:
-                            csv_writer.writerow(i)
-                    csv_writer.writerow(list)
+
+        conn = sqlite3.connect("user.db")
+
+        c = conn.cursor()
+        c.execute(
+            """CREATE TABLE IF NOT EXISTS users (Name text, Email text, Password text, ID text, 'User Type' text)"""
+        )
+
+        c.execute(
+            "INSERT INTO users VALUES (?, ?, ?, ?, ?)",
+            (
+                str(self.nameBOX.text()),
+                str(self.emailBOX.text()),
+                str(self.passwordBOX.text()),
+                self.create_id(),
+                str(self.combo.currentText()),
+            ),
+        )
+
+        conn.commit()
+
+        conn.close()
+
         name = self.nameBOX.text()
         email = self.emailBOX.text()
         acc_type = self.combo.currentText()
@@ -894,24 +883,26 @@ class mainWindow(QMainWindow):
         global id
         global email
         global acc_type
-        try:
-            with open("users.csv", "r") as CSVr:
-                csv_reader = csv.reader(CSVr)
-                lines = []
-                for i in csv_reader:
-                    lines.append(i)
-                for i in lines:
-                    if i[0] == self.nameBOX.text() and i[2] == self.passwordBOX.text():
-                        name = str(i[0])
-                        email = str(i[1])
-                        id = str(i[3])
-                        acc_type = str(i[4])
-                        self.mainpage_home()
-                self.tipsTXT.setText(
-                    "\n\n\n\n\n          Invalid user\n   Sign in to create an \n            account"
-                )
-        except:
-            pass
+
+        conn = sqlite3.connect("user.db")
+        c = conn.cursor()
+        c.execute(
+            """CREATE TABLE IF NOT EXISTS users (Name text, Email text, Password text, ID text, 'User Type' text)"""
+        )
+        c.execute(
+            "SELECT * FROM users WHERE name=? AND password=?",
+            (self.nameBOX.text(), self.passwordBOX.text()),
+        )
+        row = c.fetchone()
+        if row != None:
+            name = row[0]
+            email = row[1]
+            id = row[3]
+            acc_type = row[4]
+            self.mainpage_home()
+        self.tipsTXT.setText(
+            "\n\n\n\n\n          Invalid user\n   Sign in to create an \n            account"
+        )
 
     def create_id(self):
         letters = string.ascii_uppercase
@@ -923,3 +914,8 @@ app = QApplication(sys.argv)
 window = mainWindow()
 window.show()
 app.exec_()
+
+# plan
+# buttons always exist, but if you are in the right period, they will function as they should,
+# if you are not, they won't function and give you warning messages (use schedule module)
+# use schedule module to play with buttons
