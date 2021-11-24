@@ -887,7 +887,7 @@ class mainWindow(QMainWindow):
         conn = sqlite3.connect("user.db")
         c = conn.cursor()
         c.execute(
-            "SELECT * FROM users WHERE name=? AND password=?",
+            "SELECT rowid, * FROM users WHERE name=? AND password=?",
             (self.nameBOX.text(), self.passwordBOX.text()),
         )
         row = c.fetchone()
@@ -897,9 +897,13 @@ class mainWindow(QMainWindow):
             id = row[3]
             acc_type = row[4]
             self.mainpage_home()
+        conn.commit()
+        conn.close()
         self.tipsTXT.setText(
             "\n\n\n\n\n          Invalid user\n   Sign in to create an \n            account"
         )
+        # create an instance of a user according to acc_type
+        # find the user in appropriate db using primary key
 
     def create_id(self):
         letters = string.ascii_uppercase
