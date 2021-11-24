@@ -855,11 +855,18 @@ class mainWindow(QMainWindow):
 
         c = conn.cursor()
         c.execute(
-            """CREATE TABLE IF NOT EXISTS applicants (Name text, Email text, Password text, ID text, 'User Type' text)"""
+            """CREATE TABLE IF NOT EXISTS applicants (
+                ID integer PRIMARY KEY,
+                Name text NOT NULL,
+                Email text NOT NULL,
+                'User ID' integer NOT NULL,
+                Password text NOT NULL,
+                'User Type' text NOT NULL
+                )"""
         )
 
         c.execute(
-            "INSERT INTO applicants VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO applicants(Name, Email, Password, 'User ID', 'User Type') VALUES (?, ?, ?, ?, ?)",
             (
                 str(self.nameBOX.text()),
                 str(self.emailBOX.text()),
@@ -870,7 +877,6 @@ class mainWindow(QMainWindow):
         )
 
         conn.commit()
-
         conn.close()
 
         name = self.nameBOX.text()
@@ -913,21 +919,58 @@ class mainWindow(QMainWindow):
 conn = sqlite3.connect("user.db")
 c = conn.cursor()
 c.execute(
-    """CREATE TABLE IF NOT EXISTS users (Name text, Email text, Password text, ID text, 'User Type' text)"""
+    """CREATE TABLE IF NOT EXISTS users (
+        ID integer PRIMARY KEY,
+        Name text NOT NULL,
+        Email text NOT NULL,
+        'Applicant ID' integer,
+        Password text NOT NULL,
+        'User ID' text NOT NULL,
+        'User Type' text NOT NULL
+        )"""
 )
 c.execute("SELECT Name FROM users LIMIT 1")
 if c.fetchall() == []:
     many_registrars = [
-        ("Jaehong", "email", "123", "id", "Registrar"),
-        ("Aiman", "email", "123", "id", "Registrar"),
-        ("Ragib", "email", "123", "id", "Registrar"),
-        ("Michael", "email", "123", "id", "Registrar"),
-        ("Joel", "email", "123", "id", "Registrar"),
+        ("Jaehong", "email", None, "123", "id", "Registrar"),
+        ("Aiman", "email", None, "123", "id", "Registrar"),
+        ("Ragib", "email", None, "123", "id", "Registrar"),
+        ("Michael", "email", None, "123", "id", "Registrar"),
+        ("Joel", "email", None, "123", "id", "Registrar"),
     ]
-    c.executemany("INSERT INTO users VALUES (?, ?, ?, ?, ?)", many_registrars)
+    c.executemany(
+        "INSERT INTO users(Name, Email, 'Applicant ID', Password, 'User ID', 'User Type') VALUES (?, ?, ?, ?, ?, ?)",
+        many_registrars,
+    )
 
 conn.commit()
 conn.close()
+
+conn = sqlite3.connect("class.db")
+c = conn.cursor()
+c.execute(
+    """CREATE TABLE IF NOT EXISTS classes (ID integer PRIMARY KEY, Name text NOT NULL, 'Class Start' text NOT NULL, 'Class End' text NOT NULL, 'Class Size' integer NOT NULL, 'Student Classes ID' integer, 'Instructor Classes ID' integer, FOREIGN KEY ('Student Classes ID') REFERENCES student_classes (ID), FOREIGN KEY ('Instructor Classes ID') REFERENCES instructor_classes (ID))"""
+    # might use blob for 'Class Start' and 'Class End'
+)
+conn.commit()
+c.close()
+
+conn = sqlite3.connect("student.db")
+c = conn.cursor()
+c.execute(
+    """CREATE TABLE IF NOT EXISTS students (ID integer PRIMARY KEY, 'Student Classes ID' integer, GPA real NOT NULL, 'Course History ID', 'User ID' integer, FOREIGN KEY ('Student Classes ID') REFERENCES student_classes (ID), FOREIGN KEY ('Course History ID') REFERENCES course_history (ID), FOREIGN KEY ('User ID') REFERENCES users (ID))"""
+)
+conn.commit()
+c.close()
+
+conn = sqlite3.connect("student_class.db")
+c = conn.cursor()
+c.execute(
+    """CREATE TABLE IF NOT EXISTS student_classes (ID integer PRIMARY KEY, 'Student ID' integer, 'Class ID' integer, FOREIGN KEY ('Student ID') REFERENCES students (ID), FOREIGN KEY ('Class ID') REFERENCES classes (ID))"""
+    # might use blob for 'Class Start' and 'Class End'
+)
+conn.commit()
+c.close()
 
 # Running the Gui with the run of application
 app = QApplication(sys.argv)
@@ -939,3 +982,17 @@ app.exec_()
 # buttons always exist, but if you are in the right period, they will function as they should,
 # if you are not, they won't function and give you warning messages (use schedule module)
 # use schedule module to play with buttons
+
+# for classes other than registrar
+# c.execute(
+#     """CREATE TABLE IF NOT EXISTS users (
+#         ID integer PRIMARY KEY,
+#         Name text NOT NULL,
+#         Email text NOT NULL,
+#         'Applicant ID' integer NOT NULL,
+#         Password text NOT NULL,
+#         'User ID' integer NOT NULL,
+#         'User Type' text NOT NULL,
+#         FOREIGN KEY ('Applicant ID') REFERENCES applicants (ID)
+#         )"""
+# )

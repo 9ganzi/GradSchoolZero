@@ -1,4 +1,4 @@
-class Cls:
+class Class:
     def __init__(self, name, instructor, start, end, size):
         self.name = name
         self.instructor = instructor

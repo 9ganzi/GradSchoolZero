@@ -1,28 +1,14 @@
-# 1. add a button to set up classes(only work for registrar)
-# 2. set up class(name, time, instructor, size)
-# @ add the class to the db
-# 3. make all students register between 2-4 courses
-# @ no time conflict
-# # look at 'currently enrolled classes' of the student
-# @ student didn't take the class before
-# # look at 'course history(+grade)'
-# @ or took it before but failed
-# # look at 'course history(+grade)'
-# @ course limit not reached
-# # look at 'course enrolled count'
-# - if limit reached, wait-list
-# # add to the class database(wait-list attribute)
-
-from clas import Cls
+from clas import Class
 import sqlite3
 import datetime
 
 
 class User:
-    def __init__(self, first, last, email):
+    def __init__(self, first, last, email, primary_key):
         self.first = first
         self.last = last
         self.email = email
+        self.primary_key = primary_key
 
 
 class Registrar:
@@ -43,10 +29,13 @@ class Registrar:
 
 
 class Student:
-    def __init__(self, first, last, email):
-        super().__init__(first, last, email)
-        self.classes = []
-        self.course_shitory = []
+    def __init__(self, first, last, email, primary_key, classes):
+        super().__init__(first, last, email, primary_key)
+        conn = sqlite3.connect("student.db")
+        c = conn.cursor()
+        # row = list(c.execute("SELECT * FROM students WHERE ID = ?", (primary_key,)))[0]
+        # self.classes = row[]
+        # self.course_shitory = row[]
 
     def is_time_conflict(self, start, end):
         result = False
@@ -59,7 +48,7 @@ class Student:
         if (len(self.classes) >= 4) or (self.is_time_conflict(start, end)):
             return False
 
-    def enroll_class(self, start, end):
+    def enroll_class(self, start, end, cls_primary_key):
         if self.is_eligible(start, end):
             pass
 
@@ -68,7 +57,7 @@ class Instructor:
     pass
 
 
-# # test
+# # testing class time conflict
 # def test(start, end, classes):
 #     result = True
 #     for cls in classes:
@@ -102,3 +91,46 @@ class Instructor:
 # print(test(c_start, c_end, classes))
 # print(test(d_start, d_end, classes))
 # print(test(p_start, p_end, classes))
+
+
+# # testing database
+# import sqlite3
+
+# conn = sqlite3.connect("class.db")
+# c = conn.cursor()
+# c.execute(
+#     """CREATE TABLE IF NOT EXISTS classes (ID integer PRIMARY KEY, Name text NOT NULL, 'Class Start' text NOT NULL, 'Class End' text NOT NULL, 'Class Size' integer NOT NULL, 'Student Classes ID' integer, 'Instructor Classes ID' integer, FOREIGN KEY ('Student Classes ID') REFERENCES student_classes (ID), FOREIGN KEY ('Instructor Classes ID') REFERENCES instructor_classes (ID))"""
+#     # might use blob for 'Class Start' and 'Class End'
+# )
+# c.execute(
+#     """INSERT INTO classes(Name, 'Class Start', 'Class End', 'Class Size') VALUES (?, ?, ?, ?)""",
+#     ("CSC 520", "09:00:00", "10:00:00", 50),
+# )
+# conn.commit()
+# c.close()
+
+# conn = sqlite3.connect("student.db")
+# c = conn.cursor()
+# c.execute(
+#     """CREATE TABLE IF NOT EXISTS students (ID integer PRIMARY KEY, 'Student Classes ID' integer, GPA real NOT NULL, 'Course History ID', 'User ID' integer, FOREIGN KEY ('Student Classes ID') REFERENCES student_classes (ID), FOREIGN KEY ('Course History ID') REFERENCES course_history (ID), FOREIGN KEY ('User ID') REFERENCES users (ID))"""
+#     # might use blob for 'Class Start' and 'Class End'
+# )
+# c.execute(
+#     """INSERT INTO students(GPA) VALUES (?)""",
+#     (50,),
+# )
+# conn.commit()
+# c.close()
+
+# conn = sqlite3.connect("student_class.db")
+# c = conn.cursor()
+# c.execute(
+#     """CREATE TABLE IF NOT EXISTS student_classes (ID integer PRIMARY KEY, 'Student ID' integer, 'Class ID' integer, FOREIGN KEY ('Student ID') REFERENCES students (ID), FOREIGN KEY ('Class ID') REFERENCES classes (ID))"""
+#     # might use blob for 'Class Start' and 'Class End'
+# )
+# c.execute(
+#     """INSERT INTO student_classes('Student ID', 'Class ID') VALUES (?, ?)""",
+#     (1, 1),
+# )
+# conn.commit()
+# c.close()
