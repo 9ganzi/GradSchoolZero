@@ -310,7 +310,6 @@ c.execute(
 conn.commit()
 c.close()
 
-
 # # testing set up courses
 # conn = sqlite3.connect("user.db")
 # c = conn.cursor()
