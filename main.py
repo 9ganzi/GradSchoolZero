@@ -1802,61 +1802,148 @@ class mainWindow(QMainWindow):
         return "".join(random.choice(letters) for i in range(10))
 
 
+# user.db
 conn = sqlite3.connect("user.db")
 c = conn.cursor()
 c.execute(
     """CREATE TABLE IF NOT EXISTS users (
-        ID integer PRIMARY KEY,
-        Name text NOT NULL,
-        Email text NOT NULL,
-        'Applicant ID' integer,
-        Password text NOT NULL,
-        'User ID' text NOT NULL,
-        'User Type' text NOT NULL
-        )"""
+        user_id integer PRIMARY KEY,
+        first text NOT NULL,
+        last text NOT NULL,
+        id text NOT NULL,
+        password text NOT NULL,
+        email text NOT NULL,
+        user_type text NOT NULL)
+        """
 )
 c.execute("SELECT Name FROM users LIMIT 1")
 if c.fetchall() == []:
     many_registrars = [
-        ("Jaehong", "email", None, "123", "id", "Registrar"),
-        ("Aiman", "email", None, "123", "id", "Registrar"),
-        ("Ragib", "email", None, "123", "id", "Registrar"),
-        ("Michael", "email", None, "123", "id", "Registrar"),
-        ("Joel", "email", None, "123", "id", "Registrar"),
+        ("Jaehong", "Cho", "id", "123", "email@email.com", "Registrar"),
+        ("Aiman", "Last", "id", "123", "email@email.com", "Registrar"),
+        ("Ragib", "Last", "id", "123", "email@email.com", "Registrar"),
+        ("Michael", "Last", "id", "123", "email@email.com", "Registrar"),
+        ("Joel", "Last", "id", "123", "email@email.com", "Registrar"),
     ]
     c.executemany(
-        "INSERT INTO users(Name, Email, 'Applicant ID', Password, 'User ID', 'User Type') VALUES (?, ?, ?, ?, ?, ?)",
+        """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
         many_registrars,
     )
-
 conn.commit()
 conn.close()
 
-conn = sqlite3.connect("class.db")
+# applicant.db
+conn = sqlite3.connect("applicant.db")
 c = conn.cursor()
 c.execute(
-    """CREATE TABLE IF NOT EXISTS classes (ID integer PRIMARY KEY, Name text NOT NULL, 'Class Start' text NOT NULL, 'Class End' text NOT NULL, 'Class Size' integer NOT NULL, 'Student Classes ID' integer, 'Instructor Classes ID' integer, FOREIGN KEY ('Student Classes ID') REFERENCES student_classes (ID), FOREIGN KEY ('Instructor Classes ID') REFERENCES instructor_classes (ID))"""
-    # might use blob for 'Class Start' and 'Class End'
+    """CREATE TABLE IF NOT EXISTS applicants(
+        applicant_id integer PRIMARY KEY,
+        first text NOT NULL,
+        last text NOT NULL,
+        email text NOT NULL,
+        gpa real,
+        num_courses_taken integer,
+        user_type text NOT NULL
+        )"""
 )
 conn.commit()
-c.close()
+conn.close()
 
+# student.db
 conn = sqlite3.connect("student.db")
 c = conn.cursor()
 c.execute(
-    """CREATE TABLE IF NOT EXISTS students (ID integer PRIMARY KEY, 'Student Classes ID' integer, GPA real NOT NULL, 'Course History ID', 'User ID' integer, FOREIGN KEY ('Student Classes ID') REFERENCES student_classes (ID), FOREIGN KEY ('Course History ID') REFERENCES course_history (ID), FOREIGN KEY ('User ID') REFERENCES users (ID))"""
+    """CREATE TABLE IF NOT EXISTS students (
+        student_id integer PRIMARY KEY,
+        user_id integer NOT NULL,
+        gpa real NOT NULL,
+        num_courses_taken integer NOT NULL,
+        honor_count integer NOT NULL,
+        warning_count integer NOT NULL,
+        FOREIGN KEY ('user_id') REFERENCES users (user_id)
+        )"""
 )
 conn.commit()
-c.close()
+conn.close()
 
-conn = sqlite3.connect("student_class.db")
+# instructor.db
+conn = sqlite3.connect("instructor.db")
 c = conn.cursor()
 c.execute(
-    """CREATE TABLE IF NOT EXISTS student_classes (ID integer PRIMARY KEY, 'Student ID' integer, 'Class ID' integer, FOREIGN KEY ('Student ID') REFERENCES students (ID), FOREIGN KEY ('Class ID') REFERENCES classes (ID))"""
-    # might use blob for 'Class Start' and 'Class End'
+    """CREATE TABLE IF NOT EXISTS instructors (
+        instructor_id integer PRIMARY KEY,
+        user_id integer NOT NULL,
+        warning_count integer NOT NULL,
+        is_suspended integer NOT NULL,
+        FOREIGN KEY ('user_id') REFERENCES users (user_id)
+        )"""
 )
 conn.commit()
-c.close()
+conn.close()
+
+# course.db
+conn = sqlite3.connect("course.db")
+c = conn.cursor()
+c.execute(
+    """CREATE TABLE IF NOT EXISTS courses (
+        course_id integer PRIMARY KEY,
+        course_name text NOT NULL,
+        course_rating real,
+        course_time text NOT NULL,
+        instructor_id integer NOT NULL,
+        course_size integer NOT NULL,
+        enroll_count integer,
+        course_gpa real,
+        FOREIGN KEY ('instructor_id') REFERENCES users (user_id)
+        )"""
+)
+
+# enrollment.db
+conn = sqlite3.connect("enrollment.db")
+c = conn.cursor()
+c.execute(
+    """CREATE TABLE IF NOT EXISTS enrollments (
+        enrollment_id integer PRIMARY KEY,
+        student_id integer NOT NULL,
+        course_id integer NOT NULL,
+        grade real,
+        FOREIGN KEY ('student_id') REFERENCES students (student_id),
+        FOREIGN KEY ('course_id') REFERENCES courses (course_id)
+        )"""
+)
+conn.commit()
+conn.close()
+
+# course_history.db
+conn = sqlite3.connect("course_history.db")
+c = conn.cursor()
+c.execute(
+    """CREATE TABLE IF NOT EXISTS course_historys (
+        course_history_id integer PRIMARY KEY,
+        student_id integer NOT NULL,
+        course_id integer NOT NULL,
+        grade real,
+        FOREIGN KEY ('student_id') REFERENCES students (student_id),
+        FOREIGN KEY ('course_id') REFERENCES courses (course_id)
+        )"""
+)
+conn.commit()
+conn.close()
+
+# waitlist.db
+conn = sqlite3.connect("waitlist.db")
+c = conn.cursor()
+c.execute(
+    """CREATE TABLE IF NOT EXISTS waitlists (
+        waitlist_id integer PRIMARY KEY,
+        student_id integer NOT NULL,
+        course_id integer NOT NULL,
+        FOREIGN KEY ('student_id') REFERENCES students (student_id),
+        FOREIGN KEY ('course_id') REFERENCES courses (course_id)
+        )"""
+)
+conn.commit()
+conn.close()
 
 # Running the Gui with the run of application
 app = QApplication(sys.argv)
@@ -1868,17 +1955,3 @@ app.exec_()
 # buttons always exist, but if you are in the right period, they will function as they should,
 # if you are not, they won't function and give you warning messages (use schedule module)
 # use schedule module to play with buttons
-
-# for classes other than registrar
-# c.execute(
-#     """CREATE TABLE IF NOT EXISTS users (
-#         ID integer PRIMARY KEY,
-#         Name text NOT NULL,
-#         Email text NOT NULL,
-#         'Applicant ID' integer NOT NULL,
-#         Password text NOT NULL,
-#         'User ID' integer NOT NULL,
-#         'User Type' text NOT NULL,
-#         FOREIGN KEY ('Applicant ID') REFERENCES applicants (ID)
-#         )"""
-# )

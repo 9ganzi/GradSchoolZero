@@ -22,43 +22,22 @@ class Registrar(User):
         super().__init__(user_id)
 
     def course_set_up(self, name, time, instructor, size):
-        self.name = name
-        self.rating = None
-        self.time = time
-        self.instructor = instructor
-        self.size = size
-        self.enroll_count = 0
-        self.course_gpa = None
-
         conn = sqlite3.connect("course.db")
         c = conn.cursor()
         c.execute(
-            """CREATE TABLE IF NOT EXISTS courses (
-                course_id integer PRIMARY KEY,
-                course_name text NOT NULL,
-                course_rating real,
-                course_time text NOT NULL,
-                instructor_id integer NOT NULL,
-                course_size integer NOT NULL,
-                enroll_count integer,
-                course_gpa real,
-                FOREIGN KEY ('instructor_id') REFERENCES users (user_id)
-                )"""
-        )
-        c.execute(
             """INSERT INTO courses(course_name, course_rating, course_time, instructor_id, course_size, enroll_count, course_gpa) VALUES (?, ?, ?, ?, ?, ?, ?)""",
             (
-                self.name,
-                self.rating,
-                self.time,
-                self.instructor,
-                self.size,
-                self.enroll_count,
-                self.course_gpa,
+                name,
+                None,
+                time,
+                instructor,
+                size,
+                0,
+                None,
             ),
         )
         conn.commit()
-        c.close()
+        conn.close()
 
 
 class Student(User):
@@ -77,6 +56,7 @@ class Student(User):
 
     def is_time_conflict(self, course_id):
         conn = sqlite3.connect("enrollment.db")
+        # to get a list of values instead of a list of tuples
         conn.row_factory = lambda cursor, row: row[0]
         c = conn.cursor()
         c.execute(
@@ -116,7 +96,7 @@ class Student(User):
             (self.student_id,),
         )
         num_courses = len(c.fetchall())
-        c.close()
+        conn.close()
         if num_courses >= 4:
             return True
         return False
@@ -136,13 +116,32 @@ class Student(User):
         return True
 
     def is_eligible(self, course_id):
-        # took_and_not_failed
-        # is_too_many_courses
-        # is_time_conflict
-        pass
+        return (
+            (not self.is_time_conflict(course_id))
+            and (not self.is_too_many_courses())
+            and (not self.took_and_not_failed(course_id))
+        )
+
+    def apply_wait_list(self, course_id):
+        conn = sqlite3.connect("waitlist.db")
+        c = conn.cursor()
+        c.execute(
+            """INSERT INTO waitlists(student_id, course_id) VALUES (?, ?)""",
+            (
+                self.student_id,
+                course_id,
+            ),
+        )
+        conn.commit()
+        conn.close()
 
     def enroll_course(self, course_id):
-        self.is_eligible(course_id)
+        if self.is_eligible(course_id):
+            if Course(course_id).is_full():
+                self.apply_wait_list(course_id)
+            return 0
+        # enroll course
+        return 1
 
 
 class Instructor(User):
@@ -254,7 +253,7 @@ class Instructor(User):
 # user_id = c.fetchone()[0]
 # # print(user_id)
 # conn.commit()
-# c.close()
+# conn.close()
 
 # # # student.db
 # # conn = sqlite3.connect("student.db")
@@ -275,7 +274,7 @@ class Instructor(User):
 # #     (user_id, applicant_row[4], 0, 0, applicant_row[5]),
 # # )
 # # conn.commit()
-# # c.close()
+# # conn.close()
 
 # # instructor.db
 # conn = sqlite3.connect("instructor.db")
@@ -294,7 +293,7 @@ class Instructor(User):
 #     (user_id, 0, 0),
 # )
 # conn.commit()
-# c.close()
+# conn.close()
 
 # # course.db
 # conn = sqlite3.connect("course.db")
@@ -312,6 +311,8 @@ class Instructor(User):
 #         FOREIGN KEY ('instructor_id') REFERENCES users (user_id)
 #         )"""
 # )
+
+
 # c.execute(
 #     """INSERT INTO courses(course_name, course_rating, course_time, instructor_id, course_size, enroll_count, course_gpa) VALUES (?, ?, ?, ?, ?, ?, ?)""",
 #     (
@@ -325,7 +326,7 @@ class Instructor(User):
 #     ),
 # )
 # conn.commit()
-# c.close()
+# conn.close()
 
 # enrollment.db
 # conn = sqlite3.connect("enrollment.db")
@@ -349,7 +350,7 @@ class Instructor(User):
 #     ),
 # )
 # conn.commit()
-# c.close()
+# conn.close()
 
 # # course_history.db
 # conn = sqlite3.connect("course_history.db")
@@ -373,7 +374,7 @@ class Instructor(User):
 #     ),
 # )
 # conn.commit()
-# c.close()
+# conn.close()
 
 # # waitlist.db
 # conn = sqlite3.connect("waitlist.db")
@@ -383,22 +384,19 @@ class Instructor(User):
 #         waitlist_id integer PRIMARY KEY,
 #         student_id integer NOT NULL,
 #         course_id integer NOT NULL,
-#         instructor_id integer NOT NULL,
 #         FOREIGN KEY ('student_id') REFERENCES students (student_id),
-#         FOREIGN KEY ('course_id') REFERENCES courses (course_id),
-#         FOREIGN KEY ('instructor_id') REFERENCES instructors (instructor_id)
+#         FOREIGN KEY ('course_id') REFERENCES courses (course_id)
 #         )"""
 # )
 # c.execute(
-#     """INSERT INTO waitlists(student_id, course_id, instructor_id) VALUES (?, ?, ?)""",
+#     """INSERT INTO waitlists(student_id, course_id) VALUES (?, ?)""",
 #     (
-#         1,
 #         1,
 #         1,
 #     ),
 # )
 # conn.commit()
-# c.close()
+# conn.close()
 
 # # testing set up courses
 # conn = sqlite3.connect("user.db")
@@ -419,16 +417,20 @@ c = conn.cursor()
 c.execute("SELECT * FROM students WHERE student_id=?", (1,))
 args = c.fetchone()
 student1 = Student(args[0])
-print(student1.took_and_not_failed(1))
-print(student1.took_and_not_failed(2))
-print(student1.took_and_not_failed(3))
-print(student1.took_and_not_failed(4))
-print(student1.took_and_not_failed(5))
+print(student1.apply_wait_list(3))
+print(student1.apply_wait_list(4))
+print(student1.apply_wait_list(5))
+print(student1.apply_wait_list(6))
 
-# sql = """ UPDATE course_historys
-#               SET grade = ?
-#               WHERE course_history_id = ?"""
-# conn = sqlite3.connect("course_history.db")
+
+# sql = """ UPDATE courses
+#               SET enroll_count = ?
+#               WHERE course_id = ?"""
+# conn = sqlite3.connect("course.db")
 # c = conn.cursor()
-# c.execute(sql, ("B", 2))
+# c.execute(sql, (26, 3))
+# c.execute(sql, (25, 4))
+# c.execute(sql, (15, 5))
+# c.execute(sql, (18, 6))
 # conn.commit()
+# conn.close()

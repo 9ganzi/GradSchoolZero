@@ -16,3 +16,6 @@ class Course:
         self.course_size = course_info[5]
         self.enroll_count = course_info[6]
         self.course_gpa = course_info[7]
+
+    def is_full(self):
+        return self.enroll_count >= self.course_size
