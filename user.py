@@ -21,8 +21,44 @@ class Registrar(User):
     def __init__(self, user_id):
         super().__init__(user_id)
 
-    def set_up_courses(self, name, instructor, start, end, size):
-        pass
+    def course_set_up(self, name, time, instructor, size):
+        self.name = name
+        self.rating = None
+        self.time = time
+        self.instructor = instructor
+        self.size = size
+        self.enroll_count = 0
+        self.course_gpa = None
+
+        conn = sqlite3.connect("course.db")
+        c = conn.cursor()
+        c.execute(
+            """CREATE TABLE IF NOT EXISTS courses (
+                course_id integer PRIMARY KEY,
+                course_name text NOT NULL,
+                course_rating real,
+                course_time text NOT NULL,
+                instructor_id integer NOT NULL,
+                course_size integer NOT NULL,
+                enroll_count integer,
+                course_gpa real,
+                FOREIGN KEY ('instructor_id') REFERENCES users (user_id)
+                )"""
+        )
+        c.execute(
+            """INSERT INTO courses(course_name, course_rating, course_time, instructor_id, course_size, enroll_count, course_gpa) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            (
+                self.name,
+                self.rating,
+                self.time,
+                self.instructor,
+                self.size,
+                self.enroll_count,
+                self.course_gpa,
+            ),
+        )
+        conn.commit()
+        c.close()
 
 
 class Student(User):
@@ -39,27 +75,81 @@ class Student(User):
         self.honor_count = student_info[4]
         self.warning_count = student_info[5]
 
-    def is_time_conflict(self, start, end):
-        result = False
-        for cls in self.courses:
-            if (not (start > cls[1])) and (not (end < cls[0])):
-                result = True
-        return result
+    def is_time_conflict(self, course_id):
+        conn = sqlite3.connect("enrollment.db")
+        conn.row_factory = lambda cursor, row: row[0]
+        c = conn.cursor()
+        c.execute(
+            "SELECT course_id FROM enrollments WHERE student_id=?", (self.student_id,)
+        )
+        courses = c.fetchall()
+        courses = list(map(int, courses))
+        conn = sqlite3.connect("course.db")
+        c = conn.cursor()
+        c.execute(
+            "SELECT course_time FROM courses WHERE course_id in ({courses})".format(
+                courses=",".join(["?"] * len(courses))
+            ),
+            courses,
+        )
+        schedule = c.fetchall()
+        schedule = [x[0].split(",") for x in schedule]
+        schedule = [
+            x2.replace(" - ", " ").strip().split(" ") for x1 in schedule for x2 in x1
+        ]
+        c.execute("SELECT course_time FROM courses WHERE course_id = ?", (course_id,))
+        new_course = c.fetchone()[0]
+        new_course = new_course.split(",")
+        new_course = [x.strip().replace(" - ", " ").split(" ") for x in new_course]
+        for day in schedule:
+            for new_day in new_course:
+                if day[0] == new_day[0]:
+                    if (not (day[1] > new_day[1])) and (not (day[2] < new_day[2])):
+                        return True
+        return False
 
-    def is_eligible(self, start, end):
-        if (len(self.courses) >= 4) or (self.is_time_conflict(start, end)):
+    def is_too_many_courses(self):
+        conn = sqlite3.connect("enrollment.db")
+        c = conn.cursor()
+        c.execute(
+            "SELECT enrollment_id FROM enrollments WHERE student_id = ?",
+            (self.student_id,),
+        )
+        num_courses = len(c.fetchall())
+        c.close()
+        if num_courses >= 4:
+            return True
+        return False
+
+    def took_and_not_failed(self, course_id):
+        conn = sqlite3.connect("course_history.db")
+        c = conn.cursor()
+        c.execute(
+            "SELECT grade FROM course_historys WHERE student_id=? AND course_id=?",
+            (self.student_id, course_id),
+        )
+        grade = c.fetchone()
+        if type(grade) == tuple:
+            grade = grade[0]
+        if (grade == None) or (grade.lower() == "f"):
             return False
+        return True
 
-    def enroll_cours(self, start, end, cls_primary_key):
-        if self.is_eligible(start, end):
-            pass
+    def is_eligible(self, course_id):
+        # took_and_not_failed
+        # is_too_many_courses
+        # is_time_conflict
+        pass
+
+    def enroll_course(self, course_id):
+        self.is_eligible(course_id)
 
 
 class Instructor(User):
     def __init__(self, instructor_id):
         conn = sqlite3.connect("instructor.db")
         c = conn.cursor()
-        c.execute("SELECT * FROM instructors WHERE student_id = ?", (instructor_id,))
+        c.execute("SELECT * FROM instructors WHERE instructor_id = ?", (instructor_id,))
         instructor_info = c.fetchone()
         conn.close()
         super().__init__(instructor_info[1])
@@ -226,10 +316,10 @@ class Instructor(User):
 #     """INSERT INTO courses(course_name, course_rating, course_time, instructor_id, course_size, enroll_count, course_gpa) VALUES (?, ?, ?, ?, ?, ?, ?)""",
 #     (
 #         "CSC 59866",
-#         5.0,
-#         "TuTh 11:00 - 12:15, Fr 12:00 - 2:30",
+#         None,
+#         "Th 11:00 - 12:15, Fr 1:00 - 2:30",
 #         1,
-#         30,
+#         15,
 #         0,
 #         None,
 #     ),
@@ -237,7 +327,7 @@ class Instructor(User):
 # conn.commit()
 # c.close()
 
-# # enrollment.db
+# enrollment.db
 # conn = sqlite3.connect("enrollment.db")
 # c = conn.cursor()
 # c.execute(
@@ -254,7 +344,7 @@ class Instructor(User):
 #     """INSERT INTO enrollments(student_id, course_id, grade) VALUES (?, ?, ?)""",
 #     (
 #         1,
-#         1,
+#         6,
 #         None,
 #     ),
 # )
@@ -278,44 +368,67 @@ class Instructor(User):
 #     """INSERT INTO course_historys(student_id, course_id, grade) VALUES (?, ?, ?)""",
 #     (
 #         1,
-#         1,
-#         None,
+#         5,
+#         "F",
 #     ),
 # )
 # conn.commit()
 # c.close()
 
-# waitlist.db
-conn = sqlite3.connect("waitlist.db")
-c = conn.cursor()
-c.execute(
-    """CREATE TABLE IF NOT EXISTS waitlists (
-        waitlist_id integer PRIMARY KEY,
-        student_id integer NOT NULL,
-        course_id integer NOT NULL,
-        instructor_id integer NOT NULL,
-        FOREIGN KEY ('student_id') REFERENCES students (student_id),
-        FOREIGN KEY ('course_id') REFERENCES courses (course_id),
-        FOREIGN KEY ('instructor_id') REFERENCES instructors (instructor_id)
-        )"""
-)
-c.execute(
-    """INSERT INTO waitlists(student_id, course_id, instructor_id) VALUES (?, ?, ?)""",
-    (
-        1,
-        1,
-        1,
-    ),
-)
-conn.commit()
-c.close()
+# # waitlist.db
+# conn = sqlite3.connect("waitlist.db")
+# c = conn.cursor()
+# c.execute(
+#     """CREATE TABLE IF NOT EXISTS waitlists (
+#         waitlist_id integer PRIMARY KEY,
+#         student_id integer NOT NULL,
+#         course_id integer NOT NULL,
+#         instructor_id integer NOT NULL,
+#         FOREIGN KEY ('student_id') REFERENCES students (student_id),
+#         FOREIGN KEY ('course_id') REFERENCES courses (course_id),
+#         FOREIGN KEY ('instructor_id') REFERENCES instructors (instructor_id)
+#         )"""
+# )
+# c.execute(
+#     """INSERT INTO waitlists(student_id, course_id, instructor_id) VALUES (?, ?, ?)""",
+#     (
+#         1,
+#         1,
+#         1,
+#     ),
+# )
+# conn.commit()
+# c.close()
 
 # # testing set up courses
 # conn = sqlite3.connect("user.db")
 # c = conn.cursor()
-# c.execute("SELECT * FROM users WHERE ID=1")
+# c.execute("SELECT * FROM users WHERE user_id=1")
 # args = c.fetchone()
-# r = Registrar("first", "last", args[0])
-# a_start = "04:59:00"
-# a_end = "05:00:00"
-# r.set_up_courses("csc 32200", "Wei", a_start, a_end, 30)
+# registrar1 = Registrar(args[0])
+# conn = sqlite3.connect("instructor.db")
+# c = conn.cursor()
+# c.execute("SELECT * FROM instructors WHERE instructor_id=1")
+# args = c.fetchone()
+# instructor1 = Instructor(args[0])
+# registrar1.course_set_up("CSC 33500", "Tu 12:00 - 1:15, We 12:00 - 2:30", args[0], 25)
+
+
+conn = sqlite3.connect("student.db")
+c = conn.cursor()
+c.execute("SELECT * FROM students WHERE student_id=?", (1,))
+args = c.fetchone()
+student1 = Student(args[0])
+print(student1.took_and_not_failed(1))
+print(student1.took_and_not_failed(2))
+print(student1.took_and_not_failed(3))
+print(student1.took_and_not_failed(4))
+print(student1.took_and_not_failed(5))
+
+# sql = """ UPDATE course_historys
+#               SET grade = ?
+#               WHERE course_history_id = ?"""
+# conn = sqlite3.connect("course_history.db")
+# c = conn.cursor()
+# c.execute(sql, ("B", 2))
+# conn.commit()
