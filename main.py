@@ -1816,7 +1816,7 @@ c.execute(
         user_type text NOT NULL)
         """
 )
-c.execute("SELECT Name FROM users LIMIT 1")
+c.execute("SELECT user_id FROM users LIMIT 1")
 if c.fetchall() == []:
     many_registrars = [
         ("Jaehong", "Cho", "id", "123", "email@email.com", "Registrar"),
