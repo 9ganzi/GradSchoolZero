@@ -237,14 +237,14 @@ class Instructor(User):
 #         user_type text NOT NULL)
 #         """
 # )
-# # c.execute(
-# #     """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
-# #     ("Jaehong", "Cho", "id", "password", "email@email.com", "registrar"),
-# # )
-# # c.execute(
-# #     """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
-# #     ("John", "Doe", "id", "password", "email@email.com", "student"),
-# # )
+# c.execute(
+#     """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
+#     ("Jaehong", "Cho", "id", "password", "email@email.com", "registrar"),
+# )
+# c.execute(
+#     """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
+#     ("John", "Doe", "id", "password", "email@email.com", "student"),
+# )
 # c.execute(
 #     """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
 #     ("Jane", "Doe", "id", "password", "email@emgail.com", "instructor"),
@@ -412,15 +412,15 @@ class Instructor(User):
 # registrar1.course_set_up("CSC 33500", "Tu 12:00 - 1:15, We 12:00 - 2:30", args[0], 25)
 
 
-conn = sqlite3.connect("student.db")
-c = conn.cursor()
-c.execute("SELECT * FROM students WHERE student_id=?", (1,))
-args = c.fetchone()
-student1 = Student(args[0])
-print(student1.apply_wait_list(3))
-print(student1.apply_wait_list(4))
-print(student1.apply_wait_list(5))
-print(student1.apply_wait_list(6))
+# conn = sqlite3.connect("student.db")
+# c = conn.cursor()
+# c.execute("SELECT * FROM students WHERE student_id=?", (1,))
+# args = c.fetchone()
+# student1 = Student(args[0])
+# print(student1.apply_wait_list(3))
+# print(student1.apply_wait_list(4))
+# print(student1.apply_wait_list(5))
+# print(student1.apply_wait_list(6))
 
 
 # sql = """ UPDATE courses
@@ -434,3 +434,18 @@ print(student1.apply_wait_list(6))
 # c.execute(sql, (18, 6))
 # conn.commit()
 # conn.close()
+
+conn = sqlite3.connect("user.db")
+c = conn.cursor()
+c.execute(
+    "INSERT INTO users (first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)",
+    ("Michael", "Jackson", "id", "password", "email@email.com", "registrar"),
+)
+
+# c.execute(
+#     """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
+#     ("Jaehong", "Cho", "id", "password", "email@email.com", "registrar"),
+# )
+
+conn.commit()
+conn.close()
