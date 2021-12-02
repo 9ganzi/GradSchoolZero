@@ -16,7 +16,81 @@ class User:
         self.email = user_info[5]
         self.user_type = user_info[6]
 
+# fire an instructor ( can only be accessed by registrar on their page)
+# input a specfic instructor_id, deletes instructor from database 
+def fire_instructor(instructor_id):
+    conn = sqlite3.connect("instructor.db")
+    c = conn.cursor()
+    c.execute("DELETE FROM instructors WHERE instructor_id = :instructor_id",
+              {'instructor_id': instructor_id})
+    conn.commit()
+    conn.close()
+    
+# drop student from program ( can only be accessed by registrar on their page)
+# given student class, delete student from database
+def terminate_student(student):
+    conn = sqlite3.connect("student.db")
+    c = conn.cursor()
+    c.execute("DELETE * FROM students WHERE student_id = :student_id",
+              {'student_id': student.student_id})
+    conn.commit()
+    conn.close()    
 
+# drop student from program ( can only be accessed by registrar on their page)
+# given student_id, delete student from database
+def terminate_student(student_id):
+    conn = sqlite3.connect("student.db")
+    c = conn.cursor()
+    c.execute("DELETE * FROM students WHERE student_id = :student_id",
+              {'student_id': student_id})
+    conn.commit()
+    conn.close()        
+    
+# graduates a student by setting degree to master ( can only be accessed by registrar on their page)
+# inputs a student class, alterativelty should we just delete student from database as well
+def graduate_student(student):
+    conn = sqlite3.connect("student.db")
+    c = conn.cursor()
+    c.execute("""UPDATE student SET degree = :degree
+                            WHERE student_id = student_id""",
+              {'student_id': student.student_id, 'degree': 'Masters'})
+    conn.commit()
+    conn.close()    
+    
+    # issue warning to student ( can only be accessed by registrar on their page)
+    # given a student_id
+def issue_warning_std(student_id):
+    conn = sqlite3.connect("student.db")
+    c = conn.cursor()
+    # get current warning_count
+    c.execute("SELECT warning_count From students where student_id = :student_id",
+              {'student_id': student_id})
+    new_warning_count = c.fetchone()[0] + 1 # c.fetchone()[0] isolate variable from tuple
+    #print(new_warning_count)
+    # update student warning_count
+    c.execute("""UPDATE students SET warning_count = :new_warning_count
+                        WHERE student_id =:student_id""",
+              {'student_id': student_id, 'new_warning_count': new_warning_count})
+    conn.commit()
+    conn.close()    
+    
+    # issue warning to instructor ( can only be accessed by registrar on their page)
+    # given a instructor_id
+def issue_warning_instuctor(instructor_id):
+    conn = sqlite3.connect("instructor.db")
+    c = conn.cursor()
+    # get current warning_count
+    c.execute("SELECT warning_count From instructors where instructor_id = :instructor_id",
+              {'instructor_id': instructor_id})
+    new_warning_count = c.fetchone()[0] + 1 # c.fetchone()[0] isolate variable from tuple
+    #print(new_warning_count)
+    # update student warning_count
+    c.execute("""UPDATE instructors SET warning_count = :new_warning_count
+                        WHERE instructor_id =:instructor_id""",
+              {'instructor_id': instructor_id, 'new_warning_count': new_warning_count})
+    conn.commit()
+    conn.close()        
+    
 class Registrar(User):
     def __init__(self, user_id):
         super().__init__(user_id)
@@ -53,6 +127,9 @@ class Student(User):
         self.num_courses_taken = student_info[3]
         self.honor_count = student_info[4]
         self.warning_count = student_info[5]
+        self.semester_gpa = student_info[6]
+        self.is_suspended = student_info[7]
+        self.degree = student_info[8]
 
     def is_time_conflict(self, course_id):
         conn = sqlite3.connect("enrollment.db")
@@ -142,8 +219,101 @@ class Student(User):
             return 0
         # enroll course
         return 1
+        
+    # issue warning to student
+    def receive_warning(self):
+        new_warning_count = self.warning_count + 1
+        conn = sqlite3.connect("student.db")
+        c = conn.cursor()
+        c.execute("""UPDATE student SET warning_count = :new_warning_count
+                        WHERE student_id = student_id""",
+                  {'student_id': self.student_id, 'new_warning_count': new_warning_count})
+        conn.commit()
+        conn.close()    
+        
+     # remove a warning from student class
+    def remove_warning(self):
+        new_warning_count = self.warning_count - 1
+        conn = sqlite3.connect("student.db")
+        c = conn.cursor()
+        c.execute("""UPDATE student SET warning_count = :new_warning_count
+                        WHERE student_id = student_id""",
+                  {'student_id': self.student_id, 'new_warning_count': new_warning_count})
+        conn.commit()
+        conn.close()   
 
+     # warn student for gpa btwn 2-2.25
+     # student function
+    def is_struggling(self):
+        if 2 <= self.gpa <= 2.25:
+            self.receive_warning()
+            return True
+        return False
+            
+     # if GPA < 2 or failed a course twice, if true then terminate
+    def is_failing(self):
+        if self.gpa < 2 or self.failed_twice():
+            conn = sqlite3.connect("student.db")
+            c = conn.cursor()
+            c.execute("DELETE * FROM student WHERE student_id = ?", (self.student_id,))
+            conn.commit()
+            conn.close()
+            return True
+         return False
+        
+    # check to see if student failed class twice
+    def failed_twice(self):
+        failing_grade = 2.0  # or should it an 'F'
+        conn = sqlite3.connect("course_history.db")
+        c = conn.cursor()
+        c.execute("""SELECT course_id FROM course_history WHERE grade < :failing_grade
+                                    AND student_id =:student_id """,
+                  ({'failing_grade': failing_grade, 'student_id': self.student_id}))
+        # if cousrse_id repeats return true else return false
+        conn.commit()
+        conn.close()   
+        
+    # place student on honor roll if gpa > 3.5 or semester_gpa > 3.75
+    def is_honor_roll(self):
+        if self.gpa > 3.5 or self.semester_gpa > 3.75:
+            self.remove_warning()
+            self.place_honor_roll()
+            return True
+        return False
+            
+        # place honor_roll student on home page
+    def place_honor_roll(self):
+        # print(self.first, '? is on honor roll')
+        pass
+    
+    # check if student can graduate
+    def can_graduate(self):
+        if self.num_courses_taken > 8:  # apply if classes taken >8
+            self.apply_graduation()
+            return True
+        return False
+    
+    # apply for graduation, let registrar review
+    def apply_graduation(self):
+        # registrar needs to check if required courses passed
+        # want to give some notification to registrar
+        #print(self.first, '? applied to graduate')
+        pass
+    
+    # reset semester grades (for end of period) 
+    @classmethod
+    def reset_semester_grades(cls):
+        semester_gpa = 'NULL'
+        conn = sqlite3.connect("student.db")
+        c = conn.cursor()
+        c.execute("""UPDATE students SET semester_gpa = :semester_gpa """,
+                  {'semester_gpa': semester_gpa})
+        conn.commit()
+        conn.close()
+        # update all students
 
+    
+    
 class Instructor(User):
     def __init__(self, instructor_id):
         conn = sqlite3.connect("instructor.db")
@@ -156,6 +326,56 @@ class Instructor(User):
         self.warning_count = instructor_info[2]
         self.is_suspended = instructor_info[3]
 
+     # suspend instructor automatically if warning count >=3
+    def suspend(self):
+        if self.warning_count >= 3:
+            conn = sqlite3.connect("instructor.db")
+            c = conn.cursor()
+            c.execute("""UPDATE instructor SET is_suspended = :is_suspended
+                                        WHERE instructor_id = :instructor_id""",
+                      {'instructor_id': self.instructor_id, 'is_suspended': 1})
+            conn.commit()
+            conn.close()
+            # should warning_count be reset at start of semester?
+            # how should is_suspended be reset      
+  
+        # issue warning
+    def receive_warning(self):
+        new_warning_count = self.warning_count + 1
+        conn = sqlite3.connect("instructor.db")
+        c = conn.cursor()
+        c.execute("""UPDATE instructor SET warning_count = :new_warning_count
+                                WHERE instructor_id = instructor_id""",
+                  {'instructor_id': self.instructor_id, 'new_warning_count': new_warning_count})
+        conn.commit()
+        conn.close()
+
+    # assign grades to students during grading period
+    def assign_grade(self, student, course, grade):
+        conn = sqlite3.connect("enrollment.db")
+        c = conn.cursor()
+        c.execute("""UPDATE enrollments SET grade = :grade
+                        WHERE student_id = :student_id
+                        AND course_id =: course_id""",
+                  {'student_id': student.student_id, 'course_id': course.course_id, 'grade': grade})
+        conn.commit()
+        conn.close()    
+        
+    # check if all students are graded, give warning otherwise
+    def is_all_graded(self):
+        conn = sqlite3.connect("enrollment.db")
+        c = conn.cursor()
+        c.execute("""SELECT grade FROM enrollments
+                        WHERE instructor_id =: instructor_id
+                        AND grade IS NULL """,
+                  {'instructor_id': self.instructor_id})
+        conn.commit()
+        if c.fetchall() == {}:
+            conn.close()
+            return True
+        conn.close()
+        self.recieve_warning()
+        return False
 
 # # testing course time conflict
 # def test(start, end, courses):
