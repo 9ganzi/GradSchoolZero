@@ -2,6 +2,7 @@ import sqlite3
 import sys
 import csv
 import os
+from user import Registrar, Student, Instructor
 import random
 import string
 from PyQt5 import QtWidgets
@@ -1779,15 +1780,18 @@ class mainWindow(QMainWindow):
         conn = sqlite3.connect("user.db")
         c = conn.cursor()
         c.execute(
-            "SELECT * FROM users WHERE name=? AND password=?",
+            "SELECT * FROM users WHERE id=? AND password=?",
             (self.nameBOX.text(), self.passwordBOX.text()),
         )
         row = c.fetchone()
         if row != None:
-            name = row[0]
-            email = row[1]
-            id = row[3]
-            acc_type = row[4]
+            # create instance of user
+            if row[6] == "student":
+                user = Student(row[0])
+            elif row[6] == "instructor":
+                user = Instructor(row[0])
+            else:
+                user = Registrar(row[0])
             self.mainpage_home()
         conn.commit()
         conn.close()
@@ -1819,11 +1823,11 @@ c.execute(
 c.execute("SELECT user_id FROM users LIMIT 1")
 if c.fetchall() == []:
     many_registrars = [
-        ("Jaehong", "Cho", "id", "123", "email@email.com", "Registrar"),
-        ("Aiman", "Last", "id", "123", "email@email.com", "Registrar"),
-        ("Ragib", "Last", "id", "123", "email@email.com", "Registrar"),
-        ("Michael", "Last", "id", "123", "email@email.com", "Registrar"),
-        ("Joel", "Last", "id", "123", "email@email.com", "Registrar"),
+        ("Jaehong", "Cho", "id1", "123", "email@email.com", "Registrar"),
+        ("Aiman", "Last", "id2", "123", "email@email.com", "Registrar"),
+        ("Ragib", "Last", "id3", "123", "email@email.com", "Registrar"),
+        ("Michael", "Last", "id4", "123", "email@email.com", "Registrar"),
+        ("Joel", "Last", "id5", "123", "email@email.com", "Registrar"),
     ]
     c.executemany(
         """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
