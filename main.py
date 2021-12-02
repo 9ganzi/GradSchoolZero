@@ -1803,7 +1803,7 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.scroll)
 
         # checking if any buttons is clicked
-        self.backToMainBTN.clicked.connect(self.startup_page)
+        self.backToMainBTN.clicked.connect(self.startup_page_student)
         self.signUpBTN.clicked.connect(self.signup_page)
         self.loginFBTN.clicked.connect(self.login)
 
@@ -2379,7 +2379,7 @@ class mainWindow(QMainWindow):
         c = conn.cursor()
         c.execute(
             "SELECT * FROM users WHERE id=? AND password=?",
-            (self.nameBOX.text(), self.passwordBOX.text()),
+            (self.UsernameBOX.text(), self.passwordBOX.text()),
         )
         row = c.fetchone()
         if row != None:
