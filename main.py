@@ -878,7 +878,7 @@ class mainWindow(QMainWindow):
         self.boxesMegaW.setLayout(self.boxesMegaL)
         self.mainL.addWidget(self.boxesMegaW)
 
-        self.saveBTN.clicked.connect(self.startup_page)
+        self.saveBTN.clicked.connect(self.startup_page_student)
         self.backBTN.clicked.connect(self.StartupStudent)
 
         # Connecting the main layout and widget
