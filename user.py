@@ -422,30 +422,19 @@ class Instructor(User):
 # print(student1.apply_wait_list(5))
 # print(student1.apply_wait_list(6))
 
-
-# sql = """ UPDATE courses
-#               SET enroll_count = ?
-#               WHERE course_id = ?"""
-# conn = sqlite3.connect("course.db")
+# # update a row
+# conn = sqlite3.connect("user.db")
 # c = conn.cursor()
-# c.execute(sql, (26, 3))
-# c.execute(sql, (25, 4))
-# c.execute(sql, (15, 5))
-# c.execute(sql, (18, 6))
+# sql = """UPDATE users SET first = ?, last = ? WHERE user_id = ?"""
+# c.execute(sql, ("John", "Doe", 5))
+# c.execute(sql, ("Michael", "Jordan", 6))
 # conn.commit()
 # conn.close()
 
-conn = sqlite3.connect("user.db")
-c = conn.cursor()
-c.execute(
-    "INSERT INTO users (first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)",
-    ("Michael", "Jackson", "id", "password", "email@email.com", "registrar"),
-)
-
-# c.execute(
-#     """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
-#     ("Jaehong", "Cho", "id", "password", "email@email.com", "registrar"),
-# )
-
-conn.commit()
-conn.close()
+# # delete a row
+# sql = """DELETE FROM users WHERE user_id = ?"""
+# conn = sqlite3.connect("user.db")
+# c = conn.cursor()
+# c.execute(sql, (1,))
+# conn.commit()
+# conn.close()
