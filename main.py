@@ -1738,7 +1738,7 @@ class mainWindow(QMainWindow):
         global name
         global email
 
-        conn = sqlite3.connect("applicant.db")
+        conn = sqlite3.connect("gsz.db")
 
         c = conn.cursor()
         c.execute(
@@ -1777,7 +1777,7 @@ class mainWindow(QMainWindow):
         global email
         global acc_type
 
-        conn = sqlite3.connect("user.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             "SELECT * FROM users WHERE id=? AND password=?",
@@ -1807,8 +1807,8 @@ class mainWindow(QMainWindow):
         # find the user in appropriate db using primary key
 
 
-# user.db
-conn = sqlite3.connect("user.db")
+# users table
+conn = sqlite3.connect("gsz.db")
 c = conn.cursor()
 c.execute(
     """CREATE TABLE IF NOT EXISTS users (
@@ -1818,28 +1818,26 @@ c.execute(
         id text NOT NULL,
         password text NOT NULL,
         email text NOT NULL,
-        user_type text NOT NULL)
+        user_type text NOT NULL,
+        first_login integer NOT NULL)
         """
 )
 c.execute("SELECT user_id FROM users LIMIT 1")
 if c.fetchall() == []:
     many_registrars = [
-        ("Jaehong", "Cho", "id1", "123", "email@email.com", "Registrar, 0"),
-        ("Aiman", "Last", "id2", "123", "email@email.com", "Registrar, 0"),
-        ("Ragib", "Last", "id3", "123", "email@email.com", "Registrar, 0"),
-        ("Michael", "Last", "id4", "123", "email@email.com", "Registrar, 0"),
-        ("Joel", "Last", "id5", "123", "email@email.com", "Registrar, 0"),
+        ("Jaehong", "Cho", "id1", "123", "email@email.com", "Registrar", 0),
+        ("Aiman", "Last", "id2", "123", "email@email.com", "Registrar", 0),
+        ("Ragib", "Last", "id3", "123", "email@email.com", "Registrar", 0),
+        ("Michael", "Last", "id4", "123", "email@email.com", "Registrar", 0),
+        ("Joel", "Last", "id5", "123", "email@email.com", "Registrar", 0),
     ]
     c.executemany(
         """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
         many_registrars,
     )
 conn.commit()
-conn.close()
 
-# applicant.db
-conn = sqlite3.connect("applicant.db")
-c = conn.cursor()
+# applicants table
 c.execute(
     """CREATE TABLE IF NOT EXISTS applicants(
         applicant_id integer PRIMARY KEY,
@@ -1847,16 +1845,14 @@ c.execute(
         last text NOT NULL,
         email text NOT NULL,
         gpa real,
+        resume text,
         num_courses_taken integer,
         user_type text NOT NULL
         )"""
 )
 conn.commit()
-conn.close()
 
-# student.db
-conn = sqlite3.connect("student.db")
-c = conn.cursor()
+# students table
 c.execute(
     """CREATE TABLE IF NOT EXISTS students (
         student_id integer PRIMARY KEY,
@@ -1869,11 +1865,8 @@ c.execute(
         )"""
 )
 conn.commit()
-conn.close()
 
-# instructor.db
-conn = sqlite3.connect("instructor.db")
-c = conn.cursor()
+# instructors table
 c.execute(
     """CREATE TABLE IF NOT EXISTS instructors (
         instructor_id integer PRIMARY KEY,
@@ -1884,11 +1877,8 @@ c.execute(
         )"""
 )
 conn.commit()
-conn.close()
 
-# course.db
-conn = sqlite3.connect("course.db")
-c = conn.cursor()
+# courses table
 c.execute(
     """CREATE TABLE IF NOT EXISTS courses (
         course_id integer PRIMARY KEY,
@@ -1903,9 +1893,7 @@ c.execute(
         )"""
 )
 
-# enrollment.db
-conn = sqlite3.connect("enrollment.db")
-c = conn.cursor()
+# enrollments table
 c.execute(
     """CREATE TABLE IF NOT EXISTS enrollments (
         enrollment_id integer PRIMARY KEY,
@@ -1917,11 +1905,8 @@ c.execute(
         )"""
 )
 conn.commit()
-conn.close()
 
-# course_history.db
-conn = sqlite3.connect("course_history.db")
-c = conn.cursor()
+# course_historys table
 c.execute(
     """CREATE TABLE IF NOT EXISTS course_historys (
         course_history_id integer PRIMARY KEY,
@@ -1933,11 +1918,8 @@ c.execute(
         )"""
 )
 conn.commit()
-conn.close()
 
-# waitlist.db
-conn = sqlite3.connect("waitlist.db")
-c = conn.cursor()
+# waitlists table
 c.execute(
     """CREATE TABLE IF NOT EXISTS waitlists (
         waitlist_id integer PRIMARY KEY,
@@ -1945,6 +1927,19 @@ c.execute(
         course_id integer NOT NULL,
         FOREIGN KEY ('student_id') REFERENCES students (student_id),
         FOREIGN KEY ('course_id') REFERENCES courses (course_id)
+        )"""
+)
+conn.commit()
+
+# complaints table
+c.execute(
+    """CREATE TABLE IF NOT EXISTS complaints (
+        complaint_id integer PRIMARY KEY,
+        complainant_id integer NOT NULL,
+        complainee_id integer NOT NULL,
+        description test NOT NULL,
+        FOREIGN KEY ('complainant_id') REFERENCES users (user_id),
+        FOREIGN KEY ('complainee_id') REFERENCES users (user_id)
         )"""
 )
 conn.commit()
