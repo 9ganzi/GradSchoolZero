@@ -55,6 +55,14 @@ class mainWindow(QMainWindow):
         )
         self.InstructorPage.setFont(QFont("Century Gothic", 20))
         self.navbarL.addWidget(self.InstructorPage)
+        
+        self.RegistrarsPage = QtWidgets.QPushButton()
+        self.RegistrarsPage.setFixedSize(410, 60)
+        self.RegistrarsPage.setCursor(QCursor(Qt.PointingHandCursor))
+        self.RegistrarsPage.setText("Registrars")
+        self.RegistrarsPage.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.RegistrarsPage.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.RegistrarsPage)
 
         self.navbarW.setLayout(self.navbarL)
         self.mainL.addWidget(self.navbarW)
@@ -93,7 +101,8 @@ class mainWindow(QMainWindow):
         self.mainW.setLayout(self.mainL)
         self.setCentralWidget(self.mainW)
 
-        self.existingStudentBTN.clicked.connect(self.startup_page)
+        self.existingStudentBTN.clicked.connect(self.startup_page_instructor)#Aiman
+        self.RegistrarsPage.clicked.connect(self.StartupRegistrars)#Aiman
         self.newStudentBTN.clicked.connect(self.studentDetails)
         self.InstructorPage.clicked.connect(self.StartupInstructor)
         # self.startup_page()
@@ -129,6 +138,15 @@ class mainWindow(QMainWindow):
         )
         self.InstructorPage.setFont(QFont("Century Gothic", 20))
         self.navbarL.addWidget(self.InstructorPage)
+        #Aiman start
+        self.RegistrarsPage = QtWidgets.QPushButton()
+        self.RegistrarsPage.setFixedSize(410, 60)
+        self.RegistrarsPage.setCursor(QCursor(Qt.PointingHandCursor))
+        self.RegistrarsPage.setText("Registrars")
+        self.RegistrarsPage.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.RegistrarsPage.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.RegistrarsPage)
+        #Aiman end
 
         self.navbarW.setLayout(self.navbarL)
         self.mainL.addWidget(self.navbarW)
@@ -167,10 +185,81 @@ class mainWindow(QMainWindow):
         self.mainW.setLayout(self.mainL)
         self.setCentralWidget(self.mainW)
 
-        self.existingInstructorBTN.clicked.connect(self.startup_page)
+        self.existingInstructorBTN.clicked.connect(self.startup_page_instructor)#Aiman
         self.newInstructorBTN.clicked.connect(self.instructorDetails)
+        self.RegistrarsPage.clicked.connect(self.StartupRegistrars)#Aiman
         self.studentPage.clicked.connect(self.StartupStudent)
         # self.startup_page()
+        
+        #Aiman start
+    def StartupRegistrars(self):
+
+        # Registrars Window
+
+        # setting background colour for the page
+        self.setStyleSheet('background-color:#031926;')
+        self.mainW = QWidget()
+        self.mainL = QVBoxLayout()
+
+        self.navbarW = QWidget()
+        self.navbarL = QHBoxLayout()
+        self.navbarW.setFixedHeight(80)
+        self.navbarW.setFixedWidth(1240)
+        self.navbarW.setStyleSheet("border-bottom: 1px solid white;")
+
+        self.studentPage = QtWidgets.QPushButton()
+        self.studentPage.setFixedSize(410, 60)
+        self.studentPage.setText("Student")
+        self.studentPage.setCursor(QCursor(Qt.PointingHandCursor))
+        self.studentPage.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.studentPage.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.studentPage)
+
+        self.InstructorPage = QtWidgets.QPushButton()
+        self.InstructorPage.setFixedSize(410, 60)
+        self.InstructorPage.setCursor(QCursor(Qt.PointingHandCursor))
+        self.InstructorPage.setText("Instructor")
+        self.InstructorPage.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.InstructorPage.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.InstructorPage)
+
+        self.RegistrarsPage = QtWidgets.QPushButton()
+        self.RegistrarsPage.setFixedSize(410, 60)
+        self.RegistrarsPage.setCursor(QCursor(Qt.PointingHandCursor))
+        self.RegistrarsPage.setText("Registrars")
+        self.RegistrarsPage.setStyleSheet("color:#076DF2;background:transparent;padding-bottom:10;")
+        self.RegistrarsPage.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.RegistrarsPage)
+
+        self.navbarW.setLayout(self.navbarL)
+        self.mainL.addWidget(self.navbarW)
+
+        self.stBTNS = QWidget()
+        self.stBTNSL = QHBoxLayout()
+
+        self.loginbtn = QtWidgets.QPushButton()
+        self.loginbtn.setText("Log in")
+        self.loginbtn.setFont(QFont("Century Gothic", 26))
+        self.loginbtn.setFixedSize(380, 90)
+        self.loginbtn.setCursor(QCursor(Qt.PointingHandCursor))
+        self.loginbtn.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                     "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.stBTNSL.addWidget(self.loginbtn)
+
+        self.stBTNS.setLayout(self.stBTNSL)
+        self.mainL.addWidget(self.stBTNS)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.setCentralWidget(self.mainW)
+
+        self.studentPage.clicked.connect(self.StartupStudent)
+        self.InstructorPage.clicked.connect(self.StartupInstructor)
+        self.loginbtn.clicked.connect(self.startup_page_registrar)
+        # self.startup_page()
+        
+        #Aiman end
 
     def instructorDetails(self):
         # setting background colour for the page
@@ -491,7 +580,7 @@ class mainWindow(QMainWindow):
         self.boxesMegaW.setLayout(self.boxesMegaL)
         self.mainL.addWidget(self.boxesMegaW)
 
-        self.saveBTN.clicked.connect(self.startup_page)
+        self.saveBTN.clicked.connect(self.startup_page_instructor)
         self.backBTN.clicked.connect(self.StartupInstructor)
 
         # Connecting the main layout and widget
@@ -789,14 +878,14 @@ class mainWindow(QMainWindow):
         self.boxesMegaW.setLayout(self.boxesMegaL)
         self.mainL.addWidget(self.boxesMegaW)
 
-        self.saveBTN.clicked.connect(self.startup_page)
+        self.saveBTN.clicked.connect(self.startup_page_student)
         self.backBTN.clicked.connect(self.StartupStudent)
 
         # Connecting the main layout and widget
         self.mainW.setLayout(self.mainL)
         self.setCentralWidget(self.mainW)
 
-    def startup_page(self):
+    def startup_page_student(self):  #Aiman
         # setting background colour for the page
         self.setStyleSheet("background-color:#031926;")
         # main layout and widget
@@ -914,6 +1003,27 @@ class mainWindow(QMainWindow):
 
         self.logSignL.addWidget(self.space)
         self.logSignL.addWidget(self.signUpBTN)
+        
+        #Aiman start 
+        # start of adding the back button
+
+        self.backToStartupBTN = QtWidgets.QPushButton()
+        self.backToStartupBTN.setText("Back")
+        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        self.backToStartupBTN.setFixedSize(180, 60)
+        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.backToStartupBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                     "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.space = QWidget()
+        self.space.setFixedWidth(50)
+
+        self.logSignL.addWidget(self.space)
+        self.logSignL.addWidget(self.backToStartupBTN)
+
+        # ends of adding the back button
+        #Aiman end
+        
         self.logSignW.setLayout(self.logSignL)
         self.mainL.addWidget(self.logSignW)
 
@@ -930,7 +1040,421 @@ class mainWindow(QMainWindow):
 
         # checking if any buttons is clicked
         self.logInBTN.clicked.connect(self.login_page)
+        self.backToStartupBTN.clicked.connect(self.StartupStudent)
         self.signUpBTN.clicked.connect(self.signup_page)
+        
+        #Aiman here
+    def startup_page_instructor(self):
+        # setting background colour for the page
+        self.setStyleSheet('background-color:#031926;')
+        # main layout and widget
+        self.scroll = QtWidgets.QScrollArea()
+        self.mainW = QWidget()
+        self.mainL = QVBoxLayout()
+
+        # ----------------Design-----------------
+
+        self.classesTopStatesW = QWidget()
+        self.classesTopStatesL = QHBoxLayout()
+
+        self.space = QWidget()
+        self.space.setFixedWidth(8)
+
+        self.classesTopStatesL.addWidget(self.space)
+
+        self.highestRatedClassesW = QWidget()
+        self.highestRatedClassesL = QVBoxLayout()
+        self.highestRatedClassesL.setAlignment(Qt.AlignHCenter)
+
+        self.highestRatedClassesW.setFixedSize(380, 400)
+        self.highestRatedClassesW.setStyleSheet("border: 1px solid white;border-radius:15px;")
+
+        self.highestRatedClassesTXT = QtWidgets.QLabel()
+        self.highestRatedClassesTXT.setText("Highest rated classes")
+        self.highestRatedClassesTXT.setFont(QFont("Century Gothic", 20))
+        self.highestRatedClassesTXT.setStyleSheet("border:0;color:white;")
+
+        self.highestRatedClassesL.addWidget(self.highestRatedClassesTXT)
+
+        self.highestRatedClassesW.setLayout(self.highestRatedClassesL)
+        self.classesTopStatesL.addWidget(self.highestRatedClassesW)
+
+        self.classesTopStatesL.addWidget(self.space)
+
+        self.lowestRatedClassesW = QWidget()
+        self.lowestRatedClassesL = QVBoxLayout()
+        self.lowestRatedClassesL.setAlignment(Qt.AlignHCenter)
+
+        self.lowestRatedClassesW.setFixedSize(380, 400)
+        self.lowestRatedClassesW.setStyleSheet("border: 1px solid white;border-radius:15px;")
+
+        self.lowestRatedClassesTXT = QtWidgets.QLabel()
+        self.lowestRatedClassesTXT.setText("Lowest rated classes")
+        self.lowestRatedClassesTXT.setFont(QFont("Century Gothic", 20))
+        self.lowestRatedClassesTXT.setStyleSheet("border:0;color:white;")
+
+        self.lowestRatedClassesL.addWidget(self.lowestRatedClassesTXT)
+
+        self.lowestRatedClassesW.setLayout(self.lowestRatedClassesL)
+        self.classesTopStatesL.addWidget(self.lowestRatedClassesW)
+
+        self.classesTopStatesL.addWidget(self.space)
+
+        self.highestGPAW = QWidget()
+        self.highestGPAL = QVBoxLayout()
+        self.highestGPAL.setAlignment(Qt.AlignHCenter)
+
+        self.highestGPAW.setFixedSize(380, 400)
+        self.highestGPAW.setStyleSheet("border: 1px solid white;border-radius:15px;")
+
+        self.highestGPATXT = QtWidgets.QLabel()
+        self.highestGPATXT.setText("Highest GPA Students")
+        self.highestGPATXT.setFont(QFont("Century Gothic", 20))
+        self.highestGPATXT.setStyleSheet("border:0;color:white;")
+
+        self.highestGPAL.addWidget(self.highestGPATXT)
+
+        self.highestGPAW.setLayout(self.highestGPAL)
+        self.classesTopStatesL.addWidget(self.highestGPAW)
+
+        self.classesTopStatesL.addWidget(self.space)
+
+        self.classesTopStatesW.setLayout(self.classesTopStatesL)
+        self.mainL.addWidget(self.classesTopStatesW)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(200)
+        self.mainL.addWidget(self.space)
+
+        self.logSignW = QWidget()
+        self.logSignL = QHBoxLayout()
+        self.logSignW.setFixedHeight(130)
+        self.logSignL.setAlignment(Qt.AlignHCenter)
+
+        self.logInBTN = QtWidgets.QPushButton()
+        self.logInBTN.setText("Log In")
+        self.logInBTN.setFont(QFont("Century Gothic", 20))
+        self.logInBTN.setFixedSize(180, 60)
+        self.logInBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.logInBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                    "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.logSignL.addWidget(self.logInBTN)
+
+        self.signUpBTN = QtWidgets.QPushButton()
+        self.signUpBTN.setText("Sign Up")
+        self.signUpBTN.setFont(QFont("Century Gothic", 20))
+        self.signUpBTN.setFixedSize(180, 60)
+        self.signUpBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.signUpBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                     "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.space = QWidget()
+        self.space.setFixedWidth(50)
+
+        self.logSignL.addWidget(self.space)
+        self.logSignL.addWidget(self.signUpBTN)
+
+        # start of adding the back button
+
+        self.backToStartupBTN = QtWidgets.QPushButton()
+        self.backToStartupBTN.setText("Back")
+        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        self.backToStartupBTN.setFixedSize(180, 60)
+        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.backToStartupBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.space = QWidget()
+        self.space.setFixedWidth(50)
+
+        self.logSignL.addWidget(self.space)
+        self.logSignL.addWidget(self.backToStartupBTN)
+
+        # ends of adding the back button
+
+        self.logSignW.setLayout(self.logSignL)
+        self.mainL.addWidget(self.logSignW)
+
+        # -------------End of Design-------------
+
+        # scroll settings
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.scroll.setWidget(self.mainW)
+        self.setCentralWidget(self.scroll)
+
+        # checking if any buttons is clicked
+        self.logInBTN.clicked.connect(self.login_page)
+        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+        self.signUpBTN.clicked.connect(self.signup_page)
+
+    def startup_page_registrar(self):
+        # setting background colour for the page
+        self.setStyleSheet('background-color:#031926;')
+        # main layout and widget
+        self.scroll = QtWidgets.QScrollArea()
+        self.mainW = QWidget()
+        self.mainL = QVBoxLayout()
+
+        # ----------------Design-----------------
+
+        self.classesTopStatesW = QWidget()
+        self.classesTopStatesL = QHBoxLayout()
+
+        self.space = QWidget()
+        self.space.setFixedWidth(8)
+
+        self.classesTopStatesL.addWidget(self.space)
+
+        self.highestRatedClassesW = QWidget()
+        self.highestRatedClassesL = QVBoxLayout()
+        self.highestRatedClassesL.setAlignment(Qt.AlignHCenter)
+
+        self.highestRatedClassesW.setFixedSize(380, 400)
+        self.highestRatedClassesW.setStyleSheet("border: 1px solid white;border-radius:15px;")
+
+        self.highestRatedClassesTXT = QtWidgets.QLabel()
+        self.highestRatedClassesTXT.setText("Highest rated classes")
+        self.highestRatedClassesTXT.setFont(QFont("Century Gothic", 20))
+        self.highestRatedClassesTXT.setStyleSheet("border:0;color:white;")
+
+        self.highestRatedClassesL.addWidget(self.highestRatedClassesTXT)
+
+        self.highestRatedClassesW.setLayout(self.highestRatedClassesL)
+        self.classesTopStatesL.addWidget(self.highestRatedClassesW)
+
+        self.classesTopStatesL.addWidget(self.space)
+
+        self.lowestRatedClassesW = QWidget()
+        self.lowestRatedClassesL = QVBoxLayout()
+        self.lowestRatedClassesL.setAlignment(Qt.AlignHCenter)
+
+        self.lowestRatedClassesW.setFixedSize(380, 400)
+        self.lowestRatedClassesW.setStyleSheet("border: 1px solid white;border-radius:15px;")
+
+        self.lowestRatedClassesTXT = QtWidgets.QLabel()
+        self.lowestRatedClassesTXT.setText("Lowest rated classes")
+        self.lowestRatedClassesTXT.setFont(QFont("Century Gothic", 20))
+        self.lowestRatedClassesTXT.setStyleSheet("border:0;color:white;")
+
+        self.lowestRatedClassesL.addWidget(self.lowestRatedClassesTXT)
+
+        self.lowestRatedClassesW.setLayout(self.lowestRatedClassesL)
+        self.classesTopStatesL.addWidget(self.lowestRatedClassesW)
+
+        self.classesTopStatesL.addWidget(self.space)
+
+        self.highestGPAW = QWidget()
+        self.highestGPAL = QVBoxLayout()
+        self.highestGPAL.setAlignment(Qt.AlignHCenter)
+
+        self.highestGPAW.setFixedSize(380, 400)
+        self.highestGPAW.setStyleSheet("border: 1px solid white;border-radius:15px;")
+
+        self.highestGPATXT = QtWidgets.QLabel()
+        self.highestGPATXT.setText("Highest GPA Students")
+        self.highestGPATXT.setFont(QFont("Century Gothic", 20))
+        self.highestGPATXT.setStyleSheet("border:0;color:white;")
+
+        self.highestGPAL.addWidget(self.highestGPATXT)
+
+        self.highestGPAW.setLayout(self.highestGPAL)
+        self.classesTopStatesL.addWidget(self.highestGPAW)
+
+        self.classesTopStatesL.addWidget(self.space)
+
+        self.classesTopStatesW.setLayout(self.classesTopStatesL)
+        self.mainL.addWidget(self.classesTopStatesW)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(200)
+        self.mainL.addWidget(self.space)
+
+        self.logSignW = QWidget()
+        self.logSignL = QHBoxLayout()
+        self.logSignW.setFixedHeight(130)
+        self.logSignL.setAlignment(Qt.AlignHCenter)
+
+        self.logInBTN = QtWidgets.QPushButton()
+        self.logInBTN.setText("Log In")
+        self.logInBTN.setFont(QFont("Century Gothic", 20))
+        self.logInBTN.setFixedSize(180, 60)
+        self.logInBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.logInBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                     "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.logSignL.addWidget(self.logInBTN)
+
+        self.signUpBTN = QtWidgets.QPushButton()
+        self.signUpBTN.setText("Sign Up")
+        self.signUpBTN.setFont(QFont("Century Gothic", 20))
+        self.signUpBTN.setFixedSize(180, 60)
+        self.signUpBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.signUpBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                     "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.space = QWidget()
+        self.space.setFixedWidth(50)
+
+        self.logSignL.addWidget(self.space)
+        self.logSignL.addWidget(self.signUpBTN)
+
+        # start of adding the back button
+
+        self.backToStartupBTN = QtWidgets.QPushButton()
+        self.backToStartupBTN.setText("Back")
+        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        self.backToStartupBTN.setFixedSize(180, 60)
+        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.backToStartupBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                     "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.space = QWidget()
+        self.space.setFixedWidth(50)
+
+        self.logSignL.addWidget(self.space)
+        self.logSignL.addWidget(self.backToStartupBTN)
+
+        # ends of adding the back button
+
+        self.logSignW.setLayout(self.logSignL)
+        self.mainL.addWidget(self.logSignW)
+
+        # -------------End of Design-------------
+
+        # scroll settings
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.scroll.setWidget(self.mainW)
+        self.setCentralWidget(self.scroll)
+
+        # checking if any buttons is clicked
+        self.logInBTN.clicked.connect(self.login_page)
+        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+        self.signUpBTN.clicked.connect(self.signup_page)
+
+    def compliant_page(self):
+        self.setStyleSheet('background-color:#031926;')
+        self.mainW = QWidget()
+        self.mainL = QHBoxLayout()
+
+        self.boxesMegaW = QWidget()
+        self.boxesMegaL = QHBoxLayout()
+
+        self.boxesW = QWidget()
+        self.boxesL = QVBoxLayout()
+        self.boxesL.setAlignment(Qt.AlignCenter)
+
+        self.boxesW2 = QWidget()
+        self.boxesL2 = QVBoxLayout()
+        self.boxesL2.setAlignment(Qt.AlignCenter)
+
+        self.firstNameTXT = QtWidgets.QLabel()
+        self.firstNameTXT.setText("First name :")
+        self.firstNameTXT.setStyleSheet("color:white;")
+        self.firstNameTXT.setFont(QFont("Century Gothic", 16))
+        self.boxesL.addWidget(self.firstNameTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.firstnameBOX = QtWidgets.QLineEdit()
+        self.firstnameBOX.setStyleSheet("color:black;background-color:white;padding-left:20;border-radius:10px;")
+        self.firstnameBOX.setFont(QFont("Century Gothic", 16))
+        self.firstnameBOX.setFixedSize(300, 30)
+        self.boxesL.addWidget(self.firstnameBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.lastNameTXT = QtWidgets.QLabel()
+        self.lastNameTXT.setText("Last name :")
+        self.lastNameTXT.setStyleSheet("color:white;")
+        self.lastNameTXT.setFont(QFont("Century Gothic", 16))
+        self.boxesL.addWidget(self.lastNameTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.lastnameBOX = QtWidgets.QLineEdit()
+        self.lastnameBOX.setStyleSheet("color:black;background-color:white;padding-left:20;border-radius:10px;")
+        self.lastnameBOX.setFont(QFont("Century Gothic", 16))
+        self.lastnameBOX.setFixedSize(300, 30)
+        self.boxesL.addWidget(self.lastnameBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.reasonofcomplaintTXT = QtWidgets.QLabel()
+        self.reasonofcomplaintTXT.setText("Reason of complaint :")
+        self.reasonofcomplaintTXT.setStyleSheet("color:white;")
+        self.reasonofcomplaintTXT.setFont(QFont("Century Gothic", 16))
+        self.boxesL.addWidget(self.reasonofcomplaintTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.reasonofcomplaintBOX = QtWidgets.QLineEdit()
+        self.reasonofcomplaintBOX.setStyleSheet("color:black;background-color:white;padding-left:20;border-radius:10px;")
+        self.reasonofcomplaintBOX.setFont(QFont("Century Gothic", 16))
+        self.reasonofcomplaintBOX.setFixedSize(300, 30)
+        self.boxesL.addWidget(self.reasonofcomplaintBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.complaintTXT = QtWidgets.QLabel()
+        self.complaintTXT.setText("Compliant :")
+        self.complaintTXT.setStyleSheet("color:white;")
+        self.complaintTXT.setFont(QFont("Century Gothic", 16))
+        self.boxesL.addWidget(self.complaintTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.complaintBOX = QtWidgets.QLineEdit()
+        self.complaintBOX.setStyleSheet("color:black;background-color:white;padding-left:20;border-radius:10px;")
+        self.complaintBOX.setFont(QFont("Century Gothic", 16))
+        self.complaintBOX.setFixedSize(300, 30)
+        self.boxesL.addWidget(self.complaintBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.back = QtWidgets.QPushButton()
+        self.back.setText("Back")
+        self.back.setFont(QFont("Century Gothic", 20))
+        self.back.setFixedSize(180, 60)
+        self.back.setCursor(QCursor(Qt.PointingHandCursor))
+        self.back.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.boxesL.addWidget(self.back)
+
+        self.boxesW.setLayout(self.boxesL)
+        self.mainL.addWidget(self.boxesW)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.setCentralWidget(self.mainW)
+
+        self.back.clicked.connect(self.mainpage_home)
+        
+        #Aiman end
 
     def signup_page(self):
         # setting background colour for the page
@@ -1122,7 +1646,7 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.scroll)
 
         # checking if any buttons is clicked
-        self.backToMainBTN.clicked.connect(self.startup_page)
+        self.backToMainBTN.clicked.connect(self.StartupStudent)
         self.signUpFBTN.clicked.connect(self.signup)
         self.signUpBTN.clicked.connect(self.signup_page)
 
@@ -1143,23 +1667,23 @@ class mainWindow(QMainWindow):
         self.logo.setPixmap(QPixmap("logo.png"))
         self.boxesL.addWidget(self.logo)
 
-        self.nameTXT = QtWidgets.QLabel()
-        self.nameTXT.setText("Name :")
-        self.nameTXT.setStyleSheet("color:white;")
-        self.nameTXT.setFont(QFont("Century Gothic", 20))
-        self.boxesL.addWidget(self.nameTXT)
+        self.UsernameTXT = QtWidgets.QLabel()#Aiman
+        self.UsernameTXT.setText("Username :")#AIman
+        self.UsernameTXT.setStyleSheet("color:white;")#Aiman
+        self.UsernameTXT.setFont(QFont("Century Gothic", 20))#Aiman
+        self.boxesL.addWidget(self.UsernameTXT)#Aiman
 
         self.space = QWidget()
         self.space.setFixedHeight(20)
         self.boxesL.addWidget(self.space)
 
-        self.nameBOX = QtWidgets.QLineEdit()
-        self.nameBOX.setStyleSheet(
+        self.UsernameBOX = QtWidgets.QLineEdit()#Aiman
+        self.UsernameBOX.setStyleSheet( #Aiman
             "color:black;background-color:white;padding-left:20;border-radius:10px;"
         )
-        self.nameBOX.setFont(QFont("Century Gothic", 20))
-        self.nameBOX.setFixedSize(600, 60)
-        self.boxesL.addWidget(self.nameBOX)
+        self.UsernameBOX.setFont(QFont("Century Gothic", 20)) #Aiman
+        self.UsernameBOX.setFixedSize(600, 60)#Aiman
+        self.boxesL.addWidget(self.UsernameBOX)#Aiman
 
         self.space = QWidget()
         self.space.setFixedHeight(20)
@@ -1279,7 +1803,7 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.scroll)
 
         # checking if any buttons is clicked
-        self.backToMainBTN.clicked.connect(self.startup_page)
+        self.backToMainBTN.clicked.connect(self.startup_page_student)
         self.signUpBTN.clicked.connect(self.signup_page)
         self.loginFBTN.clicked.connect(self.login)
 
@@ -1345,15 +1869,54 @@ class mainWindow(QMainWindow):
         self.main_contentL.setAlignment(Qt.AlignTop)
 
         self.logoW = QWidget()
+        
+        #Aiman start
+
+        self.logoL = QVBoxLayout()
+        self.logoL.setContentsMargins(0, 0, 0, 0)
+
+        self.BTNSW = QWidget()
+        self.BTNSL = QHBoxLayout()
+
+        self.ComplaintBTN = QtWidgets.QPushButton()
+        self.ComplaintBTN.setFont(QFont("Century Gothic", 20))
+        self.ComplaintBTN.setFixedSize(180, 60)
+        self.ComplaintBTN.setText("Complaint")
+        self.ComplaintBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                  "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.BTNSL.addWidget(self.ComplaintBTN)
+
+        self.backToStartupBTN = QtWidgets.QPushButton()
+        self.backToStartupBTN.setText("Back")
+        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        self.backToStartupBTN.setFixedSize(180, 60)
+        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.backToStartupBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.BTNSL.addWidget(self.backToStartupBTN)
+
+        self.BTNSW.setLayout(self.BTNSL)
 
         self.logo = QtWidgets.QLabel(self.logoW)
+        self.logo.setFixedHeight(200)
+        self.logo.setFixedWidth(200)
         self.logo.setPixmap(QPixmap("logo.png"))
-        self.main_contentL.addWidget(self.logo)
+        self.space = QWidget()
+        self.space.setFixedHeight(385)
 
+        self.logoL.addWidget(self.logo)
+        self.logoL.addWidget(self.space)
+        self.logoL.addWidget(self.BTNSW)
+
+        self.logoW.setLayout(self.logoL)
+        self.main_contentL.addWidget(self.logoW)
         self.main_contentW.setLayout(self.main_contentL)
 
+        self.mainW.setLayout(self.mainL)
         self.mainL.addWidget(self.main_contentW)
-
+        
+        #Aiman end
+        
         # -------------End of Design-------------
 
         # scroll settings
@@ -1368,7 +1931,9 @@ class mainWindow(QMainWindow):
         # checking if any buttons is clicked
         self.home.clicked.connect(self.mainpage_home)
         self.account.clicked.connect(self.mainpage_account)
+        self.backToStartupBTN.clicked.connect(self.StartupStudent)
         self.help.clicked.connect(self.mainpage_help)
+        self.ComplaintBTN.clicked.connect(self.compliant_page)
         self.classes.clicked.connect(self.mainpage_classes)
 
     def mainpage_account(self):
@@ -1699,14 +2264,46 @@ class mainWindow(QMainWindow):
         self.main_contentL.setAlignment(Qt.AlignTop)
 
         self.logoW = QWidget()
+        
+        #Aiman start
+
+        self.logoL = QVBoxLayout()
+        self.logoL.setContentsMargins(0, 0, 0, 0)
+
+        self.BTNSW = QWidget()
+        self.BTNSL = QHBoxLayout()
+
+        self.backToStartupBTN = QtWidgets.QPushButton()
+        self.backToStartupBTN.setText("Back")
+        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        self.backToStartupBTN.setFixedSize(180, 60)
+        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.backToStartupBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.BTNSL.addWidget(self.backToStartupBTN)
+
+        self.BTNSW.setLayout(self.BTNSL)
 
         self.logo = QtWidgets.QLabel(self.logoW)
+        self.logo.setFixedHeight(200)
+        self.logo.setFixedWidth(200)
         self.logo.setPixmap(QPixmap("logo.png"))
-        self.main_contentL.addWidget(self.logo)
+        self.space = QWidget()
+        self.space.setFixedHeight(385)
 
+        self.logoL.addWidget(self.logo)
+        self.logoL.addWidget(self.space)
+        self.logoL.addWidget(self.BTNSW)
+
+        self.logoW.setLayout(self.logoL)
+        self.main_contentL.addWidget(self.logoW)
         self.main_contentW.setLayout(self.main_contentL)
 
+        self.mainW.setLayout(self.mainL)
         self.mainL.addWidget(self.main_contentW)
+        
+        #Aiman end
+        
         # -------------End of Design-------------
 
         # scroll settings
@@ -1724,6 +2321,7 @@ class mainWindow(QMainWindow):
         self.account.clicked.connect(self.mainpage_account)
         self.help.clicked.connect(self.mainpage_help)
         self.classes.clicked.connect(self.mainpage_classes)
+        self.backToStartupBTN.clicked.connect(self.StartupStudent)
 
     def logout(self):
         name = ""
@@ -1781,7 +2379,7 @@ class mainWindow(QMainWindow):
         c = conn.cursor()
         c.execute(
             "SELECT * FROM users WHERE id=? AND password=?",
-            (self.nameBOX.text(), self.passwordBOX.text()),
+            (self.UsernameBOX.text(), self.passwordBOX.text()),
         )
         row = c.fetchone()
         if row != None:
