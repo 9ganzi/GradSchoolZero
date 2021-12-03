@@ -1646,7 +1646,7 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.scroll)
 
         # checking if any buttons is clicked
-        self.backToMainBTN.clicked.connect(self.startup_page)
+        self.backToMainBTN.clicked.connect(self.StartupStudent)
         self.signUpFBTN.clicked.connect(self.signup)
         self.signUpBTN.clicked.connect(self.signup_page)
 
