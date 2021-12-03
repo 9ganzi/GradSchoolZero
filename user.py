@@ -569,6 +569,14 @@ class Instructor(User):
         self.recieve_warning()
         return False
 
+    def complain(self, complainee_id, description):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        sql = "INSERT INTO complaints(complainant_id, complainee_id, description) VALUES(?, ?, ?)"
+        c.execute(sql, (self.user_id, complainee_id, description))
+        conn.commit()
+        conn.close()
+
 
 # # testing course time conflict
 # def test(start, end, courses):
