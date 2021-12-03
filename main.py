@@ -1937,7 +1937,8 @@ c.execute(
         complaint_id integer PRIMARY KEY,
         complainant_id integer NOT NULL,
         complainee_id integer NOT NULL,
-        description test NOT NULL,
+        description text NOT NULL,
+        complaint_type text,
         FOREIGN KEY ('complainant_id') REFERENCES users (user_id),
         FOREIGN KEY ('complainee_id') REFERENCES users (user_id)
         )"""

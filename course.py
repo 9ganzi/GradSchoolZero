@@ -3,7 +3,7 @@ import sqlite3
 
 class Course:
     def __init__(self, course_id):
-        conn = sqlite3.connect("course.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute("SELECT * FROM courses WHERE course_id = ?", (course_id,))
         course_info = c.fetchone()

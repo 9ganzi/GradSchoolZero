@@ -145,6 +145,9 @@ class Registrar(User):
         conn.commit()
         conn.close()
 
+    def process_complaints(self, complaint_id):
+        pass
+
     # def assign_course(self, instructor_id, course_id):
     #     conn = sqlite
 
@@ -273,14 +276,10 @@ class Student(User):
     def complain(self, complainee_id, description):
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
-        sql = "INSERT INTO complaints(complainant_id, complainee_id, description) VALUES(?, ?, ?)"
-        c.execute(sql, (self.user_id, complainee_id, description))
+        sql = "INSERT INTO complaints(complainant_id, complainee_id, description, complaint_type) VALUES(?, ?, ?, ?)"
+        c.execute(sql, (self.user_id, complainee_id, description, "warning"))
         conn.commit()
         conn.close()
-
-
-std1 = Student(7)
-std1.complain(3, "blah blah")
 
 
 class Instructor(User):
@@ -295,6 +294,18 @@ class Instructor(User):
         self.warning_count = instructor_info[2]
         self.is_suspended = instructor_info[3]
 
+    def complain(self, complainee_id, description, complaint_type):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        sql = "INSERT INTO complaints(complainant_id, complainee_id, description, complaint_type) VALUES(?, ?, ?, ?)"
+        c.execute(sql, (self.user_id, complainee_id, description, complaint_type))
+        conn.commit()
+        conn.close()
+
+
+# ins1 = Instructor(9)
+# ins1.complain(7, "loud", "de-register")
+# ins1.complain(6, "loud", "warning")
 
 # # testing course time conflict
 # def test(start, end, courses):
@@ -496,14 +507,36 @@ class Instructor(User):
 #         FOREIGN KEY ('instructor_id') REFERENCES users (user_id)
 #         )"""
 # )
-
-
 # c.execute(
 #     """INSERT INTO courses(course_name, course_rating, course_time, instructor_id, course_size, enroll_count, course_gpa) VALUES (?, ?, ?, ?, ?, ?, ?)""",
 #     (
 #         "CSC 59866",
 #         None,
 #         "Th 11:00 - 12:15, Fr 1:00 - 2:30",
+#         1,
+#         15,
+#         0,
+#         None,
+#     ),
+# )
+# c.execute(
+#     """INSERT INTO courses(course_name, course_rating, course_time, instructor_id, course_size, enroll_count, course_gpa) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     (
+#         "CSC 32200",
+#         None,
+#         "We 11:40 - 12:15, Fr 1:00 - 2:30",
+#         1,
+#         15,
+#         0,
+#         None,
+#     ),
+# )
+# c.execute(
+#     """INSERT INTO courses(course_name, course_rating, course_time, instructor_id, course_size, enroll_count, course_gpa) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     (
+#         "CSC 44500",
+#         None,
+#         "Mo 11:00 - 12:15, Fr 10:30 - 12:30",
 #         1,
 #         15,
 #         0,
@@ -628,9 +661,17 @@ class Instructor(User):
 # conn.close()
 
 # # add a column
-# sql = "ALTER TABLE users ADD first_login integer"
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
+# sql = "ALTER TABLE complaints ADD request_type text"
+# c.execute(sql)
+# conn.commit()
+# conn.close()
+
+# # drop a table
+# conn = sqlite3.connect("gsz.db")
+# c = conn.cursor()
+# sql = "DROP TABLE complaints"
 # c.execute(sql)
 # conn.commit()
 # conn.close()
