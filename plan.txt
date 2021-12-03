@@ -1,11 +1,13 @@
+req2
 1. apply
 @ get data from gui (gui)
 @ insert data into the db
 2. approve or deny
 @ display application on gui (gui)
-@ def is_valid_applicant
+@ def is_valid_applicant !
 # check gpa for students !
 @ pop up box for justification of decision against the rule (gui)
-@ email the result with id and password
+@ email the result with id and password !
 3. ask for password change for the first login
 # add a column 'first_login' to user.db
+

@@ -1784,6 +1784,7 @@ class mainWindow(QMainWindow):
             (self.nameBOX.text(), self.passwordBOX.text()),
         )
         row = c.fetchone()
+        print(row)
         if row != None:
             # create instance of user
             if row[6] == "student":
@@ -1792,18 +1793,18 @@ class mainWindow(QMainWindow):
                 user = Instructor(row[0])
             else:
                 user = Registrar(row[0])
+            if user.is_first_login():
+                # pop up window for setting up a new password
+                # new_password = get from gui
+                # user.change_password(new_password)
+                pass
             self.mainpage_home()
-        conn.commit()
         conn.close()
         self.tipsTXT.setText(
             "\n\n\n\n\n          Invalid user\n   Sign in to create an \n            account"
         )
         # create an instance of a user according to acc_type
         # find the user in appropriate db using primary key
-
-    def create_id(self):
-        letters = string.ascii_uppercase
-        return "".join(random.choice(letters) for i in range(10))
 
 
 # user.db
@@ -1823,14 +1824,14 @@ c.execute(
 c.execute("SELECT user_id FROM users LIMIT 1")
 if c.fetchall() == []:
     many_registrars = [
-        ("Jaehong", "Cho", "id1", "123", "email@email.com", "Registrar"),
-        ("Aiman", "Last", "id2", "123", "email@email.com", "Registrar"),
-        ("Ragib", "Last", "id3", "123", "email@email.com", "Registrar"),
-        ("Michael", "Last", "id4", "123", "email@email.com", "Registrar"),
-        ("Joel", "Last", "id5", "123", "email@email.com", "Registrar"),
+        ("Jaehong", "Cho", "id1", "123", "email@email.com", "Registrar, 0"),
+        ("Aiman", "Last", "id2", "123", "email@email.com", "Registrar, 0"),
+        ("Ragib", "Last", "id3", "123", "email@email.com", "Registrar, 0"),
+        ("Michael", "Last", "id4", "123", "email@email.com", "Registrar, 0"),
+        ("Joel", "Last", "id5", "123", "email@email.com", "Registrar, 0"),
     ]
     c.executemany(
-        """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
+        """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
         many_registrars,
     )
 conn.commit()

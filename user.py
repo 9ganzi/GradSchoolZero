@@ -1,3 +1,5 @@
+import string
+import random
 from course import Course, sqlite3
 import smtplib, ssl
 
@@ -16,6 +18,19 @@ class User:
         self.password = user_info[4]
         self.email = user_info[5]
         self.user_type = user_info[6]
+        self.first_login = user_info[7]
+
+    def is_first_login(self):
+        return self.first_login == 1
+
+    def change_password(self, new_password):
+        self.password = new_password
+        conn = sqlite3.connect("user.db")
+        c = conn.cursor()
+        sql = "UPDATE users SET password = ? WHERE user_id = ?"
+        c.execute(sql, (new_password, self.user_id))
+        conn.commit()
+        conn.close()
 
 
 class Registrar(User):
@@ -51,7 +66,16 @@ class Registrar(User):
             return (applicant_info[4] > 3.0) or (applicant_info[4] == None)
         return True
 
-    # if valid but unapprove, pop-up screen to type your reason
+    # if valid but deny, pop-up screen to type your reason
+
+    def generate_random(self):
+        letters = string.ascii_uppercase
+        return "".join(random.choice(letters) for i in range(10))
+
+    # def id_exists(self):
+    #     conn = sqlite3.connect("user.db")
+    #     c = conn.cursor()
+    #     c.execute("SELECT")
 
     def email_result(self, applicant_id, decision, justification):
         sender = "gradeschoolzero@gmail.com"
@@ -66,21 +90,84 @@ class Registrar(User):
         conn.close()
         subject = "Your application is reviewed"
         approve = "Welcome, you are approved :)"
-        unapprove = "Sorry, you are not approved :("
+        deny = "Sorry, you are not approved :("
         if decision == 1:
             msg = f"Subject: {subject}\n\n{approve}"
+            generated_id = self.generate_random()
+            generated_password = self.generate_random()
+            conn = sqlite3.connect("user.db")
+            c = conn.cursor()
+            sql = "SELECT user_id FROM users WHERE user_id = ?"
+            c.execute(sql, (generated_id,))
+            while c.fetchone() != None:
+                generated_id = self.generate_random()
+                c.execute(sql, (generated_id,))
+            msg += f"""\nYour id = {generated_id}\nYour password = {generated_password}\nPlease note that you need to change your passwor after your first login"""
+            self.add_user(applicant_id, generated_id, generated_password)
         else:
-            msg = f"Subject: {subject}\n\n{unapprove}"
+            msg = f"Subject: {subject}\n\n{deny}"
             if justification != None:
                 msg += f"\nthe reason is the following,\n{justification}"
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
             server.login(sender, password)
             server.sendmail(sender, recipient, msg)
+        self.delete_applicant(applicant_id)
+
+    def add_user(self, applicant_id, generated_id, generated_password):
+        conn = sqlite3.connect("applicant.db")
+        c = conn.cursor()
+        sql = "SELECT * FROM applicants WHERE applicant_id = ?"
+        c.execute(sql, (applicant_id,))
+        applicant_info = c.fetchone()
+        conn = sqlite3.connect("user.db")
+        c = conn.cursor()
+        sql = "INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        c.execute(
+            sql,
+            (
+                applicant_info[1],
+                applicant_info[2],
+                generated_id,
+                generated_password,
+                applicant_info[3],
+                applicant_info[7],
+                1,
+            ),
+        )
+        conn.commit()
+        user_id = c.lastrowid
+        if applicant_info[7] == "student":
+            conn = sqlite3.connect("student.db")
+            sql = """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken) VALUES (?, ?, ?, ?, ?)"""
+            c = conn.cursor()
+            c.execute(sql, (user_id, applicant_info[4], 0, 0, applicant_info[4]))
+        else:
+            conn = sqlite3.connect("instructor.db")
+            sql = "INSERT INTO instructors(user_id, warning_count, is_suspended) VALUES (?, ?, ?)"
+            c = conn.cursor()
+            c.execute(sql, (user_id, 0, 0))
+        conn.commit()
+        conn.close()
+
+    def delete_applicant(self, applicant_id):
+        conn = sqlite3.connect("applicant.db")
+        c = conn.cursor()
+        sql = "DELETE FROM applicants WHERE applicant_id = ?"
+        c.execute(sql, (applicant_id,))
+        conn.commit()
+        conn.close()
 
 
-registrar1 = Registrar(7)
-print(registrar1.email_result(1, 0, None))
+# registrar1 = Registrar(7)
+# conn = sqlite3.connect("applicant.db")
+# c = conn.cursor()
+# sql = "UPDATE applicants SET user_type = ?, resume = ?, gpa = ? WHERE applicant_id = ? "
+# c.execute(sql, ("instructor", "I'm fast", None, 7))
+# conn.commit()
+# registrar1.email_result(7, 1, None)
+# registrar1.email_result(6, 0, "lack of skills")
+
 # conn = sqlite3.connect("applicant.db")
 # c = conn.cursor()
 # registrar1 = Registrar(7)
@@ -94,10 +181,10 @@ print(registrar1.email_result(1, 0, None))
 
 
 class Student(User):
-    def __init__(self, student_id):
+    def __init__(self, user_id):
         conn = sqlite3.connect("student.db")
         c = conn.cursor()
-        c.execute("SELECT * FROM students WHERE student_id = ?", (student_id,))
+        c.execute("SELECT * FROM students WHERE user_id = ?", (user_id,))
         student_info = c.fetchone()
         conn.close()
         super().__init__(student_info[1])
@@ -198,10 +285,10 @@ class Student(User):
 
 
 class Instructor(User):
-    def __init__(self, instructor_id):
+    def __init__(self, user_id):
         conn = sqlite3.connect("instructor.db")
         c = conn.cursor()
-        c.execute("SELECT * FROM instructors WHERE instructor_id = ?", (instructor_id,))
+        c.execute("SELECT * FROM instructors WHERE user_id = ?", (user_id,))
         instructor_info = c.fetchone()
         conn.close()
         super().__init__(instructor_info[1])
@@ -292,16 +379,12 @@ class Instructor(User):
 #         """
 # )
 # c.execute(
-#     """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
-#     ("Jaehong", "Cho", "id", "password", "email@email.com", "registrar"),
+#     """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     ("John", "Doe", "id", "password", "email@email.com", "student, 1"),
 # )
 # c.execute(
-#     """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
-#     ("John", "Doe", "id", "password", "email@email.com", "student"),
-# )
-# c.execute(
-#     """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
-#     ("Jane", "Doe", "id", "password", "email@emgail.com", "instructor"),
+#     """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     ("Jane", "Doe", "id", "password", "email@emgail.com", "instructor, 1"),
 # )
 # c.execute("SELECT * FROM users ORDER BY user_id DESC LIMIT 1")
 # user_id = c.fetchone()[0]
@@ -477,11 +560,11 @@ class Instructor(User):
 # print(student1.apply_wait_list(6))
 
 # # update a row
-# conn = sqlite3.connect("applicant.db")
+# conn = sqlite3.connect("user.db")
 # c = conn.cursor()
 # # sql = """UPDATE applicants SET first = ?, last = ? WHERE applicant_id = ?"""
-# sql = """UPDATE applicants SET email = ? WHERE applicant_id = ?"""
-# c.execute(sql, ("gradeschoolzero@gmail.com", 1))
+# sql = """UPDATE users SET first_login = ?"""
+# c.execute(sql, (0,))
 # # c.execute(sql, ("Jane_Doe@email.com", 2))
 # # c.execute(sql, ("Cristiano_Ronaldo@email.com", 3))
 # # c.execute(sql, ("James_Miler@email.com", 6))
@@ -495,5 +578,13 @@ class Instructor(User):
 # c = conn.cursor()
 # c.execute(sql, (4,))
 # c.execute(sql, (5,))
+# conn.commit()
+# conn.close()
+
+# # add a column
+# sql = "ALTER TABLE users ADD first_login integer"
+# conn = sqlite3.connect("user.db")
+# c = conn.cursor()
+# c.execute(sql)
 # conn.commit()
 # conn.close()
