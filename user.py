@@ -1,4 +1,5 @@
 from course import Course, sqlite3
+import smtplib, ssl
 
 
 class User:
@@ -38,6 +39,58 @@ class Registrar(User):
         )
         conn.commit()
         conn.close()
+
+    def is_valid_applicant(self, applicant_id):
+        conn = sqlite3.connect("applicant.db")
+        c = conn.cursor()
+        c.execute("SELECT * FROM applicants WHERE applicant_id = ?", (applicant_id,))
+        applicant_info = c.fetchone()
+        conn.close()
+        if applicant_info[7] == "student":
+            # freshman doesn't have a GPA, so None is still acceptable
+            return (applicant_info[4] > 3.0) or (applicant_info[4] == None)
+        return True
+
+    # if valid but unapprove, pop-up screen to type your reason
+
+    def email_result(self, applicant_id, decision, justification):
+        sender = "gradeschoolzero@gmail.com"
+        password = "csc32200"
+        port = 465
+        conn = sqlite3.connect("applicant.db")
+        c = conn.cursor()
+        c.execute(
+            "SELECT email FROM applicants WHERE applicant_id = ?", (applicant_id,)
+        )
+        recipient = c.fetchone()
+        conn.close()
+        subject = "Your application is reviewed"
+        approve = "Welcome, you are approved :)"
+        unapprove = "Sorry, you are not approved :("
+        if decision == 1:
+            msg = f"Subject: {subject}\n\n{approve}"
+        else:
+            msg = f"Subject: {subject}\n\n{unapprove}"
+            if justification != None:
+                msg += f"\nthe reason is the following,\n{justification}"
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
+            server.login(sender, password)
+            server.sendmail(sender, recipient, msg)
+
+
+registrar1 = Registrar(7)
+print(registrar1.email_result(1, 0, None))
+# conn = sqlite3.connect("applicant.db")
+# c = conn.cursor()
+# registrar1 = Registrar(7)
+# print(registrar1.is_valid_applicant(1))
+# print(registrar1.is_valid_applicant(2))
+# print(registrar1.is_valid_applicant(3))
+# print(registrar1.is_valid_applicant(6))
+# print(registrar1.is_valid_applicant(7))
+# conn.commit()
+# conn.close()
 
 
 class Student(User):
@@ -194,7 +247,7 @@ class Instructor(User):
 
 
 # # # testing database
-# # applicant.db
+# applicant.db
 # conn = sqlite3.connect("applicant.db")
 # c = conn.cursor()
 # c.execute(
@@ -204,20 +257,21 @@ class Instructor(User):
 #         last text NOT NULL,
 #         email text NOT NULL,
 #         gpa real,
+#         resume text,
 #         num_courses_taken integer,
 #         user_type text NOT NULL
 #         )"""
 # )
-# # c.execute(
-# #     """INSERT INTO applicants(first, last, email, gpa, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
-# #     ("John", "Doe", "email@email.com", 5, 3, "student"),
-# # )
 # c.execute(
-#     """INSERT INTO applicants(first, last, email, gpa, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
-#     ("Jane", "Doe", "email@email.com", None, None, "instructor"),
+#     """INSERT INTO applicants(first, last, email, gpa, resume, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     ("John", "Doe", "email@email.com", 5, None, 3, "student"),
+# )
+# c.execute(
+#     """INSERT INTO applicants(first, last, email, gpa, resume, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     ("Jane", "Doe", "email@email.com", None, "I'm a good teacher", None, "instructor"),
 # )
 # c.execute("SELECT * FROM applicants ORDER BY applicant_id DESC LIMIT 1")
-# # select the latest row, the row we just inserted
+# select the latest row, the row we just inserted
 # applicant_row = c.fetchone()
 # print(applicant_row)
 # conn.commit()
@@ -423,18 +477,23 @@ class Instructor(User):
 # print(student1.apply_wait_list(6))
 
 # # update a row
-# conn = sqlite3.connect("user.db")
+# conn = sqlite3.connect("applicant.db")
 # c = conn.cursor()
-# sql = """UPDATE users SET first = ?, last = ? WHERE user_id = ?"""
-# c.execute(sql, ("John", "Doe", 5))
-# c.execute(sql, ("Michael", "Jordan", 6))
+# # sql = """UPDATE applicants SET first = ?, last = ? WHERE applicant_id = ?"""
+# sql = """UPDATE applicants SET email = ? WHERE applicant_id = ?"""
+# c.execute(sql, ("gradeschoolzero@gmail.com", 1))
+# # c.execute(sql, ("Jane_Doe@email.com", 2))
+# # c.execute(sql, ("Cristiano_Ronaldo@email.com", 3))
+# # c.execute(sql, ("James_Miler@email.com", 6))
+# # c.execute(sql, ("David_Villa@email.com", 7))
 # conn.commit()
 # conn.close()
 
 # # delete a row
-# sql = """DELETE FROM users WHERE user_id = ?"""
-# conn = sqlite3.connect("user.db")
+# sql = """DELETE FROM applicants WHERE applicant_id = ?"""
+# conn = sqlite3.connect("applicant.db")
 # c = conn.cursor()
-# c.execute(sql, (1,))
+# c.execute(sql, (4,))
+# c.execute(sql, (5,))
 # conn.commit()
 # conn.close()
