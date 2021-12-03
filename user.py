@@ -1,9 +1,17 @@
+import string
+import random
 from course import Course, sqlite3
+import smtplib, ssl
+
+
+def generate_random():
+    letters = string.ascii_uppercase
+    return "".join(random.choice(letters) for i in range(10))
 
 
 class User:
     def __init__(self, user_id):
-        conn = sqlite3.connect("user.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute("""SELECT * FROM users WHERE user_id = ?""", (user_id,))
         user_info = c.fetchone()
@@ -15,6 +23,19 @@ class User:
         self.password = user_info[4]
         self.email = user_info[5]
         self.user_type = user_info[6]
+        self.first_login = user_info[7]
+
+    def is_first_login(self):
+        return self.first_login == 1
+
+    def change_password(self, new_password):
+        self.password = new_password
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        sql = "UPDATE users SET password = ? WHERE user_id = ?"
+        c.execute(sql, (new_password, self.user_id))
+        conn.commit()
+        conn.close()
 
 # fire an instructor ( can only be accessed by registrar on their page)
 # input a specfic instructor_id, deletes instructor from database 
@@ -96,7 +117,7 @@ class Registrar(User):
         super().__init__(user_id)
 
     def course_set_up(self, name, time, instructor, size):
-        conn = sqlite3.connect("course.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """INSERT INTO courses(course_name, course_rating, course_time, instructor_id, course_size, enroll_count, course_gpa) VALUES (?, ?, ?, ?, ?, ?, ?)""",
@@ -113,12 +134,112 @@ class Registrar(User):
         conn.commit()
         conn.close()
 
+    def is_valid_applicant(self, applicant_id):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        c.execute("SELECT * FROM applicants WHERE applicant_id = ?", (applicant_id,))
+        applicant_info = c.fetchone()
+        conn.close()
+        if applicant_info[7] == "student":
+            # freshman doesn't have a GPA, so None is still acceptable
+            return (applicant_info[4] > 3.0) or (applicant_info[4] == None)
+        return True
+
+    # if valid but deny, pop-up screen to type your reason
+
+    def email_result(self, applicant_id, decision, justification):
+        sender = "gradeschoolzero@gmail.com"
+        password = "csc32200"
+        port = 465
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        c.execute(
+            "SELECT email FROM applicants WHERE applicant_id = ?", (applicant_id,)
+        )
+        recipient = c.fetchone()
+        subject = "Your application is reviewed"
+        approve = "Welcome, you are approved :)"
+        deny = "Sorry, you are not approved :("
+        if decision == 1:
+            msg = f"Subject: {subject}\n\n{approve}"
+            generated_id = generate_random()
+            generated_password = generate_random()
+            sql = "SELECT user_id FROM users WHERE user_id = ?"
+            c.execute(sql, (generated_id,))
+            while c.fetchone() != None:
+                generated_id = generate_random()
+                c.execute(sql, (generated_id,))
+            msg += f"""\nYour id = {generated_id}\nYour password = {generated_password}\nPlease note that you need to change your passwor after your first login"""
+            self.add_user(applicant_id, generated_id, generated_password)
+        else:
+            msg = f"Subject: {subject}\n\n{deny}"
+            if justification != None:
+                msg += f"\nthe reason is the following,\n{justification}"
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
+            server.login(sender, password)
+            server.sendmail(sender, recipient, msg)
+        self.delete_applicant(applicant_id)
+
+    def add_user(self, applicant_id, generated_id, generated_password):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        sql = "SELECT * FROM applicants WHERE applicant_id = ?"
+        c.execute(sql, (applicant_id,))
+        applicant_info = c.fetchone()
+        sql = "INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        c.execute(
+            sql,
+            (
+                applicant_info[1],
+                applicant_info[2],
+                generated_id,
+                generated_password,
+                applicant_info[3],
+                applicant_info[7],
+                1,
+            ),
+        )
+        conn.commit()
+        user_id = c.lastrowid
+        if applicant_info[7] == "student":
+            sql = """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken) VALUES (?, ?, ?, ?, ?)"""
+            c.execute(sql, (user_id, applicant_info[4], 0, 0, applicant_info[4]))
+        else:
+            sql = "INSERT INTO instructors(user_id, warning_count, is_suspended) VALUES (?, ?, ?)"
+            c.execute(sql, (user_id, 0, 0))
+        conn.commit()
+        conn.close()
+
+    def delete_applicant(self, applicant_id):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        sql = "DELETE FROM applicants WHERE applicant_id = ?"
+        c.execute(sql, (applicant_id,))
+        conn.commit()
+        conn.close()
+
+    # def assign_course(self, instructor_id, course_id):
+    #     conn = sqlite
+
+
+# conn = sqlite3.connect("gsz.db")
+# c = conn.cursor()
+# registrar1 = Registrar(7)
+# print(registrar1.is_valid_applicant(1))
+# print(registrar1.is_valid_applicant(2))
+# print(registrar1.is_valid_applicant(3))
+# print(registrar1.is_valid_applicant(6))
+# print(registrar1.is_valid_applicant(7))
+# conn.commit()
+# conn.close()
+
 
 class Student(User):
-    def __init__(self, student_id):
-        conn = sqlite3.connect("student.db")
+    def __init__(self, user_id):
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
-        c.execute("SELECT * FROM students WHERE student_id = ?", (student_id,))
+        c.execute("SELECT * FROM students WHERE user_id = ?", (user_id,))
         student_info = c.fetchone()
         conn.close()
         super().__init__(student_info[1])
@@ -132,7 +253,7 @@ class Student(User):
         self.degree = student_info[8]
 
     def is_time_conflict(self, course_id):
-        conn = sqlite3.connect("enrollment.db")
+        conn = sqlite3.connect("gsz.db")
         # to get a list of values instead of a list of tuples
         conn.row_factory = lambda cursor, row: row[0]
         c = conn.cursor()
@@ -141,8 +262,6 @@ class Student(User):
         )
         courses = c.fetchall()
         courses = list(map(int, courses))
-        conn = sqlite3.connect("course.db")
-        c = conn.cursor()
         c.execute(
             "SELECT course_time FROM courses WHERE course_id in ({courses})".format(
                 courses=",".join(["?"] * len(courses))
@@ -166,7 +285,7 @@ class Student(User):
         return False
 
     def is_too_many_courses(self):
-        conn = sqlite3.connect("enrollment.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             "SELECT enrollment_id FROM enrollments WHERE student_id = ?",
@@ -179,7 +298,7 @@ class Student(User):
         return False
 
     def took_and_not_failed(self, course_id):
-        conn = sqlite3.connect("course_history.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             "SELECT grade FROM course_historys WHERE student_id=? AND course_id=?",
@@ -200,7 +319,7 @@ class Student(User):
         )
 
     def apply_wait_list(self, course_id):
-        conn = sqlite3.connect("waitlist.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """INSERT INTO waitlists(student_id, course_id) VALUES (?, ?)""",
@@ -213,11 +332,19 @@ class Student(User):
         conn.close()
 
     def enroll_course(self, course_id):
-        if self.is_eligible(course_id):
-            if Course(course_id).is_full():
-                self.apply_wait_list(course_id)
+        if not (self.is_eligible(course_id)):
             return 0
-        # enroll course
+        if Course(course_id).is_full():
+            self.apply_wait_list(course_id)
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        sql = "UPDATE courses SET enroll_count = enroll_count + 1 WHERE course_id = ?"
+        c.execute(sql, (course_id,))
+        conn.commit()
+        sql = "INSERT INTO enrollments(student_id, course_id, grade) VALUES(?, ?, ?)"
+        c.execute(sql, (self.student_id, course_id, None))
+        conn.commit()
+        conn.close()
         return 1
         
     # issue warning to student
@@ -311,14 +438,26 @@ class Student(User):
         conn.commit()
         conn.close()
         # update all students
+    def complain(self, complainee_id, description):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        sql = "INSERT INTO complaints(complainant_id, complainee_id, description) VALUES(?, ?, ?)"
+        c.execute(sql, (self.user_id, complainee_id, description))
+        conn.commit()
+        conn.close()
+
+
+std1 = Student(7)
+std1.complain(3, "blah blah")
+
 
     
     
 class Instructor(User):
-    def __init__(self, instructor_id):
-        conn = sqlite3.connect("instructor.db")
+    def __init__(self, user_id):
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
-        c.execute("SELECT * FROM instructors WHERE instructor_id = ?", (instructor_id,))
+        c.execute("SELECT * FROM instructors WHERE user_id = ?", (user_id,))
         instructor_info = c.fetchone()
         conn.close()
         super().__init__(instructor_info[1])
@@ -413,9 +552,9 @@ class Instructor(User):
 # print(test(p_start, p_end, courses))
 
 
-# # # testing database
-# # applicant.db
-# conn = sqlite3.connect("applicant.db")
+# # testing database
+# # applicants table
+# conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(
 #     """CREATE TABLE IF NOT EXISTS applicants(
@@ -424,27 +563,52 @@ class Instructor(User):
 #         last text NOT NULL,
 #         email text NOT NULL,
 #         gpa real,
+#         resume text,
 #         num_courses_taken integer,
 #         user_type text NOT NULL
 #         )"""
 # )
-# # c.execute(
-# #     """INSERT INTO applicants(first, last, email, gpa, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
-# #     ("John", "Doe", "email@email.com", 5, 3, "student"),
-# # )
 # c.execute(
-#     """INSERT INTO applicants(first, last, email, gpa, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
-#     ("Jane", "Doe", "email@email.com", None, None, "instructor"),
+#     """INSERT INTO applicants(first, last, email, gpa, resume, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     ("John", "Doe", "email@email.com", 5, None, 3, "student"),
+# )
+# c.execute(
+#     """INSERT INTO applicants(first, last, email, gpa, resume, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     ("Jane", "Doe", "email@email.com", None, "I'm a good teacher", None, "instructor"),
+# )
+# c.execute(
+#     """INSERT INTO applicants(first, last, email, gpa, resume, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     (
+#         "Kevin",
+#         "Durant",
+#         "email@email.com",
+#         3.7,
+#         None,
+#         6,
+#         "student",
+#     ),
+# )
+# c.execute(
+#     """INSERT INTO applicants(first, last, email, gpa, resume, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     (
+#         "Lebron",
+#         "James",
+#         "email@email.com",
+#         None,
+#         "I'm a good teacher",
+#         None,
+#         "instructor",
+#     ),
 # )
 # c.execute("SELECT * FROM applicants ORDER BY applicant_id DESC LIMIT 1")
 # # select the latest row, the row we just inserted
-# applicant_row = c.fetchone()
+# applicant_row = c.lastrowid
 # print(applicant_row)
 # conn.commit()
 # conn.close()
 
-# # user.db
-# conn = sqlite3.connect("user.db")
+# # users table
+# conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(
 #     """CREATE TABLE IF NOT EXISTS users (
@@ -458,16 +622,25 @@ class Instructor(User):
 #         """
 # )
 # c.execute(
-#     """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
-#     ("Jaehong", "Cho", "id", "password", "email@email.com", "registrar"),
+#     """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     ("David", "Beckham", "id1a", "password", "email1@email.com", "student", 1),
 # )
 # c.execute(
-#     """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
-#     ("John", "Doe", "id", "password", "email@email.com", "student"),
+#     """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     ("John", "Doe", "idv2", "password", "email2@email.com", "student", 1),
 # )
 # c.execute(
-#     """INSERT INTO users(first, last, id, password, email, user_type) VALUES (?, ?, ?, ?, ?, ?)""",
-#     ("Jane", "Doe", "id", "password", "email@emgail.com", "instructor"),
+#     """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     ("Apple", "Bee", "id13", "password", "email3@email.com", "student", 1),
+# )
+# c.execute(
+#     """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     ("Michael", "Jordan", "ida4", "password", "email4@email.com", "instructor", 1),
+# )
+
+# c.execute(
+#     """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     ("Jane", "Doe", "ida5", "password", "email5@emgail.com", "instructor", 1),
 # )
 # c.execute("SELECT * FROM users ORDER BY user_id DESC LIMIT 1")
 # user_id = c.fetchone()[0]
@@ -475,29 +648,37 @@ class Instructor(User):
 # conn.commit()
 # conn.close()
 
-# # # student.db
-# # conn = sqlite3.connect("student.db")
-# # c = conn.cursor()
-# # c.execute(
-# #     """CREATE TABLE IF NOT EXISTS students (
-# #         student_id integer PRIMARY KEY,
-# #         user_id integer NOT NULL,
-# #         gpa real NOT NULL,
-# #         num_courses_taken integer NOT NULL,
-# #         honor_count integer NOT NULL,
-# #         warning_count integer NOT NULL,
-# #         FOREIGN KEY ('user_id') REFERENCES users (user_id)
-# #         )"""
-# # )
-# # c.execute(
-# #     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken) VALUES (?, ?, ?, ?, ?)""",
-# #     (user_id, applicant_row[4], 0, 0, applicant_row[5]),
-# # )
-# # conn.commit()
-# # conn.close()
+# # students
+# conn = sqlite3.connect("gsz.db")
+# c = conn.cursor()
+# c.execute(
+#     """CREATE TABLE IF NOT EXISTS students (
+#         student_id integer PRIMARY KEY,
+#         user_id integer NOT NULL,
+#         gpa real NOT NULL,
+#         num_courses_taken integer NOT NULL,
+#         honor_count integer NOT NULL,
+#         warning_count integer NOT NULL,
+#         FOREIGN KEY ('user_id') REFERENCES users (user_id)
+#         )"""
+# )
+# c.execute(
+#     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken) VALUES (?, ?, ?, ?, ?)""",
+#     (6, 5, 0, 0, 2),
+# )
+# c.execute(
+#     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken) VALUES (?, ?, ?, ?, ?)""",
+#     (7, 3.5, 0, 0, 5),
+# )
+# c.execute(
+#     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken) VALUES (?, ?, ?, ?, ?)""",
+#     (8, 2.8, 0, 0, 3),
+# )
+# conn.commit()
+# conn.close()
 
-# # instructor.db
-# conn = sqlite3.connect("instructor.db")
+# # instructors table
+# conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(
 #     """CREATE TABLE IF NOT EXISTS instructors (
@@ -510,13 +691,17 @@ class Instructor(User):
 # )
 # c.execute(
 #     """INSERT INTO instructors(user_id, warning_count, is_suspended) VALUES (?, ?, ?)""",
-#     (user_id, 0, 0),
+#     (9, 0, 0),
+# )
+# c.execute(
+#     """INSERT INTO instructors(user_id, warning_count, is_suspended) VALUES (?, ?, ?)""",
+#     (10, 0, 0),
 # )
 # conn.commit()
 # conn.close()
 
-# # course.db
-# conn = sqlite3.connect("course.db")
+# # courses table
+# conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(
 #     """CREATE TABLE IF NOT EXISTS courses (
@@ -548,8 +733,8 @@ class Instructor(User):
 # conn.commit()
 # conn.close()
 
-# enrollment.db
-# conn = sqlite3.connect("enrollment.db")
+# # enrollments table
+# conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(
 #     """CREATE TABLE IF NOT EXISTS enrollments (
@@ -572,8 +757,8 @@ class Instructor(User):
 # conn.commit()
 # conn.close()
 
-# # course_history.db
-# conn = sqlite3.connect("course_history.db")
+# # course_historys table
+# conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(
 #     """CREATE TABLE IF NOT EXISTS course_historys (
@@ -596,8 +781,8 @@ class Instructor(User):
 # conn.commit()
 # conn.close()
 
-# # waitlist.db
-# conn = sqlite3.connect("waitlist.db")
+# # waitlists table
+# conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(
 #     """CREATE TABLE IF NOT EXISTS waitlists (
@@ -619,20 +804,18 @@ class Instructor(User):
 # conn.close()
 
 # # testing set up courses
-# conn = sqlite3.connect("user.db")
+# conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute("SELECT * FROM users WHERE user_id=1")
 # args = c.fetchone()
 # registrar1 = Registrar(args[0])
-# conn = sqlite3.connect("instructor.db")
-# c = conn.cursor()
 # c.execute("SELECT * FROM instructors WHERE instructor_id=1")
 # args = c.fetchone()
 # instructor1 = Instructor(args[0])
 # registrar1.course_set_up("CSC 33500", "Tu 12:00 - 1:15, We 12:00 - 2:30", args[0], 25)
 
 
-# conn = sqlite3.connect("student.db")
+# conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute("SELECT * FROM students WHERE student_id=?", (1,))
 # args = c.fetchone()
@@ -643,18 +826,31 @@ class Instructor(User):
 # print(student1.apply_wait_list(6))
 
 # # update a row
-# conn = sqlite3.connect("user.db")
+# conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
-# sql = """UPDATE users SET first = ?, last = ? WHERE user_id = ?"""
-# c.execute(sql, ("John", "Doe", 5))
-# c.execute(sql, ("Michael", "Jordan", 6))
+# # sql = """UPDATE applicants SET first = ?, last = ? WHERE applicant_id = ?"""
+# sql = """UPDATE users SET first_login = ?"""
+# c.execute(sql, (0,))
+# # c.execute(sql, ("Jane_Doe@email.com", 2))
+# # c.execute(sql, ("Cristiano_Ronaldo@email.com", 3))
+# # c.execute(sql, ("James_Miler@email.com", 6))
+# # c.execute(sql, ("David_Villa@email.com", 7))
 # conn.commit()
 # conn.close()
 
 # # delete a row
-# sql = """DELETE FROM users WHERE user_id = ?"""
-# conn = sqlite3.connect("user.db")
+# sql = """DELETE FROM applicants WHERE applicant_id = ?"""
+# conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
-# c.execute(sql, (1,))
+# c.execute(sql, (4,))
+# c.execute(sql, (5,))
+# conn.commit()
+# conn.close()
+
+# # add a column
+# sql = "ALTER TABLE users ADD first_login integer"
+# conn = sqlite3.connect("gsz.db")
+# c = conn.cursor()
+# c.execute(sql)
 # conn.commit()
 # conn.close()
