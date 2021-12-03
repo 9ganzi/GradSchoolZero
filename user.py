@@ -296,7 +296,7 @@ class Student(User):
         if num_courses >= 4:
             return True
         return False
-
+ 
     def took_and_not_failed(self, course_id):
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
