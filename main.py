@@ -14,6 +14,46 @@ name = ""
 email = ""
 acc_type = ""
 id = ""
+loginState = ""  #Aiman 
+
+#Aiman Start
+
+comboBox_stylesheet = "QComboBox{color:black;background-color:white;border-radius:10;" \
+                                 "border: 2px solid #076DF2}" \
+                                 "QComboBox:focus{box-shadow: 0 0 10px #076DF2;}" \
+                                 "QComboBox::drop-down { " \
+                                 "subcontrol-origin: padding;" \
+                                 "subcontrol-position: top right; " \
+                                 "border-left-color: white; " \
+                                 "border-left-style: solid; " \
+                                 "border-top-right-radius: 10px; " \
+                                 "border-bottom-right-radius: 10px; " \
+                                 "}" \
+                                 "QComboBox:on{border-bottom-right-radius:0;border-bottom-left-radius:0;" \
+                                 "border-bottom: 0px;}" \
+                                 "QComboBox QAbstractItemView {" \
+                                 "color:black;" \
+                                 "background:white;" \
+                                 "selection-background-color: #076DF2;" \
+                                 "selection-color: black;" \
+                                 "border: 2px solid #076DF2};" \
+                                 "border-top: 0px;"
+
+instructors = ["William John", 'Mike Chen', 'Michael Brown', 'Stephen William', 'Ali Ahmet'
+               , 'Jie Wei', 'George Lucci', 'Nancy Bishop', 'Erik William', 'Alison Jacob']
+
+classes = [["Csc 10300", "Fr 10:00am~12:15pm", "William John", "15"],
+['Csc 10400', 'MoWe 11:00am~12:15pm', 'Mike Chen', '13'],
+['Csc 21700', 'MoWe 03:00pm~04:15pm', 'Michael Brown', '10'],
+['Csc 22100', 'TuTh 09:00am~10:30pm', 'Stephen William', '12'],
+['Csc 30100', 'TuTh 09:00am~10:15am', 'Ali Ahmet', '15'],
+['Csc 32200', 'TuTh 06:00pm~07:15pm', 'Jie Wei', '15'],
+['Csc 47400', 'MoWe 09:00am~10:15pm', 'George Lucci', '10'],
+['Csc 47200', 'Fr 03:00pm~05:30pm', 'Nancy Bishop', '12'],
+['Csc 59866', 'MoWe 01:00pm~02:15pm', 'Erik William', '15'],
+['Csc 59867', 'TuTh 05:00pm~06:15pm', 'Alison Jacob', '15']]
+
+#Aiman end
 
 
 class mainWindow(QMainWindow):
@@ -25,6 +65,8 @@ class mainWindow(QMainWindow):
         self.StartupStudent()
 
     def StartupStudent(self):
+        global loginState #Aiman    
+        loginState = "Student" #Aiman
         # setting background colour for the page
         self.setStyleSheet("background-color:#031926;")
         self.mainW = QWidget()
@@ -108,6 +150,8 @@ class mainWindow(QMainWindow):
         # self.startup_page()
 
     def StartupInstructor(self):
+        global loginState #Aiman
+        loginState = "Instructor" #Aiman
         # setting background colour for the page
         self.setStyleSheet("background-color:#031926;")
         self.mainW = QWidget()
@@ -193,7 +237,8 @@ class mainWindow(QMainWindow):
         
         #Aiman start
     def StartupRegistrars(self):
-
+        global loginState #Aiman
+        loginState = "Registrar" #Aiman
         # Registrars Window
 
         # setting background colour for the page
@@ -2289,7 +2334,7 @@ class mainWindow(QMainWindow):
         self.logo.setFixedWidth(200)
         self.logo.setPixmap(QPixmap("logo.png"))
         self.space = QWidget()
-        self.space.setFixedHeight(385)
+        self.space.setFixedHeight(85) #Aiman number change 
 
         self.logoL.addWidget(self.logo)
         self.logoL.addWidget(self.space)
@@ -2298,6 +2343,55 @@ class mainWindow(QMainWindow):
         self.logoW.setLayout(self.logoL)
         self.main_contentL.addWidget(self.logoW)
         self.main_contentW.setLayout(self.main_contentL)
+        
+        #Aiman Start
+        global classes
+        self.classesW = QWidget()
+        self.classesL = QVBoxLayout()
+
+        for i in classes:
+            self.StudentClassW = QtWidgets.QWidget()
+            self.StudentClassW.setStyleSheet("background-color:white;border-radius:15px;")
+            self.StudentClassL = QHBoxLayout()
+
+            self.className = QtWidgets.QLabel()
+            self.className.setFixedWidth(180)
+            self.className.setText(f"Name:\n\n{i[0]}")
+            self.className.setFont(QFont("Century Gothic", 14))
+
+            self.classTime = QtWidgets.QLabel()
+            self.classTime.setText(f"Time:\n\n{i[1]}")
+            self.classTime.setFont(QFont("Century Gothic", 14))
+
+            self.instructorName = QtWidgets.QLabel()
+            self.instructorName.setText(f"Instructor:\n\n{i[2]}")
+            self.instructorName.setFont(QFont("Century Gothic", 14))
+
+            self.seats = QtWidgets.QLabel()
+            self.seats.setText(f"Seats:\n\n{i[3]}")
+            self.seats.setFont(QFont("Century Gothic", 14))
+
+            self.addBTN = QtWidgets.QPushButton()
+            self.addBTN.setText("Add")
+            self.addBTN.setFont(QFont("Century Gothic", 14))
+            self.addBTN.setFixedSize(100, 60)
+            self.addBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+            self.StudentClassL.addWidget(self.className)
+            self.StudentClassL.addWidget(self.classTime)
+            self.StudentClassL.addWidget(self.instructorName)
+            self.StudentClassL.addWidget(self.seats)
+            self.StudentClassL.addWidget(self.addBTN)
+
+            self.StudentClassW.setLayout(self.StudentClassL)
+            self.classesL.addWidget(self.StudentClassW)
+
+        self.classesW.setLayout(self.classesL)
+        self.main_contentL.addWidget(self.classesW)
+        self.main_contentL.addWidget(self.BTNSW)
+        
+        #Aiman end
 
         self.mainW.setLayout(self.mainL)
         self.mainL.addWidget(self.main_contentW)
