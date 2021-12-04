@@ -255,7 +255,6 @@ class Registrar(User):
         c.execute(sql, (course_id,))
         conn.commit()
         sql = "DELETE FROM enrollments WHERE student_id = ? AND course_id = ?"
-        print(f"student_id = {student_id}, course_id = {course_id}")
         c.execute(sql, (student_id, course_id))
         conn.commit()
         conn.close()
@@ -641,9 +640,12 @@ class Instructor(User):
         conn.close()
 
 
-# stu1 = Student(6)
-# stu1.complain(7, 3, "too noisy")
-# reg1 = Registrar(1)
+std1 = Student(6)
+std1.complain(7, 3, "too noisy")
+reg1 = Registrar(1)
+reg1.process_complaints(1, 1)
+reg1.process_complaints(2, 1)
+reg1.process_complaints(3, 1)
 # reg1.process_complaints(9, 1)  # 9michael(instructor),8apple(student),de-register
 # reg1.process_complaints(1, 0)  # 6david(student),7john(student),warning #worked
 # reg1.process_complaints(2, 1)  # 7john(student),6david(student),warning #worked
@@ -773,10 +775,8 @@ class Instructor(User):
 #         )"""
 # )
 # many_complaints = [
-#     (6, 7, 3, "loud", "warning"),
-#     (7, 6, 3, "loud", "warning"),
-#     (7, 9, 3, "loud", "warning"),
-#     (9, 6, 3, "loud", "warning"),
+#     (9, 6, 3, "loud", "de-register"),
+#     (9, 7, 3, "loud", "de-register"),
 #     (9, 8, 3, "loud", "de-register"),
 # ]
 # c.executemany(
@@ -903,6 +903,33 @@ class Instructor(User):
 # conn.commit()
 # conn.close()
 
+
+# # enrollments table
+# conn = sqlite3.connect("gsz.db")
+# c = conn.cursor()
+# c.execute(
+#     """CREATE TABLE IF NOT EXISTS enrollments (
+#         enrollment_id integer PRIMARY KEY,
+#         student_id integer NOT NULL,
+#         course_id integer NOT NULL,
+#         grade real,
+#         FOREIGN KEY ('student_id') REFERENCES students (student_id),
+#         FOREIGN KEY ('course_id') REFERENCES courses (course_id)
+#         )"""
+# )
+# many_enrollments = [
+#     (1, 3, None),
+#     (2, 3, None),
+#     (3, 3, None),
+# ]
+# c.executemany(
+#     """INSERT INTO enrollments(student_id, course_id, grade) VALUES (?, ?, ?)""",
+#     many_enrollments,
+# )
+# conn.commit()
+# conn.close()
+
+
 # # course_historys table
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
@@ -985,13 +1012,22 @@ class Instructor(User):
 # conn.close()
 
 # # delete a row
-# sql = """DELETE FROM applicants WHERE applicant_id = ?"""
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
+# sql = """DELETE FROM applicants WHERE applicant_id = ?"""
 # c.execute(sql, (4,))
 # c.execute(sql, (5,))
 # conn.commit()
 # conn.close()
+
+# # delete a row
+# conn = sqlite3.connect("gsz.db")
+# c = conn.cursor()
+# sql = """DELETE FROM enrollments"""
+# c.execute(sql)
+# conn.commit()
+# conn.close()
+
 
 # # add a column
 # sql = "ALTER TABLE users ADD first_login integer"
