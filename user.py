@@ -389,7 +389,7 @@ class Student(User):
             conn.commit()
             conn.close()
             return True
-         return False
+        return False
         
     # check to see if student failed class twice
     def failed_twice(self):
@@ -449,9 +449,8 @@ class Student(User):
         conn.commit()
         conn.close()
 
-
-std1 = Student(7)
-std1.complain(3, "blah blah")
+        std1 = Student(7)
+        std1.complain(3, "blah blah")
 
 
     
