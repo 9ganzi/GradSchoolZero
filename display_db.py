@@ -4,7 +4,7 @@ import pandas as pd
 from PyQt5.QtWidgets import QApplication, QTableView
 from PyQt5.QtCore import QAbstractTableModel, Qt
 
-applicant = sqlite3.connect("applicant.db")
+applicant = sqlite3.connect("gsz.db")
 
 df = pd.read_sql_query("SELECT * FROM applicants", applicant)
 print(df.columns)
