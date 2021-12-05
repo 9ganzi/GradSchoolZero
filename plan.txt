@@ -23,5 +23,12 @@ instructor by one warning. any students receiving up to
 3 warning will be suspended for 1 semester and must pay
 a fine to the registrars
 
-add the complaints to the complaints table
-complaint_id, complainant, complainee, description
+1. check complainant_id and its user_type
+1.1 if std !
+@ warn user !
+@ no warning !
+1.2 if ins
+@ warn std !
+@ deregister std !
+@ counterwarn ins !
+2 delete complaint from the db !

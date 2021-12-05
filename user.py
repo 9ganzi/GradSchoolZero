@@ -37,81 +37,110 @@ class User:
         conn.commit()
         conn.close()
 
+
 # fire an instructor ( can only be accessed by registrar on their page)
-# input a specfic instructor_id, deletes instructor from database 
+# input a specfic instructor_id, deletes instructor from database
 def fire_instructor(instructor_id):
     conn = sqlite3.connect("instructor.db")
     c = conn.cursor()
-    c.execute("DELETE FROM instructors WHERE instructor_id = :instructor_id",
-              {'instructor_id': instructor_id})
+    c.execute(
+        "DELETE FROM instructors WHERE instructor_id = :instructor_id",
+        {"instructor_id": instructor_id},
+    )
     conn.commit()
     conn.close()
-    
+
+
 # drop student from program ( can only be accessed by registrar on their page)
 # given student class, delete student from database
 def terminate_student(student):
     conn = sqlite3.connect("student.db")
     c = conn.cursor()
-    c.execute("DELETE * FROM students WHERE student_id = :student_id",
-              {'student_id': student.student_id})
+    c.execute(
+        "DELETE * FROM students WHERE student_id = :student_id",
+        {"student_id": student.student_id},
+    )
     conn.commit()
-    conn.close()    
+    conn.close()
+
 
 # drop student from program ( can only be accessed by registrar on their page)
 # given student_id, delete student from database
 def terminate_student(student_id):
     conn = sqlite3.connect("student.db")
     c = conn.cursor()
-    c.execute("DELETE * FROM students WHERE student_id = :student_id",
-              {'student_id': student_id})
+    c.execute(
+        "DELETE * FROM students WHERE student_id = :student_id",
+        {"student_id": student_id},
+    )
     conn.commit()
-    conn.close()        
-    
+    conn.close()
+
+
 # graduates a student by setting degree to master ( can only be accessed by registrar on their page)
 # inputs a student class, alterativelty should we just delete student from database as well
 def graduate_student(student):
     conn = sqlite3.connect("student.db")
     c = conn.cursor()
-    c.execute("""UPDATE student SET degree = :degree
+    c.execute(
+        """UPDATE student SET degree = :degree
                             WHERE student_id = student_id""",
-              {'student_id': student.student_id, 'degree': 'Masters'})
+        {"student_id": student.student_id, "degree": "Masters"},
+    )
     conn.commit()
-    conn.close()    
-    
+    conn.close()
+
     # issue warning to student ( can only be accessed by registrar on their page)
     # given a student_id
+
+
 def issue_warning_std(student_id):
     conn = sqlite3.connect("student.db")
     c = conn.cursor()
     # get current warning_count
-    c.execute("SELECT warning_count From students where student_id = :student_id",
-              {'student_id': student_id})
-    new_warning_count = c.fetchone()[0] + 1 # c.fetchone()[0] isolate variable from tuple
-    #print(new_warning_count)
+    c.execute(
+        "SELECT warning_count From students where student_id = :student_id",
+        {"student_id": student_id},
+    )
+    new_warning_count = (
+        c.fetchone()[0] + 1
+    )  # c.fetchone()[0] isolate variable from tuple
+    # print(new_warning_count)
     # update student warning_count
-    c.execute("""UPDATE students SET warning_count = :new_warning_count
+    c.execute(
+        """UPDATE students SET warning_count = :new_warning_count
                         WHERE student_id =:student_id""",
-              {'student_id': student_id, 'new_warning_count': new_warning_count})
+        {"student_id": student_id, "new_warning_count": new_warning_count},
+    )
     conn.commit()
-    conn.close()    
-    
+    conn.close()
+
     # issue warning to instructor ( can only be accessed by registrar on their page)
     # given a instructor_id
+
+
 def issue_warning_instuctor(instructor_id):
     conn = sqlite3.connect("instructor.db")
     c = conn.cursor()
     # get current warning_count
-    c.execute("SELECT warning_count From instructors where instructor_id = :instructor_id",
-              {'instructor_id': instructor_id})
-    new_warning_count = c.fetchone()[0] + 1 # c.fetchone()[0] isolate variable from tuple
-    #print(new_warning_count)
+    c.execute(
+        "SELECT warning_count From instructors where instructor_id = :instructor_id",
+        {"instructor_id": instructor_id},
+    )
+    new_warning_count = (
+        c.fetchone()[0] + 1
+    )  # c.fetchone()[0] isolate variable from tuple
+    # print(new_warning_count)
     # update student warning_count
-    c.execute("""UPDATE instructors SET warning_count = :new_warning_count
+    c.execute(
+        """UPDATE instructors SET warning_count = :new_warning_count
                         WHERE instructor_id =:instructor_id""",
-              {'instructor_id': instructor_id, 'new_warning_count': new_warning_count})
+        {"instructor_id": instructor_id, "new_warning_count": new_warning_count},
+    )
     conn.commit()
-    conn.close()        
-    
+    conn.close()
+
+
 class Registrar(User):
     def __init__(self, user_id):
         super().__init__(user_id)
@@ -219,8 +248,73 @@ class Registrar(User):
         conn.commit()
         conn.close()
 
-    # def assign_course(self, instructor_id, course_id):
-    #     conn = sqlite
+    def deregister(self, course_id, student_id):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        sql = "UPDATE courses SET enroll_count = enroll_count - 1 WHERE course_id = ?"
+        c.execute(sql, (course_id,))
+        conn.commit()
+        sql = "DELETE FROM enrollments WHERE student_id = ? AND course_id = ?"
+        c.execute(sql, (student_id, course_id))
+        conn.commit()
+        conn.close()
+
+    # ------- gui should show the table of complaints --------
+    def process_complaints(self, complaint_id, decision):
+        # approve
+        # disapprove
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        sql = "SELECT complainant_id, complainee_id, complaint_type, course_id FROM complaints WHERE complaint_id = ?"
+        c.execute(sql, (complaint_id,))
+        complaint_info = c.fetchone()
+        complaint_type = complaint_info[2]
+        course_id = complaint_info[3]
+        sql = "SELECT user_id, user_type FROM users WHERE user_id = ?"
+        c.execute(sql, (complaint_info[0],))
+        complainant_id_type = c.fetchone()
+        c.execute(sql, (complaint_info[1],))
+        complainee_id_type = c.fetchone()
+        # student is complaining
+        if complainant_id_type[1] == "student":
+            # punish
+            if decision == 1:
+                # complain against student
+                if complainee_id_type[1] == "student":
+                    # update std db
+                    sql = "UPDATE students SET warning_count = warning_count + 1 WHERE user_id = ?"
+                    c.execute(sql, (complainee_id_type[0],))
+                # complain against instructor
+                else:
+                    # update ins db
+                    sql = "UPDATE instructors SET warning_count = warning_count + 1 WHERE user_id = ?"
+                    c.execute(sql, (complainee_id_type[0],))
+        # instructor is complaining
+        else:
+            # punish student
+            if decision == 1:
+                # warning
+                if complaint_type == "warning":
+                    # update std db
+                    sql = "UPDATE students SET warning_count = warning_count + 1 WHERE user_id = ?"
+                    c.execute(sql, (complainee_id_type[0],))
+                # deregister
+                else:
+                    sql = "SELECT student_id FROM students WHERE user_id = ?"
+                    c.execute(sql, (complainee_id_type[0],))
+                    student_id = c.fetchone()[0]
+                    self.deregister(course_id, student_id)
+            # counter-punish instructor
+            else:
+                # warning
+                sql = "UPDATE instructors SET warning_count = warning_count + 1 WHERE user_id = ?"
+                c.execute(sql, (complainee_id_type[0]))
+        conn.commit()
+        # delete a row from complaint db
+        sql = "DELETE FROM complaints WHERE complaint_id = ?"
+        c.execute(sql, (complaint_id,))
+        conn.commit()
+        conn.close()
 
 
 # conn = sqlite3.connect("gsz.db")
@@ -248,9 +342,9 @@ class Student(User):
         self.num_courses_taken = student_info[3]
         self.honor_count = student_info[4]
         self.warning_count = student_info[5]
-        self.semester_gpa = student_info[6]
-        self.is_suspended = student_info[7]
-        self.degree = student_info[8]
+        # self.semester_gpa = student_info[6]
+        # self.is_suspended = student_info[7]
+        # self.degree = student_info[8]
 
     def is_time_conflict(self, course_id):
         conn = sqlite3.connect("gsz.db")
@@ -261,7 +355,6 @@ class Student(User):
             "SELECT course_id FROM enrollments WHERE student_id=?", (self.student_id,)
         )
         courses = c.fetchall()
-        courses = list(map(int, courses))
         c.execute(
             "SELECT course_time FROM courses WHERE course_id in ({courses})".format(
                 courses=",".join(["?"] * len(courses))
@@ -269,12 +362,12 @@ class Student(User):
             courses,
         )
         schedule = c.fetchall()
-        schedule = [x[0].split(",") for x in schedule]
+        schedule = [x.split(",") for x in schedule]
         schedule = [
             x2.replace(" - ", " ").strip().split(" ") for x1 in schedule for x2 in x1
         ]
         c.execute("SELECT course_time FROM courses WHERE course_id = ?", (course_id,))
-        new_course = c.fetchone()[0]
+        new_course = c.fetchone()
         new_course = new_course.split(",")
         new_course = [x.strip().replace(" - ", " ").split(" ") for x in new_course]
         for day in schedule:
@@ -346,38 +439,42 @@ class Student(User):
         conn.commit()
         conn.close()
         return 1
-        
+
     # issue warning to student
     def receive_warning(self):
         new_warning_count = self.warning_count + 1
         conn = sqlite3.connect("student.db")
         c = conn.cursor()
-        c.execute("""UPDATE student SET warning_count = :new_warning_count
+        c.execute(
+            """UPDATE student SET warning_count = :new_warning_count
                         WHERE student_id = student_id""",
-                  {'student_id': self.student_id, 'new_warning_count': new_warning_count})
+            {"student_id": self.student_id, "new_warning_count": new_warning_count},
+        )
         conn.commit()
-        conn.close()    
-        
-     # remove a warning from student class
+        conn.close()
+
+    # remove a warning from student class
     def remove_warning(self):
         new_warning_count = self.warning_count - 1
         conn = sqlite3.connect("student.db")
         c = conn.cursor()
-        c.execute("""UPDATE student SET warning_count = :new_warning_count
+        c.execute(
+            """UPDATE student SET warning_count = :new_warning_count
                         WHERE student_id = student_id""",
-                  {'student_id': self.student_id, 'new_warning_count': new_warning_count})
+            {"student_id": self.student_id, "new_warning_count": new_warning_count},
+        )
         conn.commit()
-        conn.close()   
+        conn.close()
 
-     # warn student for gpa btwn 2-2.25
-     # student function
+    # warn student for gpa btwn 2-2.25
+    # student function
     def is_struggling(self):
         if 2 <= self.gpa <= 2.25:
             self.receive_warning()
             return True
         return False
-            
-     # if GPA < 2 or failed a course twice, if true then terminate
+
+    # if GPA < 2 or failed a course twice, if true then terminate
     def is_failing(self):
         if self.gpa < 2 or self.failed_twice():
             conn = sqlite3.connect("student.db")
@@ -387,19 +484,21 @@ class Student(User):
             conn.close()
             return True
         return False
-        
+
     # check to see if student failed class twice
     def failed_twice(self):
         failing_grade = 2.0  # or should it an 'F'
         conn = sqlite3.connect("course_history.db")
         c = conn.cursor()
-        c.execute("""SELECT course_id FROM course_history WHERE grade < :failing_grade
+        c.execute(
+            """SELECT course_id FROM course_history WHERE grade < :failing_grade
                                     AND student_id =:student_id """,
-                  ({'failing_grade': failing_grade, 'student_id': self.student_id}))
+            ({"failing_grade": failing_grade, "student_id": self.student_id}),
+        )
         # if cousrse_id repeats return true else return false
         conn.commit()
-        conn.close()   
-        
+        conn.close()
+
     # place student on honor roll if gpa > 3.5 or semester_gpa > 3.75
     def is_honor_roll(self):
         if self.gpa > 3.5 or self.semester_gpa > 3.75:
@@ -407,52 +506,49 @@ class Student(User):
             self.place_honor_roll()
             return True
         return False
-            
+
         # place honor_roll student on home page
+
     def place_honor_roll(self):
         # print(self.first, '? is on honor roll')
         pass
-    
+
     # check if student can graduate
     def can_graduate(self):
         if self.num_courses_taken > 8:  # apply if classes taken >8
             self.apply_graduation()
             return True
         return False
-    
+
     # apply for graduation, let registrar review
     def apply_graduation(self):
         # registrar needs to check if required courses passed
         # want to give some notification to registrar
-        #print(self.first, '? applied to graduate')
+        # print(self.first, '? applied to graduate')
         pass
-    
-    # reset semester grades (for end of period) 
+
+    # reset semester grades (for end of period)
     @classmethod
     def reset_semester_grades(cls):
-        semester_gpa = 'NULL'
+        semester_gpa = "NULL"
         conn = sqlite3.connect("student.db")
         c = conn.cursor()
-        c.execute("""UPDATE students SET semester_gpa = :semester_gpa """,
-                  {'semester_gpa': semester_gpa})
+        c.execute(
+            """UPDATE students SET semester_gpa = :semester_gpa """,
+            {"semester_gpa": semester_gpa},
+        )
         conn.commit()
         conn.close()
         # update all students
-    def complain(self, complainee_id, description):
+
+    def complain(self, complainee_id, course_id, description):
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
-        sql = "INSERT INTO complaints(complainant_id, complainee_id, description) VALUES(?, ?, ?)"
-        c.execute(sql, (self.user_id, complainee_id, description))
+        sql = "INSERT INTO complaints(complainant_id, course_id, complainee_id, description, complaint_type) VALUES(?, ?, ?, ?, ?)"
+        c.execute(sql, (self.user_id, course_id, complainee_id, description, "warning"))
         conn.commit()
         conn.close()
-        
-        
-        std1 = Student(7)
-        std1.complain(3, "blah blah")
 
-
-    
-    
 class Instructor(User):
     def __init__(self, user_id):
         conn = sqlite3.connect("gsz.db")
@@ -465,27 +561,35 @@ class Instructor(User):
         self.warning_count = instructor_info[2]
         self.is_suspended = instructor_info[3]
 
-     # suspend instructor automatically if warning count >=3
+    # suspend instructor automatically if warning count >=3
     def suspend(self):
         if self.warning_count >= 3:
             conn = sqlite3.connect("instructor.db")
             c = conn.cursor()
-            c.execute("""UPDATE instructor SET is_suspended = :is_suspended
+            c.execute(
+                """UPDATE instructor SET is_suspended = :is_suspended
                                         WHERE instructor_id = :instructor_id""",
-                      {'instructor_id': self.instructor_id, 'is_suspended': 1})
+                {"instructor_id": self.instructor_id, "is_suspended": 1},
+            )
             conn.commit()
             conn.close()
             # should warning_count be reset at start of semester?
-            # how should is_suspended be reset      
-  
+            # how should is_suspended be reset
+
         # issue warning
+
     def receive_warning(self):
         new_warning_count = self.warning_count + 1
         conn = sqlite3.connect("instructor.db")
         c = conn.cursor()
-        c.execute("""UPDATE instructor SET warning_count = :new_warning_count
+        c.execute(
+            """UPDATE instructor SET warning_count = :new_warning_count
                                 WHERE instructor_id = instructor_id""",
-                  {'instructor_id': self.instructor_id, 'new_warning_count': new_warning_count})
+            {
+                "instructor_id": self.instructor_id,
+                "new_warning_count": new_warning_count,
+            },
+        )
         conn.commit()
         conn.close()
 
@@ -493,21 +597,29 @@ class Instructor(User):
     def assign_grade(self, student, course, grade):
         conn = sqlite3.connect("enrollment.db")
         c = conn.cursor()
-        c.execute("""UPDATE enrollments SET grade = :grade
+        c.execute(
+            """UPDATE enrollments SET grade = :grade
                         WHERE student_id = :student_id
                         AND course_id =: course_id""",
-                  {'student_id': student.student_id, 'course_id': course.course_id, 'grade': grade})
+            {
+                "student_id": student.student_id,
+                "course_id": course.course_id,
+                "grade": grade,
+            },
+        )
         conn.commit()
-        conn.close()    
-        
+        conn.close()
+
     # check if all students are graded, give warning otherwise
     def is_all_graded(self):
         conn = sqlite3.connect("enrollment.db")
         c = conn.cursor()
-        c.execute("""SELECT grade FROM enrollments
+        c.execute(
+            """SELECT grade FROM enrollments
                         WHERE instructor_id =: instructor_id
                         AND grade IS NULL """,
-                  {'instructor_id': self.instructor_id})
+            {"instructor_id": self.instructor_id},
+        )
         conn.commit()
         if c.fetchall() == {}:
             conn.close()
@@ -515,6 +627,30 @@ class Instructor(User):
         conn.close()
         self.recieve_warning()
         return False
+
+    def complain(self, complainee_id, course_id, description, complaint_type):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        sql = "INSERT INTO complaints(complainant_id, course_id, complainee_id, description, complaint_type) VALUES(?, ?, ?, ?, ?)"
+        c.execute(
+            sql, (self.user_id, course_id, complainee_id, description, complaint_type)
+        )
+        conn.commit()
+        conn.close()
+
+
+std1 = Student(6)
+std1.complain(7, 3, "too noisy")
+reg1 = Registrar(1)
+reg1.process_complaints(1, 1)
+reg1.process_complaints(2, 1)
+reg1.process_complaints(3, 1)
+# reg1.process_complaints(9, 1)  # 9michael(instructor),8apple(student),de-register
+# reg1.process_complaints(1, 0)  # 6david(student),7john(student),warning #worked
+# reg1.process_complaints(2, 1)  # 7john(student),6david(student),warning #worked
+# reg1.process_complaints(3, 1)  # 7john(student),9michael(instructor),warning #worked
+# reg1.process_complaints(4, 1)  # 9michael(instructor),6david(student),warning #worked
+
 
 # # testing course time conflict
 # def test(start, end, courses):
@@ -552,7 +688,8 @@ class Instructor(User):
 # print(test(p_start, p_end, courses))
 
 
-# # testing database
+# testing database
+
 # # applicants table
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
@@ -568,44 +705,28 @@ class Instructor(User):
 #         user_type text NOT NULL
 #         )"""
 # )
-# c.execute(
-#     """INSERT INTO applicants(first, last, email, gpa, resume, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)""",
-#     ("John", "Doe", "email@email.com", 5, None, 3, "student"),
-# )
-# c.execute(
-#     """INSERT INTO applicants(first, last, email, gpa, resume, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)""",
-#     ("Jane", "Doe", "email@email.com", None, "I'm a good teacher", None, "instructor"),
-# )
-# c.execute(
-#     """INSERT INTO applicants(first, last, email, gpa, resume, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+# many_applicants = [
+#     ("Kevin", "Durant", "Kevin_Durant@email.com", "3.7", "None", 6, "stuent"),
+#     ("Kevin", "Durant", "Kevin_Durant@email.com", "3.7", "None", 6, "stuent"),
+#     ("John", "Doe", "John_Doe@email.com", "5", None, 3, "stuent"),
 #     (
-#         "Kevin",
-#         "Durant",
-#         "email@email.com",
-#         3.7,
-#         None,
-#         6,
-#         "student",
-#     ),
-# )
-# c.execute(
-#     """INSERT INTO applicants(first, last, email, gpa, resume, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)""",
-#     (
-#         "Lebron",
-#         "James",
-#         "email@email.com",
+#         "Jane",
+#         "Doe",
+#         "Jane_Doe@email.com",
 #         None,
 #         "I'm a good teacher",
 #         None,
 #         "instructor",
 #     ),
+#     ("Kevin", "Durant", "Kevin_Durant@email.com", "3.7", "None", 6, "stuent"),
+# ]
+# c.executemany(
+#     """INSERT INTO applicants(first, last, email, gpa, resume, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     many_applicants,
 # )
-# c.execute("SELECT * FROM applicants ORDER BY applicant_id DESC LIMIT 1")
-# # select the latest row, the row we just inserted
-# applicant_row = c.lastrowid
-# print(applicant_row)
 # conn.commit()
 # conn.close()
+
 
 # # users table
 # conn = sqlite3.connect("gsz.db")
@@ -621,30 +742,46 @@ class Instructor(User):
 #         user_type text NOT NULL)
 #         """
 # )
-# c.execute(
-#     """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
-#     ("David", "Beckham", "id1a", "password", "email1@email.com", "student", 1),
-# )
-# c.execute(
-#     """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
-#     ("John", "Doe", "idv2", "password", "email2@email.com", "student", 1),
-# )
-# c.execute(
-#     """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
-#     ("Apple", "Bee", "id13", "password", "email3@email.com", "student", 1),
-# )
-# c.execute(
-#     """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
-#     ("Michael", "Jordan", "ida4", "password", "email4@email.com", "instructor", 1),
-# )
-
-# c.execute(
-#     """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+# many_users = [
 #     ("Jane", "Doe", "ida5", "password", "email5@emgail.com", "instructor", 1),
+#     ("Michael", "Jordan", "ida4", "password", "email4@email.com", "instructor", 1),
+#     ("Apple", "Bee", "id13", "password", "email3@email.com", "student", 1),
+#     ("John", "Doe", "idv2", "password", "email2@email.com", "student", 1),
+#     ("David", "Beckham", "id1a", "password", "email1@email.com", "student", 1),
+#     ("Kevin", "Durant", "Kevin_Durant@email.com", "3.7", "None", 6, "stuent"),
+# ]
+# c.executemany(
+#     """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+#     many_users,
 # )
-# c.execute("SELECT * FROM users ORDER BY user_id DESC LIMIT 1")
-# user_id = c.fetchone()[0]
-# # print(user_id)
+# conn.commit()
+# conn.close()
+
+# # complaints table
+# conn = sqlite3.connect("gsz.db")
+# c = conn.cursor()
+# c.execute(
+#     """CREATE TABLE IF NOT EXISTS complaints (
+#         complaint_id integer PRIMARY KEY,
+#         complainant_id integer NOT NULL,
+#         complainee_id integer NOT NULL,
+#         course_id integer NOT NULL,
+#         description text NOT NULL,
+#         complaint_type text,
+#         FOREIGN KEY ('complainant_id') REFERENCES users (user_id),
+#         FOREIGN KEY ('complainee_id') REFERENCES users (user_id),
+#         FOREIGN KEY ('course_id') REFERENCES courses (course_id)
+#         )"""
+# )
+# many_complaints = [
+#     (9, 6, 3, "loud", "de-register"),
+#     (9, 7, 3, "loud", "de-register"),
+#     (9, 8, 3, "loud", "de-register"),
+# ]
+# c.executemany(
+#     """INSERT INTO complaints(complainant_id, complainee_id, course_id, description, complaint_type) VALUES(?, ?, ?, ?, ?)""",
+#     many_complaints,
+# )
 # conn.commit()
 # conn.close()
 
@@ -749,13 +886,48 @@ class Instructor(User):
 # c.execute(
 #     """INSERT INTO enrollments(student_id, course_id, grade) VALUES (?, ?, ?)""",
 #     (
-#         1,
 #         6,
+#         3,
+#         None,
+#     ),
+# )
+# c.execute(
+#     """INSERT INTO enrollments(student_id, course_id, grade) VALUES (?, ?, ?)""",
+#     (
+#         7,
+#         3,
 #         None,
 #     ),
 # )
 # conn.commit()
 # conn.close()
+
+
+# # enrollments table
+# conn = sqlite3.connect("gsz.db")
+# c = conn.cursor()
+# c.execute(
+#     """CREATE TABLE IF NOT EXISTS enrollments (
+#         enrollment_id integer PRIMARY KEY,
+#         student_id integer NOT NULL,
+#         course_id integer NOT NULL,
+#         grade real,
+#         FOREIGN KEY ('student_id') REFERENCES students (student_id),
+#         FOREIGN KEY ('course_id') REFERENCES courses (course_id)
+#         )"""
+# )
+# many_enrollments = [
+#     (1, 3, None),
+#     (2, 3, None),
+#     (3, 3, None),
+# ]
+# c.executemany(
+#     """INSERT INTO enrollments(student_id, course_id, grade) VALUES (?, ?, ?)""",
+#     many_enrollments,
+# )
+# conn.commit()
+# conn.close()
+
 
 # # course_historys table
 # conn = sqlite3.connect("gsz.db")
@@ -839,16 +1011,33 @@ class Instructor(User):
 # conn.close()
 
 # # delete a row
-# sql = """DELETE FROM applicants WHERE applicant_id = ?"""
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
+# sql = """DELETE FROM applicants WHERE applicant_id = ?"""
 # c.execute(sql, (4,))
 # c.execute(sql, (5,))
 # conn.commit()
 # conn.close()
 
+# # delete a row
+# conn = sqlite3.connect("gsz.db")
+# c = conn.cursor()
+# sql = """DELETE FROM enrollments"""
+# c.execute(sql)
+# conn.commit()
+# conn.close()
+
+
 # # add a column
 # sql = "ALTER TABLE users ADD first_login integer"
+# conn = sqlite3.connect("gsz.db")
+# c = conn.cursor()
+# c.execute(sql)
+# conn.commit()
+# conn.close()
+
+# # delete a table
+# sql = "DROP TABLE complaints"
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(sql)
