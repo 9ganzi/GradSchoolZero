@@ -3,7 +3,7 @@ import sqlite3
 
 # ensure Course gpa btwn 2.5 -3.5
 def is_fair():
-    conn = sqlite3.connect("course.db")
+    conn = sqlite3.connect("gsz.db")
     c = conn.cursor() # assume all classes are fair at start
     c.execute(""" UPDATE courses SET is_fair = False WHERE course_gpa NOT BETWEEN 2.5 AND 3.5 """)
     conn.commit()
