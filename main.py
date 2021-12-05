@@ -2416,6 +2416,1363 @@ class mainWindow(QMainWindow):
         self.help.clicked.connect(self.mainpage_help)
         self.classes.clicked.connect(self.mainpage_classes)
         self.backToStartupBTN.clicked.connect(self.StartupStudent)
+        
+    def mainpage_home_instructor(self):
+        # setting background colour for the page
+        self.setStyleSheet('background-color:#031926;')
+        # main layout and widget
+        self.scroll = QtWidgets.QScrollArea()
+        self.mainW = QWidget()
+        self.mainL = QVBoxLayout()
+
+        # ----------------Design-----------------
+
+        self.navbarW = QWidget()
+        self.navbarL = QHBoxLayout()
+        self.navbarW.setFixedHeight(80)
+        self.navbarW.setFixedWidth(1240)
+        self.navbarW.setStyleSheet("border-bottom: 1px solid white;")
+
+        self.account = QtWidgets.QPushButton()
+        self.account.setFixedSize(310, 60)
+        self.account.setText("Account")
+        self.account.setCursor(QCursor(Qt.PointingHandCursor))
+        self.account.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.account.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.account)
+
+        self.home = QtWidgets.QPushButton()
+        self.home.setFixedSize(310, 60)
+        self.home.setCursor(QCursor(Qt.PointingHandCursor))
+        self.home.setText("Home")
+        self.home.setStyleSheet("color:#076DF2;background:transparent;padding-bottom:10;")
+        self.home.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.home)
+
+        self.help = QtWidgets.QPushButton()
+        self.help.setFixedSize(310, 60)
+        self.help.setCursor(QCursor(Qt.PointingHandCursor))
+        self.help.setText("Help")
+        self.help.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.help.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.help)
+
+        self.classes = QtWidgets.QPushButton()
+        self.classes.setFixedSize(310, 60)
+        self.classes.setCursor(QCursor(Qt.PointingHandCursor))
+        self.classes.setText("Classes")
+        self.classes.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.classes.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.classes)
+
+        self.navbarW.setLayout(self.navbarL)
+        self.mainL.addWidget(self.navbarW)
+
+        self.main_contentW = QWidget()
+        self.main_contentL = QHBoxLayout()
+        self.main_contentL.setAlignment(Qt.AlignTop)
+
+        self.logoW = QWidget()
+        self.logoL = QVBoxLayout()
+        self.logoL.setContentsMargins(0, 0, 0, 0)
+
+        self.BTNSW = QWidget()
+        self.BTNSL = QHBoxLayout()
+
+        self.ComplaintBTN = QtWidgets.QPushButton()
+        self.ComplaintBTN.setFont(QFont("Century Gothic", 20))
+        self.ComplaintBTN.setFixedSize(180, 60)
+        self.ComplaintBTN.setText("Complaint")
+        self.ComplaintBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                  "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.BTNSL.addWidget(self.ComplaintBTN)
+
+        self.backToStartupBTN = QtWidgets.QPushButton()
+        self.backToStartupBTN.setText("Back")
+        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        self.backToStartupBTN.setFixedSize(180, 60)
+        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.backToStartupBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.BTNSL.addWidget(self.backToStartupBTN)
+
+        self.BTNSW.setLayout(self.BTNSL)
+
+        self.logo = QtWidgets.QLabel(self.logoW)
+        self.logo.setFixedHeight(200)
+        self.logo.setFixedWidth(200)
+        self.logo.setPixmap(QPixmap("logo.png"))
+        self.space = QWidget()
+        self.space.setFixedHeight(385)
+
+        self.logoL.addWidget(self.logo)
+        self.logoL.addWidget(self.space)
+        self.logoL.addWidget(self.BTNSW)
+
+        self.logoW.setLayout(self.logoL)
+        self.main_contentL.addWidget(self.logoW)
+        self.main_contentW.setLayout(self.main_contentL)
+
+        self.mainW.setLayout(self.mainL)
+        self.mainL.addWidget(self.main_contentW)
+
+        # -------------End of Design-------------
+
+        # scroll settings
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.scroll.setWidget(self.mainW)
+        self.setCentralWidget(self.scroll)
+
+        # checking if any buttons is clicked
+        self.home.clicked.connect(self.mainpage_home_instructor)
+        self.account.clicked.connect(self.mainpage_account_instructor)
+        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+        self.help.clicked.connect(self.mainpage_help_instructor)
+        self.ComplaintBTN.clicked.connect(self.compliant_page)
+        self.classes.clicked.connect(self.mainpage_classes_instructor)
+
+    def mainpage_account_instructor(self):
+        global id
+        global acc_type
+        global name
+        global email
+        # setting background colour for the page
+        self.setStyleSheet('background-color:#031926;')
+        # main layout and widget
+        self.scroll = QtWidgets.QScrollArea()
+        self.mainW = QWidget()
+        self.mainL = QVBoxLayout()
+
+        # ----------------Design-----------------
+
+        self.navbarW = QWidget()
+        self.navbarL = QHBoxLayout()
+        self.navbarW.setFixedHeight(80)
+        self.navbarW.setFixedWidth(1240)
+        self.navbarW.setStyleSheet("border-bottom: 1px solid white;")
+
+        self.account = QtWidgets.QPushButton()
+        self.account.setFixedSize(310, 60)
+        self.account.setText("Account")
+        self.account.setCursor(QCursor(Qt.PointingHandCursor))
+        self.account.setStyleSheet("color:#076DF2;background:transparent;padding-bottom:10;")
+        self.account.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.account)
+
+        self.home = QtWidgets.QPushButton()
+        self.home.setFixedSize(310, 60)
+        self.home.setCursor(QCursor(Qt.PointingHandCursor))
+        self.home.setText("Home")
+        self.home.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.home.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.home)
+
+        self.help = QtWidgets.QPushButton()
+        self.help.setFixedSize(310, 60)
+        self.help.setCursor(QCursor(Qt.PointingHandCursor))
+        self.help.setText("Help")
+        self.help.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.help.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.help)
+
+        self.classes = QtWidgets.QPushButton()
+        self.classes.setFixedSize(310, 60)
+        self.classes.setCursor(QCursor(Qt.PointingHandCursor))
+        self.classes.setText("Classes")
+        self.classes.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.classes.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.classes)
+
+        self.navbarW.setLayout(self.navbarL)
+        self.mainL.addWidget(self.navbarW)
+
+        self.main_contentW = QWidget()
+        self.main_contentL = QHBoxLayout()
+        self.main_contentL.setAlignment(Qt.AlignTop)
+
+        self.logoW = QWidget()
+        self.logoL = QVBoxLayout()
+        self.logoL.setContentsMargins(0,0,0,0)
+
+        self.logOut = QtWidgets.QPushButton()
+        self.logOut.setFont(QFont("Century Gothic", 20))
+        self.logOut.setFixedSize(180, 60)
+        self.logOut.setText("Log out")
+        self.logOut.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                     "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.logo = QtWidgets.QLabel(self.logoW)
+        self.logo.setFixedHeight(200)
+        self.logo.setFixedWidth(200)
+        self.logo.setPixmap(QPixmap("logo.png"))
+        self.space = QWidget()
+
+        self.logoL.addWidget(self.logo)
+        self.logoL.addWidget(self.space)
+        self.logoL.addWidget(self.logOut)
+
+        self.logoW.setLayout(self.logoL)
+        self.main_contentL.addWidget(self.logoW)
+
+        self.accountDataW = QWidget()
+        self.accountDataL = QVBoxLayout()
+        self.accountDataL.setAlignment(Qt.AlignHCenter)
+
+        self.accountDataW.setFixedSize(480, 660)
+        self.accountDataW.setStyleSheet("border: 1px solid white;border-radius:15px;margin-top:30px;")
+
+        self.accountNameTXT = QtWidgets.QLabel()
+        self.accountNameTXT.setText("Account name :")
+        self.accountNameTXT.setStyleSheet("color:white; border:0;")
+        self.accountNameTXT.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.accountNameTXT)
+
+        self.accountName = QtWidgets.QLabel()
+        self.accountName.setText(name)
+        self.accountName.setStyleSheet("color:#0583F2; border:0;")
+        self.accountName.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.accountName)
+
+        self.email_TXT = QtWidgets.QLabel()
+        self.email_TXT.setText("E-mail :")
+        self.email_TXT.setStyleSheet("color:white; border:0;")
+        self.email_TXT.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.email_TXT)
+
+        self.email = QtWidgets.QLabel()
+        self.email.setText(email)
+        self.email.setStyleSheet("color:#0583F2; border:0;")
+        self.email.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.email)
+
+        self.idTXT = QtWidgets.QLabel()
+        self.idTXT.setText("Student ID :")
+        self.idTXT.setStyleSheet("color:white; border:0;")
+        self.idTXT.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.idTXT)
+
+        self.accountId = QtWidgets.QLabel()
+        self.accountId.setText(id)
+        self.accountId.setStyleSheet("color:#0583F2; border:0;")
+        self.accountId.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.accountId)
+
+        self.accountTypeTXT = QtWidgets.QLabel()
+        self.accountTypeTXT.setText("Account type :")
+        self.accountTypeTXT.setStyleSheet("color:white; border:0;")
+        self.accountTypeTXT.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.accountTypeTXT)
+
+        self.accountType = QtWidgets.QLabel()
+        self.accountType.setText(acc_type)
+        self.accountType.setStyleSheet("color:#0583F2; border:0;")
+        self.accountType.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.accountType)
+
+        self.accountDataW.setLayout(self.accountDataL)
+        self.main_contentL.addWidget(self.accountDataW)
+        self.main_contentW.setLayout(self.main_contentL)
+
+        self.mainW.setLayout(self.mainL)
+        self.mainL.addWidget(self.main_contentW)
+
+        # -------------End of Design-------------
+
+        # scroll settings
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.scroll.setWidget(self.mainW)
+        self.setCentralWidget(self.scroll)
+
+        # checking if any buttons is clicked
+
+        self.home.clicked.connect(self.mainpage_home_instructor)
+        self.account.clicked.connect(self.mainpage_account_instructor)
+        self.help.clicked.connect(self.mainpage_help_instructor)
+        self.logOut.clicked.connect(self.logout)
+        self.classes.clicked.connect(self.mainpage_classes_instructor)
+
+    def mainpage_help_instructor(self):
+        # setting background colour for the page
+        self.setStyleSheet('background-color:#031926;')
+        # main layout and widget
+        self.scroll = QtWidgets.QScrollArea()
+        self.mainW = QWidget()
+        self.mainL = QVBoxLayout()
+
+        # ----------------Design-----------------
+
+        self.navbarW = QWidget()
+        self.navbarL = QHBoxLayout()
+        self.navbarW.setFixedHeight(80)
+        self.navbarW.setFixedWidth(1240)
+        self.navbarW.setStyleSheet("border-bottom: 1px solid white;")
+
+        self.account = QtWidgets.QPushButton()
+        self.account.setFixedSize(310, 60)
+        self.account.setText("Account")
+        self.account.setCursor(QCursor(Qt.PointingHandCursor))
+        self.account.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.account.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.account)
+
+        self.home = QtWidgets.QPushButton()
+        self.home.setFixedSize(310, 60)
+        self.home.setCursor(QCursor(Qt.PointingHandCursor))
+        self.home.setText("Home")
+        self.home.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.home.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.home)
+
+        self.help = QtWidgets.QPushButton()
+        self.help.setFixedSize(310, 60)
+        self.help.setCursor(QCursor(Qt.PointingHandCursor))
+        self.help.setText("Help")
+        self.help.setStyleSheet("color:#076DF2;background:transparent;padding-bottom:10;")
+        self.help.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.help)
+
+        self.classes = QtWidgets.QPushButton()
+        self.classes.setFixedSize(310, 60)
+        self.classes.setCursor(QCursor(Qt.PointingHandCursor))
+        self.classes.setText("Classes")
+        self.classes.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.classes.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.classes)
+
+        self.navbarW.setLayout(self.navbarL)
+        self.mainL.addWidget(self.navbarW)
+
+        self.main_contentW = QWidget()
+        self.main_contentL = QHBoxLayout()
+        self.main_contentL.setAlignment(Qt.AlignTop)
+
+        self.logoW = QWidget()
+        self.logoL = QVBoxLayout()
+        self.logoL.setContentsMargins(0, 0, 0, 0)
+
+        self.BTNSW = QWidget()
+        self.BTNSL = QHBoxLayout()
+
+        self.backToStartupBTN = QtWidgets.QPushButton()
+        self.backToStartupBTN.setText("Back")
+        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        self.backToStartupBTN.setFixedSize(180, 60)
+        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.backToStartupBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.BTNSL.addWidget(self.backToStartupBTN)
+
+        self.BTNSW.setLayout(self.BTNSL)
+
+        self.logo = QtWidgets.QLabel(self.logoW)
+        self.logo.setFixedHeight(200)
+        self.logo.setFixedWidth(200)
+        self.logo.setPixmap(QPixmap("logo.png"))
+        self.space = QWidget()
+        self.space.setFixedHeight(385)
+
+        self.logoL.addWidget(self.logo)
+        self.logoL.addWidget(self.space)
+        self.logoL.addWidget(self.BTNSW)
+
+        self.logoW.setLayout(self.logoL)
+        self.main_contentL.addWidget(self.logoW)
+        self.main_contentW.setLayout(self.main_contentL)
+
+        self.mainW.setLayout(self.mainL)
+        self.mainL.addWidget(self.main_contentW)
+        # -------------End of Design-------------
+
+        # scroll settings
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.scroll.setWidget(self.mainW)
+        self.setCentralWidget(self.scroll)
+
+        # checking if any buttons is clicked
+
+        self.home.clicked.connect(self.mainpage_home_instructor)
+        self.account.clicked.connect(self.mainpage_account_instructor)
+        self.help.clicked.connect(self.mainpage_help_instructor)
+        self.classes.clicked.connect(self.mainpage_classes_instructor)
+        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+
+    def mainpage_classes_instructor(self):
+        # setting background colour for the page
+        self.setStyleSheet('background-color:#031926;')
+        # main layout and widget
+        self.scroll = QtWidgets.QScrollArea()
+        self.mainW = QWidget()
+        self.mainL = QVBoxLayout()
+
+        # ----------------Design-----------------
+
+        self.navbarW = QWidget()
+        self.navbarL = QHBoxLayout()
+        self.navbarW.setFixedHeight(80)
+        self.navbarW.setFixedWidth(1240)
+        self.navbarW.setStyleSheet("border-bottom: 1px solid white;")
+
+        self.account = QtWidgets.QPushButton()
+        self.account.setFixedSize(310, 60)
+        self.account.setText("Account")
+        self.account.setCursor(QCursor(Qt.PointingHandCursor))
+        self.account.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.account.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.account)
+
+        self.home = QtWidgets.QPushButton()
+        self.home.setFixedSize(310, 60)
+        self.home.setCursor(QCursor(Qt.PointingHandCursor))
+        self.home.setText("Home")
+        self.home.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.home.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.home)
+
+        self.help = QtWidgets.QPushButton()
+        self.help.setFixedSize(310, 60)
+        self.help.setCursor(QCursor(Qt.PointingHandCursor))
+        self.help.setText("Help")
+        self.help.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.help.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.help)
+
+        self.classes = QtWidgets.QPushButton()
+        self.classes.setFixedSize(310, 60)
+        self.classes.setCursor(QCursor(Qt.PointingHandCursor))
+        self.classes.setText("Classes")
+        self.classes.setStyleSheet("color:#076DF2;background:transparent;padding-bottom:10;")
+        self.classes.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.classes)
+
+        self.navbarW.setLayout(self.navbarL)
+        self.mainL.addWidget(self.navbarW)
+
+        self.main_contentW = QWidget()
+        self.main_contentL = QVBoxLayout()
+        self.main_contentL.setAlignment(Qt.AlignTop)
+
+        self.logoW = QWidget()
+        self.logoL = QVBoxLayout()
+        self.logoL.setContentsMargins(0, 0, 0, 0)
+
+        self.BTNSW = QWidget()
+        self.BTNSL = QHBoxLayout()
+
+        self.backToStartupBTN = QtWidgets.QPushButton()
+        self.backToStartupBTN.setText("Back")
+        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        self.backToStartupBTN.setFixedSize(180, 60)
+        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.backToStartupBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.BTNSL.addWidget(self.backToStartupBTN)
+
+        self.BTNSW.setLayout(self.BTNSL)
+
+        self.logo = QtWidgets.QLabel(self.logoW)
+        self.logo.setFixedHeight(200)
+        self.logo.setFixedWidth(200)
+        self.logo.setPixmap(QPixmap("logo.png"))
+        self.space = QWidget()
+        self.space.setFixedHeight(85)
+
+        self.logoL.addWidget(self.logo)
+        self.logoL.addWidget(self.space)
+
+        self.logoW.setLayout(self.logoL)
+        # self.main_contentL.addWidget(self.logoW)
+        self.main_contentW.setLayout(self.main_contentL)
+
+        self.mainW.setLayout(self.mainL)
+        self.mainL.addWidget(self.main_contentW)
+
+        # -------------End of Design-------------
+
+        # scroll settings
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.scroll.setWidget(self.mainW)
+        self.setCentralWidget(self.scroll)
+
+        # checking if any buttons is clicked
+
+        self.home.clicked.connect(self.mainpage_home_instructor)
+        self.account.clicked.connect(self.mainpage_account_instructor)
+        self.help.clicked.connect(self.mainpage_help_instructor)
+        self.classes.clicked.connect(self.mainpage_classes_instructor)
+        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+
+    def mainpage_home_registrar(self):
+        # setting background colour for the page
+        self.setStyleSheet('background-color:#031926;')
+        # main layout and widget
+        self.scroll = QtWidgets.QScrollArea()
+        self.mainW = QWidget()
+        self.mainL = QVBoxLayout()
+
+        # ----------------Design-----------------
+
+        self.navbarW = QWidget()
+        self.navbarL = QHBoxLayout()
+        self.navbarW.setFixedHeight(80)
+        self.navbarW.setFixedWidth(1240)
+        self.navbarW.setStyleSheet("border-bottom: 1px solid white;")
+
+        self.account = QtWidgets.QPushButton()
+        self.account.setFixedSize(310, 60)
+        self.account.setText("Account")
+        self.account.setCursor(QCursor(Qt.PointingHandCursor))
+        self.account.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.account.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.account)
+
+        self.home = QtWidgets.QPushButton()
+        self.home.setFixedSize(310, 60)
+        self.home.setCursor(QCursor(Qt.PointingHandCursor))
+        self.home.setText("Home")
+        self.home.setStyleSheet("color:#076DF2;background:transparent;padding-bottom:10;")
+        self.home.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.home)
+
+        self.help = QtWidgets.QPushButton()
+        self.help.setFixedSize(310, 60)
+        self.help.setCursor(QCursor(Qt.PointingHandCursor))
+        self.help.setText("Help")
+        self.help.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.help.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.help)
+
+        self.classes = QtWidgets.QPushButton()
+        self.classes.setFixedSize(310, 60)
+        self.classes.setCursor(QCursor(Qt.PointingHandCursor))
+        self.classes.setText("Classes")
+        self.classes.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.classes.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.classes)
+
+        self.navbarW.setLayout(self.navbarL)
+        self.mainL.addWidget(self.navbarW)
+
+        self.main_contentW = QWidget()
+        self.main_contentL = QHBoxLayout()
+        self.main_contentL.setAlignment(Qt.AlignTop)
+
+        self.logoW = QWidget()
+        self.logoL = QVBoxLayout()
+        self.logoL.setContentsMargins(0, 0, 0, 0)
+
+        self.BTNSW = QWidget()
+        self.BTNSL = QHBoxLayout()
+
+        self.ComplaintBTN = QtWidgets.QPushButton()
+        self.ComplaintBTN.setFont(QFont("Century Gothic", 20))
+        self.ComplaintBTN.setFixedSize(180, 60)
+        self.ComplaintBTN.setText("Complaint")
+        self.ComplaintBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                  "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.BTNSL.addWidget(self.ComplaintBTN)
+
+        self.backToStartupBTN = QtWidgets.QPushButton()
+        self.backToStartupBTN.setText("Back")
+        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        self.backToStartupBTN.setFixedSize(180, 60)
+        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.backToStartupBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.BTNSL.addWidget(self.backToStartupBTN)
+
+        self.BTNSW.setLayout(self.BTNSL)
+
+        self.logo = QtWidgets.QLabel(self.logoW)
+        self.logo.setFixedHeight(200)
+        self.logo.setFixedWidth(200)
+        self.logo.setPixmap(QPixmap("logo.png"))
+        self.space = QWidget()
+        self.space.setFixedHeight(385)
+
+        self.logoL.addWidget(self.logo)
+        self.logoL.addWidget(self.space)
+        self.logoL.addWidget(self.BTNSW)
+
+        self.logoW.setLayout(self.logoL)
+        self.main_contentL.addWidget(self.logoW)
+        self.main_contentW.setLayout(self.main_contentL)
+
+        self.mainW.setLayout(self.mainL)
+        self.mainL.addWidget(self.main_contentW)
+
+        # -------------End of Design-------------
+
+        # scroll settings
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.scroll.setWidget(self.mainW)
+        self.setCentralWidget(self.scroll)
+
+        # checking if any buttons is clicked
+        self.home.clicked.connect(self.mainpage_home_registrar)
+        self.account.clicked.connect(self.mainpage_account_registrar)
+        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+        self.help.clicked.connect(self.mainpage_help_registrar)
+        self.ComplaintBTN.clicked.connect(self.compliant_page)
+        self.classes.clicked.connect(self.mainpage_classes_registrar)
+
+    def mainpage_account_registrar(self):
+        global id
+        global acc_type
+        global name
+        global email
+        # setting background colour for the page
+        self.setStyleSheet('background-color:#031926;')
+        # main layout and widget
+        self.scroll = QtWidgets.QScrollArea()
+        self.mainW = QWidget()
+        self.mainL = QVBoxLayout()
+
+        # ----------------Design-----------------
+
+        self.navbarW = QWidget()
+        self.navbarL = QHBoxLayout()
+        self.navbarW.setFixedHeight(80)
+        self.navbarW.setFixedWidth(1240)
+        self.navbarW.setStyleSheet("border-bottom: 1px solid white;")
+
+        self.account = QtWidgets.QPushButton()
+        self.account.setFixedSize(310, 60)
+        self.account.setText("Account")
+        self.account.setCursor(QCursor(Qt.PointingHandCursor))
+        self.account.setStyleSheet("color:#076DF2;background:transparent;padding-bottom:10;")
+        self.account.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.account)
+
+        self.home = QtWidgets.QPushButton()
+        self.home.setFixedSize(310, 60)
+        self.home.setCursor(QCursor(Qt.PointingHandCursor))
+        self.home.setText("Home")
+        self.home.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.home.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.home)
+
+        self.help = QtWidgets.QPushButton()
+        self.help.setFixedSize(310, 60)
+        self.help.setCursor(QCursor(Qt.PointingHandCursor))
+        self.help.setText("Help")
+        self.help.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.help.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.help)
+
+        self.classes = QtWidgets.QPushButton()
+        self.classes.setFixedSize(310, 60)
+        self.classes.setCursor(QCursor(Qt.PointingHandCursor))
+        self.classes.setText("Classes")
+        self.classes.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.classes.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.classes)
+
+        self.navbarW.setLayout(self.navbarL)
+        self.mainL.addWidget(self.navbarW)
+
+        self.main_contentW = QWidget()
+        self.main_contentL = QHBoxLayout()
+        self.main_contentL.setAlignment(Qt.AlignTop)
+
+        self.logoW = QWidget()
+        self.logoL = QVBoxLayout()
+        self.logoL.setContentsMargins(0,0,0,0)
+
+        self.logOut = QtWidgets.QPushButton()
+        self.logOut.setFont(QFont("Century Gothic", 20))
+        self.logOut.setFixedSize(180, 60)
+        self.logOut.setText("Log out")
+        self.logOut.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                     "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.logo = QtWidgets.QLabel(self.logoW)
+        self.logo.setFixedHeight(200)
+        self.logo.setFixedWidth(200)
+        self.logo.setPixmap(QPixmap("logo.png"))
+        self.space = QWidget()
+
+        self.logoL.addWidget(self.logo)
+        self.logoL.addWidget(self.space)
+        self.logoL.addWidget(self.logOut)
+
+        self.logoW.setLayout(self.logoL)
+        self.main_contentL.addWidget(self.logoW)
+
+        self.accountDataW = QWidget()
+        self.accountDataL = QVBoxLayout()
+        self.accountDataL.setAlignment(Qt.AlignHCenter)
+
+        self.accountDataW.setFixedSize(480, 660)
+        self.accountDataW.setStyleSheet("border: 1px solid white;border-radius:15px;margin-top:30px;")
+
+        self.accountNameTXT = QtWidgets.QLabel()
+        self.accountNameTXT.setText("Account name :")
+        self.accountNameTXT.setStyleSheet("color:white; border:0;")
+        self.accountNameTXT.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.accountNameTXT)
+
+        self.accountName = QtWidgets.QLabel()
+        self.accountName.setText(name)
+        self.accountName.setStyleSheet("color:#0583F2; border:0;")
+        self.accountName.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.accountName)
+
+        self.email_TXT = QtWidgets.QLabel()
+        self.email_TXT.setText("E-mail :")
+        self.email_TXT.setStyleSheet("color:white; border:0;")
+        self.email_TXT.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.email_TXT)
+
+        self.email = QtWidgets.QLabel()
+        self.email.setText(email)
+        self.email.setStyleSheet("color:#0583F2; border:0;")
+        self.email.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.email)
+
+        self.idTXT = QtWidgets.QLabel()
+        self.idTXT.setText("Student ID :")
+        self.idTXT.setStyleSheet("color:white; border:0;")
+        self.idTXT.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.idTXT)
+
+        self.accountId = QtWidgets.QLabel()
+        self.accountId.setText(id)
+        self.accountId.setStyleSheet("color:#0583F2; border:0;")
+        self.accountId.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.accountId)
+
+        self.accountTypeTXT = QtWidgets.QLabel()
+        self.accountTypeTXT.setText("Account type :")
+        self.accountTypeTXT.setStyleSheet("color:white; border:0;")
+        self.accountTypeTXT.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.accountTypeTXT)
+
+        self.accountType = QtWidgets.QLabel()
+        self.accountType.setText(acc_type)
+        self.accountType.setStyleSheet("color:#0583F2; border:0;")
+        self.accountType.setFont(QFont("Century Gothic", 18))
+
+        self.accountDataL.addWidget(self.accountType)
+
+        self.accountDataW.setLayout(self.accountDataL)
+        self.main_contentL.addWidget(self.accountDataW)
+        self.main_contentW.setLayout(self.main_contentL)
+
+        self.mainW.setLayout(self.mainL)
+        self.mainL.addWidget(self.main_contentW)
+
+        # -------------End of Design-------------
+
+        # scroll settings
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.scroll.setWidget(self.mainW)
+        self.setCentralWidget(self.scroll)
+
+        # checking if any buttons is clicked
+
+        self.home.clicked.connect(self.mainpage_home_registrar)
+        self.account.clicked.connect(self.mainpage_account_registrar)
+        self.help.clicked.connect(self.mainpage_help_registrar)
+        self.logOut.clicked.connect(self.logout)
+        self.classes.clicked.connect(self.mainpage_classes_registrar)
+
+    def mainpage_help_registrar(self):
+        # setting background colour for the page
+        self.setStyleSheet('background-color:#031926;')
+        # main layout and widget
+        self.scroll = QtWidgets.QScrollArea()
+        self.mainW = QWidget()
+        self.mainL = QVBoxLayout()
+
+        # ----------------Design-----------------
+
+        self.navbarW = QWidget()
+        self.navbarL = QHBoxLayout()
+        self.navbarW.setFixedHeight(80)
+        self.navbarW.setFixedWidth(1240)
+        self.navbarW.setStyleSheet("border-bottom: 1px solid white;")
+
+        self.account = QtWidgets.QPushButton()
+        self.account.setFixedSize(310, 60)
+        self.account.setText("Account")
+        self.account.setCursor(QCursor(Qt.PointingHandCursor))
+        self.account.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.account.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.account)
+
+        self.home = QtWidgets.QPushButton()
+        self.home.setFixedSize(310, 60)
+        self.home.setCursor(QCursor(Qt.PointingHandCursor))
+        self.home.setText("Home")
+        self.home.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.home.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.home)
+
+        self.help = QtWidgets.QPushButton()
+        self.help.setFixedSize(310, 60)
+        self.help.setCursor(QCursor(Qt.PointingHandCursor))
+        self.help.setText("Help")
+        self.help.setStyleSheet("color:#076DF2;background:transparent;padding-bottom:10;")
+        self.help.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.help)
+
+        self.classes = QtWidgets.QPushButton()
+        self.classes.setFixedSize(310, 60)
+        self.classes.setCursor(QCursor(Qt.PointingHandCursor))
+        self.classes.setText("Classes")
+        self.classes.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.classes.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.classes)
+
+        self.navbarW.setLayout(self.navbarL)
+        self.mainL.addWidget(self.navbarW)
+
+        self.main_contentW = QWidget()
+        self.main_contentL = QHBoxLayout()
+        self.main_contentL.setAlignment(Qt.AlignTop)
+
+        self.logoW = QWidget()
+        self.logoL = QVBoxLayout()
+        self.logoL.setContentsMargins(0, 0, 0, 0)
+
+        self.BTNSW = QWidget()
+        self.BTNSL = QHBoxLayout()
+
+        self.backToStartupBTN = QtWidgets.QPushButton()
+        self.backToStartupBTN.setText("Back")
+        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        self.backToStartupBTN.setFixedSize(180, 60)
+        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.backToStartupBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.BTNSL.addWidget(self.backToStartupBTN)
+
+        self.BTNSW.setLayout(self.BTNSL)
+
+        self.logo = QtWidgets.QLabel(self.logoW)
+        self.logo.setFixedHeight(200)
+        self.logo.setFixedWidth(200)
+        self.logo.setPixmap(QPixmap("logo.png"))
+        self.space = QWidget()
+        self.space.setFixedHeight(385)
+
+        self.logoL.addWidget(self.logo)
+        self.logoL.addWidget(self.space)
+        self.logoL.addWidget(self.BTNSW)
+
+        self.logoW.setLayout(self.logoL)
+        self.main_contentL.addWidget(self.logoW)
+        self.main_contentW.setLayout(self.main_contentL)
+
+        self.mainW.setLayout(self.mainL)
+        self.mainL.addWidget(self.main_contentW)
+        # -------------End of Design-------------
+
+        # scroll settings
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.scroll.setWidget(self.mainW)
+        self.setCentralWidget(self.scroll)
+
+        # checking if any buttons is clicked
+
+        self.home.clicked.connect(self.mainpage_home_registrar)
+        self.account.clicked.connect(self.mainpage_account_registrar)
+        self.help.clicked.connect(self.mainpage_help_registrar)
+        self.classes.clicked.connect(self.mainpage_classes_registrar)
+        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+
+    def mainpage_classes_registrar(self):
+        global comboBox_stylesheet
+        # setting background colour for the page
+        self.setStyleSheet('background-color:#031926;')
+        # main layout and widget
+        self.scroll = QtWidgets.QScrollArea()
+        self.mainW = QWidget()
+        self.mainL = QVBoxLayout()
+
+        # ----------------Design-----------------
+
+        self.navbarW = QWidget()
+        self.navbarL = QHBoxLayout()
+        self.navbarW.setFixedHeight(80)
+        self.navbarW.setFixedWidth(1240)
+        self.navbarW.setStyleSheet("border-bottom: 1px solid white;")
+
+        self.account = QtWidgets.QPushButton()
+        self.account.setFixedSize(310, 60)
+        self.account.setText("Account")
+        self.account.setCursor(QCursor(Qt.PointingHandCursor))
+        self.account.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.account.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.account)
+
+        self.home = QtWidgets.QPushButton()
+        self.home.setFixedSize(310, 60)
+        self.home.setCursor(QCursor(Qt.PointingHandCursor))
+        self.home.setText("Home")
+        self.home.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.home.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.home)
+
+        self.help = QtWidgets.QPushButton()
+        self.help.setFixedSize(310, 60)
+        self.help.setCursor(QCursor(Qt.PointingHandCursor))
+        self.help.setText("Help")
+        self.help.setStyleSheet("color:white;background:transparent;padding-bottom:10;")
+        self.help.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.help)
+
+        self.classes = QtWidgets.QPushButton()
+        self.classes.setFixedSize(310, 60)
+        self.classes.setCursor(QCursor(Qt.PointingHandCursor))
+        self.classes.setText("Classes")
+        self.classes.setStyleSheet("color:#076DF2;background:transparent;padding-bottom:10;")
+        self.classes.setFont(QFont("Century Gothic", 20))
+        self.navbarL.addWidget(self.classes)
+
+        self.navbarW.setLayout(self.navbarL)
+        self.mainL.addWidget(self.navbarW)
+
+        self.main_contentW = QWidget()
+        self.main_contentL = QVBoxLayout()
+        self.main_contentL.setAlignment(Qt.AlignTop)
+
+        self.logoW = QWidget()
+        self.logoL = QVBoxLayout()
+        self.logoL.setContentsMargins(0, 0, 0, 0)
+
+        self.BTNSW = QWidget()
+        self.BTNSL = QHBoxLayout()
+
+        self.backToStartupBTN = QtWidgets.QPushButton()
+        self.backToStartupBTN.setText("Back")
+        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        self.backToStartupBTN.setFixedSize(180, 60)
+        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.backToStartupBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.BTNSL.addWidget(self.backToStartupBTN)
+
+        self.BTNSW.setLayout(self.BTNSL)
+
+        self.logo = QtWidgets.QLabel(self.logoW)
+        self.logo.setFixedHeight(200)
+        self.logo.setFixedWidth(200)
+        self.logo.setPixmap(QPixmap("logo.png"))
+        self.space = QWidget()
+        self.space.setFixedHeight(85)
+
+        self.logoL.addWidget(self.logo)
+        self.logoL.addWidget(self.space)
+
+        self.logoW.setLayout(self.logoL)
+        # self.main_contentL.addWidget(self.logoW)
+        self.main_contentW.setLayout(self.main_contentL)
+
+        self.nameRegistrarTXT = QtWidgets.QLabel()
+        self.nameRegistrarTXT.setText("Name :")
+        self.nameRegistrarTXT.setStyleSheet("color:white;padding-bottom:10px;")
+        self.nameRegistrarTXT.setFont(QFont("Century Gothic", 20))
+
+        self.nameRegistrar = QtWidgets.QLineEdit()
+        self.nameRegistrar.setStyleSheet("color:black;background-color:white;padding-left:20;border-radius:10px;")
+        self.nameRegistrar.setFont(QFont("Century Gothic", 16))
+        self.nameRegistrar.setFixedSize(400, 40)
+
+        self.instructorTXT = QtWidgets.QLabel()
+        self.instructorTXT.setText("Instructor :")
+        self.instructorTXT.setStyleSheet("color:white;padding-bottom:10px;")
+        self.instructorTXT.setFont(QFont("Century Gothic", 20))
+
+        self.instructor = QtWidgets.QComboBox()
+        self.instructor.setStyleSheet(comboBox_stylesheet)
+        self.instructor.setFont(QFont("Century Gothic", 16))
+        self.instructor.setFixedSize(400, 40)
+
+        global instructors
+        for i in instructors:
+            self.instructor.addItem(str(f"  {i}"))
+
+        self.seatsTXT = QtWidgets.QLabel()
+        self.seatsTXT.setText("Seats :")
+        self.seatsTXT.setStyleSheet("color:white;padding-bottom:10px;")
+        self.seatsTXT.setFont(QFont("Century Gothic", 20))
+
+        self.seats = QtWidgets.QComboBox()
+        self.seats.setStyleSheet(comboBox_stylesheet)
+        self.seats.setFont(QFont("Century Gothic", 16))
+        self.seats.setFixedSize(400, 40)
+        self.seats.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(11):
+            self.seats.addItem(str(f"  {i+5}"))
+
+        self.scheduleTXT = QtWidgets.QLabel()
+        self.scheduleTXT.setText("Schedule :")
+        self.scheduleTXT.setStyleSheet("color:white;padding-bottom:10px;")
+        self.scheduleTXT.setFont(QFont("Century Gothic", 20))
+
+        self.mondayW = QWidget()
+        self.mondayL = QHBoxLayout()
+
+        self.mondayTXT = QtWidgets.QLabel()
+        self.mondayTXT.setText("Monday :")
+        self.mondayTXT.setStyleSheet("color:white;padding-bottom:10px;")
+        self.mondayTXT.setFont(QFont("Century Gothic", 18))
+
+        self.mondayHRS_min = QtWidgets.QComboBox()
+        self.mondayHRS_min.setStyleSheet(comboBox_stylesheet)
+        self.mondayHRS_min.setFont(QFont("Century Gothic", 16))
+        self.mondayHRS_min.setFixedSize(60, 45)
+        self.mondayHRS_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(24):
+            self.mondayHRS_min.addItem(str(i+1))
+
+        self.mondayMIN_min = QtWidgets.QComboBox()
+        self.mondayMIN_min.setStyleSheet(comboBox_stylesheet)
+        self.mondayMIN_min.setFont(QFont("Century Gothic", 16))
+        self.mondayMIN_min.setFixedSize(60, 45)
+        self.mondayMIN_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(59):
+            self.mondayMIN_min.addItem(str(i + 1))
+
+        self.mondayHRS_max = QtWidgets.QComboBox()
+        self.mondayHRS_max.setStyleSheet(comboBox_stylesheet)
+        self.mondayHRS_max.setFont(QFont("Century Gothic", 16))
+        self.mondayHRS_max.setFixedSize(60, 45)
+        self.mondayHRS_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(24):
+            self.mondayHRS_max.addItem(str(i + 1))
+
+        self.mondayMIN_max = QtWidgets.QComboBox()
+        self.mondayMIN_max.setStyleSheet(comboBox_stylesheet)
+        self.mondayMIN_max.setFont(QFont("Century Gothic", 16))
+        self.mondayMIN_max.setFixedSize(60, 45)
+        self.mondayMIN_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(59):
+            self.mondayMIN_max.addItem(str(i + 1))
+
+        self.space = QWidget()
+        self.space.setFixedWidth(50)
+
+        self.mondayL.addWidget(self.mondayTXT)
+        self.mondayL.addWidget(self.mondayHRS_min)
+        self.mondayL.addWidget(self.mondayMIN_min)
+        self.mondayL.addWidget(self.space)
+        self.mondayL.addWidget(self.mondayHRS_max)
+        self.mondayL.addWidget(self.mondayMIN_max)
+        self.mondayW.setLayout(self.mondayL)
+
+        self.tuesdayW = QWidget()
+        self.tuesdayL = QHBoxLayout()
+
+        self.tuesdayTXT = QtWidgets.QLabel()
+        self.tuesdayTXT.setText("Tuesday :")
+        self.tuesdayTXT.setStyleSheet("color:white;padding-bottom:10px;")
+        self.tuesdayTXT.setFont(QFont("Century Gothic", 18))
+
+        self.tuesdayHRS_min = QtWidgets.QComboBox()
+        self.tuesdayHRS_min.setStyleSheet(comboBox_stylesheet)
+        self.tuesdayHRS_min.setFont(QFont("Century Gothic", 16))
+        self.tuesdayHRS_min.setFixedSize(60, 45)
+        self.tuesdayHRS_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(24):
+            self.tuesdayHRS_min.addItem(str(i + 1))
+
+        self.tuesdayMIN_min = QtWidgets.QComboBox()
+        self.tuesdayMIN_min.setStyleSheet(comboBox_stylesheet)
+        self.tuesdayMIN_min.setFont(QFont("Century Gothic", 16))
+        self.tuesdayMIN_min.setFixedSize(60, 45)
+        self.tuesdayMIN_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(59):
+            self.tuesdayMIN_min.addItem(str(i + 1))
+
+        self.tuesdayHRS_max = QtWidgets.QComboBox()
+        self.tuesdayHRS_max.setStyleSheet(comboBox_stylesheet)
+        self.tuesdayHRS_max.setFont(QFont("Century Gothic", 16))
+        self.tuesdayHRS_max.setFixedSize(60, 45)
+        self.tuesdayHRS_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(24):
+            self.tuesdayHRS_max.addItem(str(i + 1))
+
+        self.tuesdayMIN_max = QtWidgets.QComboBox()
+        self.tuesdayMIN_max.setStyleSheet(comboBox_stylesheet)
+        self.tuesdayMIN_max.setFont(QFont("Century Gothic", 16))
+        self.tuesdayMIN_max.setFixedSize(60, 45)
+        self.tuesdayMIN_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(59):
+            self.tuesdayMIN_max.addItem(str(i + 1))
+
+        self.space = QWidget()
+        self.space.setFixedWidth(50)
+
+        self.tuesdayL.addWidget(self.tuesdayTXT)
+        self.tuesdayL.addWidget(self.tuesdayHRS_min)
+        self.tuesdayL.addWidget(self.tuesdayMIN_min)
+        self.tuesdayL.addWidget(self.space)
+        self.tuesdayL.addWidget(self.tuesdayHRS_max)
+        self.tuesdayL.addWidget(self.tuesdayMIN_max)
+        self.tuesdayW.setLayout(self.tuesdayL)
+
+        self.wednesdayW = QWidget()
+        self.wednesdayL = QHBoxLayout()
+
+        self.wednesdayTXT = QtWidgets.QLabel()
+        self.wednesdayTXT.setText("wednesday :")
+        self.wednesdayTXT.setStyleSheet("color:white;padding-bottom:10px;")
+        self.wednesdayTXT.setFont(QFont("Century Gothic", 18))
+
+        self.wednesdayHRS_min = QtWidgets.QComboBox()
+        self.wednesdayHRS_min.setStyleSheet(comboBox_stylesheet)
+        self.wednesdayHRS_min.setFont(QFont("Century Gothic", 16))
+        self.wednesdayHRS_min.setFixedSize(60, 45)
+        self.wednesdayHRS_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(24):
+            self.wednesdayHRS_min.addItem(str(i + 1))
+
+        self.wednesdayMIN_min = QtWidgets.QComboBox()
+        self.wednesdayMIN_min.setStyleSheet(comboBox_stylesheet)
+        self.wednesdayMIN_min.setFont(QFont("Century Gothic", 16))
+        self.wednesdayMIN_min.setFixedSize(60, 45)
+        self.wednesdayMIN_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(59):
+            self.wednesdayMIN_min.addItem(str(i + 1))
+
+        self.wednesdayHRS_max = QtWidgets.QComboBox()
+        self.wednesdayHRS_max.setStyleSheet(comboBox_stylesheet)
+        self.wednesdayHRS_max.setFont(QFont("Century Gothic", 16))
+        self.wednesdayHRS_max.setFixedSize(60, 45)
+        self.wednesdayHRS_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(24):
+            self.wednesdayHRS_max.addItem(str(i + 1))
+
+        self.wednesdayMIN_max = QtWidgets.QComboBox()
+        self.wednesdayMIN_max.setStyleSheet(comboBox_stylesheet)
+        self.wednesdayMIN_max.setFont(QFont("Century Gothic", 16))
+        self.wednesdayMIN_max.setFixedSize(60, 45)
+        self.wednesdayMIN_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(59):
+            self.wednesdayMIN_max.addItem(str(i + 1))
+
+        self.space = QWidget()
+        self.space.setFixedWidth(50)
+
+        self.wednesdayL.addWidget(self.wednesdayTXT)
+        self.wednesdayL.addWidget(self.wednesdayHRS_min)
+        self.wednesdayL.addWidget(self.wednesdayMIN_min)
+        self.wednesdayL.addWidget(self.space)
+        self.wednesdayL.addWidget(self.wednesdayHRS_max)
+        self.wednesdayL.addWidget(self.wednesdayMIN_max)
+        self.wednesdayW.setLayout(self.wednesdayL)
+
+        self.thursdayW = QWidget()
+        self.thursdayL = QHBoxLayout()
+
+        self.thursdayTXT = QtWidgets.QLabel()
+        self.thursdayTXT.setText("Thursday :")
+        self.thursdayTXT.setStyleSheet("color:white;padding-bottom:10px;")
+        self.thursdayTXT.setFont(QFont("Century Gothic", 18))
+
+        self.thursdayHRS_min = QtWidgets.QComboBox()
+        self.thursdayHRS_min.setStyleSheet(comboBox_stylesheet)
+        self.thursdayHRS_min.setFont(QFont("Century Gothic", 16))
+        self.thursdayHRS_min.setFixedSize(60, 45)
+        self.thursdayHRS_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(24):
+            self.thursdayHRS_min.addItem(str(i + 1))
+
+        self.thursdayMIN_min = QtWidgets.QComboBox()
+        self.thursdayMIN_min.setStyleSheet(comboBox_stylesheet)
+        self.thursdayMIN_min.setFont(QFont("Century Gothic", 16))
+        self.thursdayMIN_min.setFixedSize(60, 45)
+        self.thursdayMIN_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(59):
+            self.thursdayMIN_min.addItem(str(i + 1))
+
+        self.thursdayHRS_max = QtWidgets.QComboBox()
+        self.thursdayHRS_max.setStyleSheet(comboBox_stylesheet)
+        self.thursdayHRS_max.setFont(QFont("Century Gothic", 16))
+        self.thursdayHRS_max.setFixedSize(60, 45)
+        self.thursdayHRS_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(24):
+            self.thursdayHRS_max.addItem(str(i + 1))
+
+        self.thursdayMIN_max = QtWidgets.QComboBox()
+        self.thursdayMIN_max.setStyleSheet(comboBox_stylesheet)
+        self.thursdayMIN_max.setFont(QFont("Century Gothic", 16))
+        self.thursdayMIN_max.setFixedSize(60, 45)
+        self.thursdayMIN_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(59):
+            self.thursdayMIN_max.addItem(str(i + 1))
+
+        self.space = QWidget()
+        self.space.setFixedWidth(50)
+
+        self.thursdayL.addWidget(self.thursdayTXT)
+        self.thursdayL.addWidget(self.thursdayHRS_min)
+        self.thursdayL.addWidget(self.thursdayMIN_min)
+        self.thursdayL.addWidget(self.space)
+        self.thursdayL.addWidget(self.thursdayHRS_max)
+        self.thursdayL.addWidget(self.thursdayMIN_max)
+        self.thursdayW.setLayout(self.thursdayL)
+
+        self.fridayW = QWidget()
+        self.fridayL = QHBoxLayout()
+
+        self.fridayTXT = QtWidgets.QLabel()
+        self.fridayTXT.setText("Friday :")
+        self.fridayTXT.setStyleSheet("color:white;padding-bottom:10px;")
+        self.fridayTXT.setFont(QFont("Century Gothic", 18))
+
+        self.fridayHRS_min = QtWidgets.QComboBox()
+        self.fridayHRS_min.setStyleSheet(comboBox_stylesheet)
+        self.fridayHRS_min.setFont(QFont("Century Gothic", 16))
+        self.fridayHRS_min.setFixedSize(60, 45)
+        self.fridayHRS_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(24):
+            self.fridayHRS_min.addItem(str(i + 1))
+
+        self.fridayMIN_min = QtWidgets.QComboBox()
+        self.fridayMIN_min.setStyleSheet(comboBox_stylesheet)
+        self.fridayMIN_min.setFont(QFont("Century Gothic", 16))
+        self.fridayMIN_min.setFixedSize(60, 45)
+        self.fridayMIN_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(59):
+            self.fridayMIN_min.addItem(str(i + 1))
+
+        self.fridayHRS_max = QtWidgets.QComboBox()
+        self.fridayHRS_max.setStyleSheet(comboBox_stylesheet)
+        self.fridayHRS_max.setFont(QFont("Century Gothic", 16))
+        self.fridayHRS_max.setFixedSize(60, 45)
+        self.fridayHRS_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(24):
+            self.fridayHRS_max.addItem(str(i + 1))
+
+        self.fridayMIN_max = QtWidgets.QComboBox()
+        self.fridayMIN_max.setStyleSheet(comboBox_stylesheet)
+        self.fridayMIN_max.setFont(QFont("Century Gothic", 16))
+        self.fridayMIN_max.setFixedSize(60, 45)
+        self.fridayMIN_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        for i in range(59):
+            self.fridayMIN_max.addItem(str(i + 1))
+
+        self.space = QWidget()
+        self.space.setFixedWidth(50)
+
+        self.fridayL.addWidget(self.fridayTXT)
+        self.fridayL.addWidget(self.fridayHRS_min)
+        self.fridayL.addWidget(self.fridayMIN_min)
+        self.fridayL.addWidget(self.space)
+        self.fridayL.addWidget(self.fridayHRS_max)
+        self.fridayL.addWidget(self.fridayMIN_max)
+        self.fridayW.setLayout(self.fridayL)
+
+        self.registerBTN = QtWidgets.QPushButton()
+        self.registerBTN.setText("Register")
+        self.registerBTN.setFont(QFont("Century Gothic", 20))
+        self.registerBTN.setFixedSize(180, 60)
+        self.registerBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.registerBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.main_contentL.addWidget(self.nameRegistrarTXT)
+        self.main_contentL.addWidget(self.nameRegistrar)
+        self.main_contentL.addWidget(self.instructorTXT)
+        self.main_contentL.addWidget(self.instructor)
+        self.main_contentL.addWidget(self.seatsTXT)
+        self.main_contentL.addWidget(self.seats)
+        self.main_contentL.addWidget(self.scheduleTXT)
+        self.main_contentL.addWidget(self.mondayW)
+        self.main_contentL.addWidget(self.tuesdayW)
+        self.main_contentL.addWidget(self.wednesdayW)
+        self.main_contentL.addWidget(self.thursdayW)
+        self.main_contentL.addWidget(self.fridayW)
+        self.main_contentL.addWidget(self.registerBTN)
+
+        self.mainW.setLayout(self.mainL)
+        self.mainL.addWidget(self.main_contentW)
+
+        # -------------End of Design-------------
+
+        # scroll settings
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.scroll.setWidget(self.mainW)
+        self.setCentralWidget(self.scroll)
+
+        # checking if any buttons is clicked
+
+        self.home.clicked.connect(self.mainpage_home_registrar)
+        self.account.clicked.connect(self.mainpage_account_registrar)
+        self.help.clicked.connect(self.mainpage_help_registrar)
+        self.classes.clicked.connect(self.mainpage_classes_registrar)
+        self.backToStartupBTN.clicked.connect(self.StartupStudent)
 
     def logout(self):
         name = ""
