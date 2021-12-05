@@ -639,12 +639,14 @@ class Instructor(User):
         conn.close()
 
 
-std1 = Student(6)
-std1.complain(7, 3, "too noisy")
-reg1 = Registrar(1)
-reg1.process_complaints(1, 1)
-reg1.process_complaints(2, 1)
-reg1.process_complaints(3, 1)
+# std1 = Student(6)
+# std1.complain(7, 3, "too noisy")
+# reg1 = Registrar(1)
+# reg1.process_complaints(1, 1)
+# reg1.process_complaints(2, 1)
+# reg1.process_complaints(3, 1)
+#Aiman
+
 # reg1.process_complaints(9, 1)  # 9michael(instructor),8apple(student),de-register
 # reg1.process_complaints(1, 0)  # 6david(student),7john(student),warning #worked
 # reg1.process_complaints(2, 1)  # 7john(student),6david(student),warning #worked
