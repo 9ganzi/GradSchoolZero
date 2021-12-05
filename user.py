@@ -549,7 +549,6 @@ class Student(User):
         conn.commit()
         conn.close()
 
-
 class Instructor(User):
     def __init__(self, user_id):
         conn = sqlite3.connect("gsz.db")
