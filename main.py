@@ -3929,7 +3929,7 @@ class mainWindow(QMainWindow):
         email = ""
         acc_type = ""
         id = ""
-        self.startup_page()
+        self.startup_page_student() #Aiman last change
 
     def signup(self):
         global id
