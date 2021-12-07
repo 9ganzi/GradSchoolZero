@@ -20,12 +20,12 @@ class mainWindow(QMainWindow):
     def __init__(self):
         super(mainWindow, self).__init__()
         self.setWindowTitle("Class Reviews")
-        self.setFixedSize(1260,800)
+        self.setFixedSize(1260, 800)
         self.add_review_page()
 
     def startup_page(self):
         self.setStyleSheet("background-color:#031926;")
-        #main layout and widget
+        # main layout and widget
         self.scroll = QtWidgets.QScrollArea()
         self.mainW = QWidget()
         self.mainL = QVBoxLayout()
@@ -34,16 +34,17 @@ class mainWindow(QMainWindow):
         self.submitBTN.setFont(QFont("Century Gothic", 20))
         self.submitBTN.setFixedSize(180, 60)
         self.submitBTN.setCursor(QCursor(Qt.PointingHandCursor))
-        self.submitBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-                                     "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.submitBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
 
         self.space = QWidget()
         self.space.setFixedWidth(50)
 
-
     def add_review_page(self):
         # setting background colour for the page
-        self.setStyleSheet('background-color:#031926;')
+        self.setStyleSheet("background-color:#031926;")
         # main layout and widget
         self.scroll = QtWidgets.QScrollArea()
         self.mainW = QWidget()
@@ -64,7 +65,9 @@ class mainWindow(QMainWindow):
         self.boxesL.addWidget(self.space)
 
         self.nameBOX = QtWidgets.QLineEdit()
-        self.nameBOX.setStyleSheet("color:black;background-color:white;padding-left:20;border-radius:10px;")
+        self.nameBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
         self.nameBOX.setFont(QFont("Times", 20))
         self.nameBOX.setFixedSize(600, 60)
         self.boxesL.addWidget(self.nameBOX)
@@ -104,7 +107,9 @@ class mainWindow(QMainWindow):
         self.boxesL.addWidget(self.space)
 
         self.studentidBOX = QtWidgets.QLineEdit()
-        self.studentidBOX.setStyleSheet("color:black;background-color:white;padding-left:20;border-radius:10px;")
+        self.studentidBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
         self.studentidBOX.setFont(QFont("Times", 20))
         self.studentidBOX.setFixedSize(600, 60)
         self.boxesL.addWidget(self.studentidBOX)
@@ -124,7 +129,9 @@ class mainWindow(QMainWindow):
         self.boxesL.addWidget(self.space)
 
         self.classtakingBOX = QtWidgets.QLineEdit()
-        self.classtakingBOX.setStyleSheet("color:black;background-color:white;padding-left:20;border-radius:10px;")
+        self.classtakingBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
         self.classtakingBOX.setFont(QFont("Century Gothic", 20))
         self.classtakingBOX.setFixedSize(600, 60)
         self.boxesL.addWidget(self.classtakingBOX)
@@ -132,7 +139,6 @@ class mainWindow(QMainWindow):
         self.space = QWidget()
         self.space.setFixedHeight(30)
         self.boxesL.addWidget(self.space)
-
 
         self.profnameTXT = QtWidgets.QLabel()
         self.profnameTXT.setText("Professor Name :")
@@ -145,7 +151,9 @@ class mainWindow(QMainWindow):
         self.boxesL.addWidget(self.space)
 
         self.profnameBOX = QtWidgets.QLineEdit()
-        self.profnameBOX.setStyleSheet("color:black;background-color:white;padding-left:20;border-radius:10px;")
+        self.profnameBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
         self.profnameBOX.setFont(QFont("Century Gothic", 20))
         self.profnameBOX.setFixedSize(600, 60)
         self.boxesL.addWidget(self.profnameBOX)
@@ -165,7 +173,9 @@ class mainWindow(QMainWindow):
         self.boxesL.addWidget(self.space)
 
         self.ratingBOX = QtWidgets.QLineEdit()
-        self.ratingBOX.setStyleSheet("color:black;background-color:white;padding-left:20;border-radius:10px;")
+        self.ratingBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
         self.ratingBOX.setFont(QFont("Century Gothic", 20))
         self.ratingBOX.setFixedSize(600, 60)
         self.boxesL.addWidget(self.ratingBOX)
@@ -180,17 +190,17 @@ class mainWindow(QMainWindow):
         self.reviewTXT.setFont(QFont("Century Gothic", 20))
         self.boxesL.addWidget(self.reviewTXT)
 
-
         self.space = QWidget()
         self.space.setFixedHeight(30)
         self.boxesL.addWidget(self.space)
 
         self.reviewBOX = QtWidgets.QLineEdit()
-        self.reviewBOX.setStyleSheet("color:black;background-color:white;padding-left:20;border-radius:10px;")
+        self.reviewBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
         self.reviewBOX.setFont(QFont("Century Gothic", 20))
         self.reviewBOX.setFixedSize(600, 60)
         self.boxesL.addWidget(self.reviewBOX)
-
 
         self.boxesW.setLayout(self.boxesL)
         self.mainL.addWidget(self.boxesW)
@@ -208,8 +218,10 @@ class mainWindow(QMainWindow):
         self.submitFBTN.setText("Submit Review")
         self.submitFBTN.setFont(QFont("Century Gothic", 20))
         self.submitFBTN.setFixedSize(180, 60)
-        self.submitFBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-                                     "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.submitFBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
         self.buttonsW = QWidget()
         self.buttonsL.addWidget(self.submitFBTN)
 
@@ -222,8 +234,10 @@ class mainWindow(QMainWindow):
         self.backToMainBTN.setCursor(QCursor(Qt.PointingHandCursor))
         self.backToMainBTN.setFont(QFont("Century Gothic", 20))
         self.backToMainBTN.setFixedSize(180, 60)
-        self.backToMainBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-                                     "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.backToMainBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
         self.buttonsL.addWidget(self.backToMainBTN)
         self.buttonsW.setLayout(self.buttonsL)
         self.combo = QtWidgets.QComboBox()
@@ -271,8 +285,9 @@ class mainWindow(QMainWindow):
         self.tipsW.setStyleSheet("border: 1px solid white;border-radius: 10px;")
 
         self.tipsTXT = QtWidgets.QTextEdit()
-        self.tipsTXT.setText("\nA student who is in class can write reviews of this case and assign stars (1 worst to 5 best), which will be summarized in the class, no one else except the registrars know who rated which class. The instructor of any course receiving average rating <2 will be warned. An instructor who accumulated 3 warnings will be suspended. The student cannot rate the class after the instructor post the grade. Reviews with 1 or 2 taboo words (the list of taboo words are set up by registrars) will be shown but those words are changed to * and the author receives one warning; whereas reviews with >=3 taboo’s words are not shown in the systems and the author will receive 2 warnings.")
-
+        self.tipsTXT.setText(
+            "\nA student who is in class can write reviews of this case and assign stars (1 worst to 5 best), which will be summarized in the class, no one else except the registrars know who rated which class. The instructor of any course receiving average rating <2 will be warned. An instructor who accumulated 3 warnings will be suspended. The student cannot rate the class after the instructor post the grade. Reviews with 1 or 2 taboo words (the list of taboo words are set up by registrars) will be shown but those words are changed to * and the author receives one warning; whereas reviews with >=3 taboo’s words are not shown in the systems and the author will receive 2 warnings."
+        )
 
         self.tipsTXT.setFont(QFont("Century Gothic", 20))
         self.tipsTXT.setAlignment(Qt.AlignHCenter)
@@ -296,17 +311,15 @@ class mainWindow(QMainWindow):
 
         # checking if any buttons is clicked
         self.backToMainBTN.clicked.connect(self.startup_page)
-        #self.submitBTN.clicked.connect(self.add_review_page)
+        # self.submitBTN.clicked.connect(self.add_review_page)
         self.submitFBTN.clicked.connect(self.add_review)
-
-    
 
     def add_review(self):
         global id
         global acc_type
         global name
         global email
-        
+
         conn = sqlite3.connect("gsz.db")
 
         c = conn.cursor()
@@ -338,7 +351,7 @@ class mainWindow(QMainWindow):
         conn.close()
 
         name = self.nameBOX.text()
-        
+
         acc_type = self.combo.currentText()
         # self.check_taboo()
         self.mainpage_home()
@@ -359,29 +372,31 @@ class mainWindow(QMainWindow):
             Prof_name = row[3]
             rating = row[4]
             review = row[5]
-    
+
         conn.commit()
         conn.close()
 
-        with open('taboolist.txt') as f:
+        with open("taboolist.txt") as f:
             lines = f.readlines()
-        
+
         for line in lines:
             for l in line:
                 if l in review:
                     taboo_word = self.toAsterisk(l)
                     conn = sqlite3.connect("reviews.db")
                     c = conn.cursor()
-                    c.execute('''
+                    c.execute(
+                        """
                                 UPDATE reviews
                                 SET Review = taboo_word
-                                WHERE ID = row[0]''')
-                
+                                WHERE ID = row[0]"""
+                    )
+
                     conn.commit()
                     self.receive_warning_std(ID)
 
     def toAsterisk(word):
-        stars = '*' * len(word)
+        stars = "*" * len(word)
         word = stars
         return word
 
@@ -389,18 +404,21 @@ class mainWindow(QMainWindow):
         letters = string.ascii_uppercase
         return "".join(random.choice(letters) for i in range(10))
 
-
     def receive_warning_instructor(instructor_id):
         conn = sqlite3.connect("instructors.db")
         c = conn.cursor()
 
-        c.execute("SELECT warning_count from instructor where instructor_id = :instructor_id",
-                    {'instructor_id': instructor_id})
+        c.execute(
+            "SELECT warning_count from instructor where instructor_id = :instructor_id",
+            {"instructor_id": instructor_id},
+        )
         new_warning_count = c.fetchone()[0] + 1
-        c.execute("""UPDATE instructor SET warning_count = :new_warning_count
+        c.execute(
+            """UPDATE instructor SET warning_count = :new_warning_count
                         WHERE instructor_id =:instructor_id""",
-                    {'instructor_id': instructor_id, 'new_warning_count' : new_warning_count})
-        
+            {"instructor_id": instructor_id, "new_warning_count": new_warning_count},
+        )
+
         conn.commit()
         conn.close()
 
@@ -408,21 +426,24 @@ class mainWindow(QMainWindow):
         conn = sqlite3.connect("student.db")
         c = conn.cursor()
 
-        c.execute("SELECT warning_count from students where student_id = :student_id",
-                    {'student_id': student_id})
+        c.execute(
+            "SELECT warning_count from students where student_id = :student_id",
+            {"student_id": student_id},
+        )
         new_warning_count = c.fetchone()[0] + 1
-      
 
-        c.execute("""UPDATE student SET warning_count = :new_warning_count
+        c.execute(
+            """UPDATE student SET warning_count = :new_warning_count
                         WHERE student_id =:student_id""",
-                    {'student_id': student_id, 'new_warning_count' : new_warning_count})
-        
+            {"student_id": student_id, "new_warning_count": new_warning_count},
+        )
+
         conn.commit()
         conn.close()
+
 
 # Running the Gui with the run of application
 app = QApplication(sys.argv)
 window = mainWindow()
 window.show()
 app.exec_()
-

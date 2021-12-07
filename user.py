@@ -172,7 +172,7 @@ class Registrar(User):
         if applicant_info[7] == "student":
             # freshman doesn't have a GPA, so None is still acceptable
             return (applicant_info[4] > 3.0) or (applicant_info[4] == None)
-        return True
+        return False
 
     # if valid but deny, pop-up screen to type your reason
 
@@ -709,9 +709,9 @@ class Instructor(User):
 #         )"""
 # )
 # many_applicants = [
-#     ("Kevin", "Durant", "Kevin_Durant@email.com", "3.7", "None", 6, "stuent"),
-#     ("Kevin", "Durant", "Kevin_Durant@email.com", "3.7", "None", 6, "stuent"),
-#     ("John", "Doe", "John_Doe@email.com", "5", None, 3, "stuent"),
+#     ("Kevin", "Durant", "Kevin_Durant@email.com", "3.7", "None", 6, "student"),
+#     ("Lebron", "James", "Lebron_James@email.com", "2.7", "None", 6, "student"),
+#     ("John", "Doe", "John_Doe@email.com", "5", None, 3, "student"),
 #     (
 #         "Jane",
 #         "Doe",
@@ -721,7 +721,16 @@ class Instructor(User):
 #         None,
 #         "instructor",
 #     ),
-#     ("Kevin", "Durant", "Kevin_Durant@email.com", "3.7", "None", 6, "stuent"),
+#     ("Kevin", "Hart", "Kevin_Hart@email.com", "3.7", "None", 6, "student"),
+#     (
+#         "Ashley",
+#         "Doe",
+#         "Ashley_Doe@email.com",
+#         None,
+#         "I'm a bad teacher",
+#         None,
+#         "instructor",
+#     ),
 # ]
 # c.executemany(
 #     """INSERT INTO applicants(first, last, email, gpa, resume, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)""",
@@ -751,7 +760,7 @@ class Instructor(User):
 #     ("Apple", "Bee", "id13", "password", "email3@email.com", "student", 1),
 #     ("John", "Doe", "idv2", "password", "email2@email.com", "student", 1),
 #     ("David", "Beckham", "id1a", "password", "email1@email.com", "student", 1),
-#     ("Kevin", "Durant", "Kevin_Durant@email.com", "3.7", "None", 6, "stuent"),
+#     ("Kevin", "Durant", "Kevin_Durant@email.com", "3.7", "None", 6, "student"),
 # ]
 # c.executemany(
 #     """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
@@ -1007,8 +1016,7 @@ class Instructor(User):
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # # sql = """UPDATE applicants SET first = ?, last = ? WHERE applicant_id = ?"""
-# sql = """UPDATE users SET first_login = ?"""
-# c.execute(sql, (0,))
+# sql = """UPDATE applicants SET approval_status = ?"""
 # # c.execute(sql, ("Jane_Doe@email.com", 2))
 # # c.execute(sql, ("Cristiano_Ronaldo@email.com", 3))
 # # c.execute(sql, ("James_Miler@email.com", 6))
@@ -1020,8 +1028,12 @@ class Instructor(User):
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # sql = """DELETE FROM applicants WHERE applicant_id = ?"""
-# c.execute(sql, (4,))
-# c.execute(sql, (5,))
+# c.execute(sql, (12,))
+# c.execute(sql, (13,))
+# c.execute(sql, (14,))
+# c.execute(sql, (15,))
+# c.execute(sql, (16,))
+# c.execute(sql, (17,))
 # conn.commit()
 # conn.close()
 
@@ -1035,7 +1047,7 @@ class Instructor(User):
 
 
 # # add a column
-# sql = "ALTER TABLE users ADD first_login integer"
+# sql = "ALTER TABLE applicants ADD approval_status text"
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(sql)

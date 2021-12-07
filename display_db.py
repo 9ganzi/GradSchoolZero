@@ -1,14 +1,9 @@
 import sqlite3
 import sys
 import pandas as pd
-from PyQt5.QtWidgets import QApplication, QTableView
+from PyQt5.QtWidgets import QApplication, QTableView, QComboBox
 from PyQt5.QtCore import QAbstractTableModel, Qt
-
-applicant = sqlite3.connect("gsz.db")
-
-df = pd.read_sql_query("SELECT * FROM applicants", applicant)
-print(df.columns)
-df = df.drop(["num_courses_taken", "applicant_id"], axis=1)
+from PyQt5.QtGui import QStandardItem
 
 
 class pandasModel(QAbstractTableModel):
@@ -34,11 +29,40 @@ class pandasModel(QAbstractTableModel):
         return None
 
 
+# if __name__ == "__main__":
+#     app = QApplication(sys.argv)
+#     applicant = sqlite3.connect("gsz.db")
+#     df = pd.read_sql_query("SELECT * FROM applicants", applicant)
+#     df = df.drop(["num_courses_taken"], axis=1)
+#     model = pandasModel(df)
+#     view = QTableView()
+#     view.setModel(model)
+#     view.resize(800, 600)
+#     view.show()
+#     print(model.rowCount())
+#     print(model.columnCount())
+#     sys.exit(app.exec_())
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    applicant = sqlite3.connect("gsz.db")
+    df = pd.read_sql_query("SELECT * FROM applicants", applicant)
+    df = df.drop(["num_courses_taken"], axis=1)
     model = pandasModel(df)
     view = QTableView()
     view.setModel(model)
+    for row in range(model.rowCount()):
+        c = QComboBox()
+        c.addItems(
+            [
+                "approve",
+                "deny",
+            ]
+        )
+        i = view.model().index(row, 7)
+        view.setIndexWidget(i, c)
     view.resize(800, 600)
     view.show()
+    print(model.rowCount())
+    print(model.columnCount())
     sys.exit(app.exec_())
