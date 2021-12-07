@@ -12,6 +12,8 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout
 from PyQt5.QtCore import Qt, QRegExp
 from PyQt5.QtGui import QFont, QPixmap, QCursor, QRegExpValidator
+from functools import partial #Aiman 11/6
+
 
 name = ""
 email = ""
