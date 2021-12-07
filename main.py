@@ -2470,7 +2470,10 @@ class mainWindow(QMainWindow):
 
             self.StudentClassW.setLayout(self.StudentClassL)
             self.classesL.addWidget(self.StudentClassW)
+            
+            self.addBTN.clicked.connect(partial(self.addClass, self.addBTN))#Aiman 11/6
 
+            
         self.classesW.setLayout(self.classesL)
         self.main_contentL.addWidget(self.classesW)
         self.main_contentL.addWidget(self.BTNSW)
