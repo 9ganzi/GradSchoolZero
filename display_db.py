@@ -4,11 +4,11 @@ import pandas as pd
 from PyQt5.QtWidgets import QApplication, QTableView
 from PyQt5.QtCore import QAbstractTableModel, Qt
 
-applicant = sqlite3.connect("gsz.db")
+# applicant = sqlite3.connect("gsz.db")
 
-df = pd.read_sql_query("SELECT * FROM applicants", applicant)
-print(df.columns)
-df = df.drop(["num_courses_taken", "applicant_id"], axis=1)
+# df = pd.read_sql_query("SELECT * FROM applicants", applicant)
+# print(df.columns)
+# df = df.drop(["num_courses_taken", "applicant_id"], axis=1)
 
 
 class pandasModel(QAbstractTableModel):
@@ -34,11 +34,11 @@ class pandasModel(QAbstractTableModel):
         return None
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    model = pandasModel(df)
-    view = QTableView()
-    view.setModel(model)
-    view.resize(800, 600)
-    view.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+#     app = QApplication(sys.argv)
+#     model = pandasModel(df)
+#     view = QTableView()
+#     view.setModel(model)
+#     view.resize(800, 600)
+#     view.show()
+#     sys.exit(app.exec_())

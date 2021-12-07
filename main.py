@@ -9,10 +9,17 @@ from user import Registrar, Student, Instructor, generate_random
 import random
 import string
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QTableView,
+)
 from PyQt5.QtCore import Qt, QRegExp
 from PyQt5.QtGui import QFont, QPixmap, QCursor, QRegExpValidator
-from functools import partial #Aiman 11/6
+from functools import partial  # Aiman 11/6
 
 
 name = ""
@@ -460,23 +467,23 @@ class mainWindow(QMainWindow):
         self.space.setFixedHeight(12)
         self.boxesL.addWidget(self.space)
 
-        self.BDTXT = QtWidgets.QLabel()
-        self.BDTXT.setText("Birth date :")
-        self.BDTXT.setStyleSheet("color:white;")
-        self.BDTXT.setFont(QFont("Century Gothic", 16))
-        self.boxesL.addWidget(self.BDTXT)
+        self.numcoursesTXT = QtWidgets.QLabel()
+        self.numcoursesTXT.setText("Birth date :")
+        self.numcoursesTXT.setStyleSheet("color:white;")
+        self.numcoursesTXT.setFont(QFont("Century Gothic", 16))
+        self.boxesL.addWidget(self.numcoursesTXT)
 
         self.space = QWidget()
         self.space.setFixedHeight(12)
         self.boxesL.addWidget(self.space)
 
-        self.BDBOX = QtWidgets.QLineEdit()
-        self.BDBOX.setStyleSheet(
+        self.numcoursesBOX = QtWidgets.QLineEdit()
+        self.numcoursesBOX.setStyleSheet(
             "color:black;background-color:white;padding-left:20;border-radius:10px;"
         )
-        self.BDBOX.setFont(QFont("Century Gothic", 16))
-        self.BDBOX.setFixedSize(300, 30)
-        self.boxesL.addWidget(self.BDBOX)
+        self.numcoursesBOX.setFont(QFont("Century Gothic", 16))
+        self.numcoursesBOX.setFixedSize(300, 30)
+        self.boxesL.addWidget(self.numcoursesBOX)
 
         self.HomeAdressTXT = QtWidgets.QLabel()
         self.HomeAdressTXT.setText("Permanent home address :")
@@ -786,23 +793,23 @@ class mainWindow(QMainWindow):
         self.space.setFixedHeight(18)
         self.boxesL.addWidget(self.space)
 
-        self.BDTXT = QtWidgets.QLabel()
-        self.BDTXT.setText("Birth date :")
-        self.BDTXT.setStyleSheet("color:white;")
-        self.BDTXT.setFont(QFont("Century Gothic", 16))
-        self.boxesL.addWidget(self.BDTXT)
+        self.numcoursesTXT = QtWidgets.QLabel()
+        self.numcoursesTXT.setText("# of courses taken :")
+        self.numcoursesTXT.setStyleSheet("color:white;")
+        self.numcoursesTXT.setFont(QFont("Century Gothic", 16))
+        self.boxesL.addWidget(self.numcoursesTXT)
 
         self.space = QWidget()
         self.space.setFixedHeight(18)
         self.boxesL.addWidget(self.space)
 
-        self.BDBOX = QtWidgets.QLineEdit()
-        self.BDBOX.setStyleSheet(
+        self.numcoursesBOX = QtWidgets.QLineEdit()
+        self.numcoursesBOX.setStyleSheet(
             "color:black;background-color:white;padding-left:20;border-radius:10px;"
         )
-        self.BDBOX.setFont(QFont("Century Gothic", 16))
-        self.BDBOX.setFixedSize(300, 30)
-        self.boxesL.addWidget(self.BDBOX)
+        self.numcoursesBOX.setFont(QFont("Century Gothic", 16))
+        self.numcoursesBOX.setFixedSize(300, 30)
+        self.boxesL.addWidget(self.numcoursesBOX)
 
         self.HomeAdressTXT = QtWidgets.QLabel()
         self.HomeAdressTXT.setText("Permanent home address :")
@@ -949,13 +956,31 @@ class mainWindow(QMainWindow):
         self.boxesMegaL.addWidget(self.boxesW2)
         self.boxesMegaW.setLayout(self.boxesMegaL)
         self.mainL.addWidget(self.boxesMegaW)
-
         self.saveBTN.clicked.connect(self.startup_page_student)
         self.backBTN.clicked.connect(self.StartupStudent)
 
         # Connecting the main layout and widget
         self.mainW.setLayout(self.mainL)
         self.setCentralWidget(self.mainW)
+        # test start
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        print(type(self.firstnameBOX.text()))
+        print("printed?")
+        c.execute(
+            "INSERT INTO applicants(first, last, email, gpa, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                self.firstnameBOX.text(),
+                self.lastnameBOX.text(),
+                self.emailBOX.text(),
+                self.GPABOX.text(),
+                self.numcoursesBOX.text(),
+                "student",
+            ),
+        )
+        conn.commit()
+        conn.close()
+        # end
 
     def startup_page_student(self):
         # setting background colour for the page
@@ -2472,10 +2497,11 @@ class mainWindow(QMainWindow):
 
             self.StudentClassW.setLayout(self.StudentClassL)
             self.classesL.addWidget(self.StudentClassW)
-            
-            self.addBTN.clicked.connect(partial(self.addClass, self.addBTN))#Aiman 11/6
 
-            
+            self.addBTN.clicked.connect(
+                partial(self.addClass, self.addBTN)
+            )  # Aiman 11/6
+
         self.classesW.setLayout(self.classesL)
         self.main_contentL.addWidget(self.classesW)
         self.main_contentL.addWidget(self.BTNSW)
@@ -3121,13 +3147,15 @@ class mainWindow(QMainWindow):
             "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
         )
         self.BTNSL.addWidget(self.ComplaintBTN)
-        
-        self.applicationsBTN = QtWidgets.QPushButton() #Aiman 11/6
+
+        self.applicationsBTN = QtWidgets.QPushButton()  # Aiman 11/6
         self.applicationsBTN.setFont(QFont("Century Gothic", 17))
         self.applicationsBTN.setFixedSize(180, 60)
         self.applicationsBTN.setText("Applications")
-        self.applicationsBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-                                        "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.applicationsBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
         self.BTNSL.addWidget(self.applicationsBTN)
 
         self.backToStartupBTN = QtWidgets.QPushButton()
@@ -3174,7 +3202,7 @@ class mainWindow(QMainWindow):
 
         # checking if any buttons is clicked
         self.home.clicked.connect(self.mainpage_home_registrar)
-        self.applicationsBTN.clicked.connect(self.applications) #Aiman 11/6
+        self.applicationsBTN.clicked.connect(self.applications)  # Aiman 11/6
         self.account.clicked.connect(self.mainpage_account_registrar)
         self.backToStartupBTN.clicked.connect(self.StartupStudent)
         self.help.clicked.connect(self.mainpage_help_registrar)
@@ -3937,22 +3965,27 @@ class mainWindow(QMainWindow):
         self.help.clicked.connect(self.mainpage_help_registrar)
         self.classes.clicked.connect(self.mainpage_classes_registrar)
         self.backToStartupBTN.clicked.connect(self.StartupStudent)
-        
-        #Aiman 11/6
+
+        # Aiman 11/6
+
     def addClass(self, addBtn):
         # change this if statement to If the class is actually added or not
         if True:
             addBtn.setText("Added")
-            addBtn.setStyleSheet("QPushButton{background-color:#4FE80C;border-radius: 10px;color: white;}"
-                                            "QPushButton:pressed{background-color: #3bad09;border-style: inset;}")
+            addBtn.setStyleSheet(
+                "QPushButton{background-color:#4FE80C;border-radius: 10px;color: white;}"
+                "QPushButton:pressed{background-color: #3bad09;border-style: inset;}"
+            )
         else:
             addBtn.setText("Denied")
-            addBtn.setStyleSheet("QPushButton{background-color:#e80909;border-radius: 10px;color: white;}"
-                                 "QPushButton:pressed{background-color: #b30707;border-style: inset;}")
+            addBtn.setStyleSheet(
+                "QPushButton{background-color:#e80909;border-radius: 10px;color: white;}"
+                "QPushButton:pressed{background-color: #b30707;border-style: inset;}"
+            )
 
     def applications(self):
         # setting background colour for the page
-        self.setStyleSheet('background-color:#031926;')
+        self.setStyleSheet("background-color:#031926;")
         # main layout and widget
         self.scroll = QtWidgets.QScrollArea()
         self.mainW = QWidget()
@@ -3976,8 +4009,10 @@ class mainWindow(QMainWindow):
         self.backToHomeBTN.setFont(QFont("Century Gothic", 20))
         self.backToHomeBTN.setFixedSize(180, 60)
         self.backToHomeBTN.setCursor(QCursor(Qt.PointingHandCursor))
-        self.backToHomeBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.backToHomeBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
         self.BTNSL.addWidget(self.backToHomeBTN)
 
         self.BTNSW.setLayout(self.BTNSL)
@@ -4005,7 +4040,9 @@ class mainWindow(QMainWindow):
 
             for i in applications:
                 self.StudentClassW = QtWidgets.QWidget()
-                self.StudentClassW.setStyleSheet("background-color:white;border-radius:15px;")
+                self.StudentClassW.setStyleSheet(
+                    "background-color:white;border-radius:15px;"
+                )
                 self.StudentClassL = QHBoxLayout()
 
                 self.firstName = QtWidgets.QLabel()
@@ -4037,15 +4074,19 @@ class mainWindow(QMainWindow):
                 self.approveBTN.setText("Approve")
                 self.approveBTN.setFont(QFont("Century Gothic", 8))
                 self.approveBTN.setFixedSize(70, 40)
-                self.approveBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-                                          "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+                self.approveBTN.setStyleSheet(
+                    "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                    "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+                )
 
                 self.denyBTN = QtWidgets.QPushButton()
                 self.denyBTN.setText("Deny")
                 self.denyBTN.setFont(QFont("Century Gothic", 8))
                 self.denyBTN.setFixedSize(70, 40)
-                self.denyBTN.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-                                              "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+                self.denyBTN.setStyleSheet(
+                    "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                    "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+                )
 
                 space = QWidget()
                 space.setFixedWidth(20)
@@ -4076,6 +4117,16 @@ class mainWindow(QMainWindow):
 
         # -------------End of Design-------------
 
+        applicant = sqlite3.connect("gsz.db")
+        df = display_db.pd.read_sql_query("SELECT * FROM applicants", applicant)
+        df = df.drop(["num_courses_taken", "applicant_id"], axis=1)
+
+        model = display_db.pandasModel(df)
+        view = QTableView()
+        view.setModel(model)
+        view.resize(800, 600)
+        view.show()
+
         # scroll settings
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -4088,15 +4139,15 @@ class mainWindow(QMainWindow):
         # checking if any buttons is clicked
 
         self.backToHomeBTN.clicked.connect(self.mainpage_home)
-        
-        #Aiman 11/6 end
-        
+
+        # Aiman 11/6 end
+
     def logout(self):
         name = ""
         email = ""
         acc_type = ""
         id = ""
-        self.startup_page_student() #Aiman last change
+        self.startup_page_student()  # Aiman last change
 
     def signup(self):
         global id
@@ -4107,16 +4158,6 @@ class mainWindow(QMainWindow):
         conn = sqlite3.connect("gsz.db")
 
         c = conn.cursor()
-        c.execute(
-            """CREATE TABLE IF NOT EXISTS applicants (
-                ID integer PRIMARY KEY,
-                Name text NOT NULL,
-                Email text NOT NULL,
-                'User ID' integer NOT NULL,
-                Password text NOT NULL,
-                'User Type' text NOT NULL
-                )"""
-        )
 
         c.execute(
             "INSERT INTO applicants(Name, Email, Password, 'User ID', 'User Type') VALUES (?, ?, ?, ?, ?)",
