@@ -1013,16 +1013,15 @@ class Instructor(User):
 # conn.commit()
 # conn.close()
 
-# # delete a row
-# conn = sqlite3.connect("gsz.db")
-# c = conn.cursor()
-# sql = """DELETE FROM applicants WHERE applicant_id = ?"""
-# c.execute(sql, (6,))
-# c.execute(sql, (7,))
-# c.execute(sql, (8,))
-# c.execute(sql, (9,))
-# conn.commit()
-# conn.close()
+# delete a row
+conn = sqlite3.connect("gsz.db")
+c = conn.cursor()
+sql = """DELETE FROM applicants WHERE applicant_id = ?"""
+c.execute(sql, (7,))
+c.execute(sql, (8,))
+c.execute(sql, (9,))
+conn.commit()
+conn.close()
 
 # # delete a row
 # conn = sqlite3.connect("gsz.db")

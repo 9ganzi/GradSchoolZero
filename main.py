@@ -340,6 +340,23 @@ class mainWindow(QMainWindow):
         self.loginbtn.clicked.connect(self.startup_page_registrar)
         # self.startup_page()
 
+    def addInsApplicant(self):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        c.execute(
+            """INSERT INTO applicants(first, last, email, resume, user_type) VALUES (?, ?, ?, ?, ?)""",
+            (
+                str(self.firstnameBOX.text()),
+                str(self.lastnameBOX.text()),
+                str(self.emailBOX.text()),
+                str(self.ResumeBOX.text()),
+                "instructor",
+            ),
+        )
+        conn.commit()
+        conn.close()
+        self.startup_page_instructor()
+
     def instructorDetails(self):
         # setting background colour for the page
         self.setStyleSheet("background-color:#031926;")
@@ -659,12 +676,14 @@ class mainWindow(QMainWindow):
         self.boxesMegaW.setLayout(self.boxesMegaL)
         self.mainL.addWidget(self.boxesMegaW)
 
-        self.saveBTN.clicked.connect(self.startup_page_instructor)
-        self.backBTN.clicked.connect(self.StartupInstructor)
-
         # Connecting the main layout and widget
         self.mainW.setLayout(self.mainL)
         self.setCentralWidget(self.mainW)
+
+        self.saveBTN.clicked.connect(self.addInsApplicant)
+        # run startup_page_instructor in the addInsApplicant
+        # self.saveBTN.clicked.connect(self.startup_page_instructor)
+        self.backBTN.clicked.connect(self.StartupInstructor)
 
     def studentDetails(self):
         # setting background colour for the page
@@ -956,31 +975,13 @@ class mainWindow(QMainWindow):
         self.boxesMegaL.addWidget(self.boxesW2)
         self.boxesMegaW.setLayout(self.boxesMegaL)
         self.mainL.addWidget(self.boxesMegaW)
-        self.saveBTN.clicked.connect(self.startup_page_student)
-        self.backBTN.clicked.connect(self.StartupStudent)
 
         # Connecting the main layout and widget
         self.mainW.setLayout(self.mainL)
         self.setCentralWidget(self.mainW)
-        # test start
-        conn = sqlite3.connect("gsz.db")
-        c = conn.cursor()
-        print(type(self.firstnameBOX.text()))
-        print("printed?")
-        c.execute(
-            "INSERT INTO applicants(first, last, email, gpa, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?)",
-            (
-                self.firstnameBOX.text(),
-                self.lastnameBOX.text(),
-                self.emailBOX.text(),
-                self.GPABOX.text(),
-                self.numcoursesBOX.text(),
-                "student",
-            ),
-        )
-        conn.commit()
-        conn.close()
-        # end
+
+        self.saveBTN.clicked.connect(self.startup_page_student)
+        self.backBTN.clicked.connect(self.StartupStudent)
 
     def startup_page_student(self):
         # setting background colour for the page
@@ -1927,7 +1928,7 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.scroll)
 
         # checking if any buttons is clicked
-
+        print(f"self.nameBOX = {self.nameBOX.text()}")
         self.backToMainBTN.clicked.connect(self.StartupStudent)
         self.signUpBTN.clicked.connect(self.signup_page)
         self.loginFBTN.clicked.connect(self.login)
@@ -4183,6 +4184,8 @@ class mainWindow(QMainWindow):
         global id
         global email
         global acc_type
+
+        print(f"self.nameBOX = {self.nameBOX.text()}")
 
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
