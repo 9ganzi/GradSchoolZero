@@ -1,9 +1,9 @@
 import sqlite3
 
-from pandas.core.indexing import _IndexSlice
+#from pandas.core.indexing import _IndexSlice
 
 # import task5
-import display_db
+#import display_db
 import sys
 import csv
 import os
@@ -1599,7 +1599,7 @@ class mainWindow(QMainWindow):
         self.mainW.setLayout(self.mainL)
         self.setCentralWidget(self.mainW)
 
-        self.back.clicked.connect(self.mainpage_home)
+        self.back.clicked.connect(self.mainpage_home_registrar)
 
     def signup_page(self):
         # setting background colour for the page
@@ -2073,9 +2073,9 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.scroll)
 
         # checking if any buttons is clicked
-        self.home.clicked.connect(self.mainpage_home)
+        self.home.clicked.connect(self.mainpage_home_student)
         self.account.clicked.connect(self.mainpage_account)
-        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+        # self.backToStartupBTN.clicked.connect(self.StartupStudent)
         self.help.clicked.connect(self.mainpage_help)
         self.ComplaintBTN.clicked.connect(self.compliant_page)
         self.classes.clicked.connect(self.mainpage_classes)
