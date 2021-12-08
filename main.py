@@ -3179,8 +3179,19 @@ class mainWindow(QMainWindow):
 
     def justification(self):
         dlg = QDialog()
+        justify = QtWidgets.QLabel(dlg)
+        justify.setText("Justification :")
+        justify.setFont(QFont("Century Gothic", 10))
+        justify.move(10,10)
+        justify_entry = QtWidgets.QLineEdit(dlg)
+        justify_entry.setStyleSheet("color:black;background-color:white;padding-left:20;border-radius:10px;")
+        justify_entry.setFont(QFont("Century Gothic", 16))
+        justify_entry.setFixedSize(150, 17)
+        justify_entry.move(20,30)
+        
+        
         b1 = QPushButton("submit", dlg)
-        b1.move(50, 50)
+        b1.move(50, 60)
 
         dlg.setWindowTitle("Dialog")
         dlg.setWindowModality(Qt.ApplicationModal)
