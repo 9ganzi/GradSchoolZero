@@ -54,23 +54,23 @@ class mainWindow(QMainWindow):
         self.boxesW = QWidget()
         self.boxesL = QVBoxLayout()
 
-        self.nameTXT = QtWidgets.QLabel()
-        self.nameTXT.setText("Your Name :")
-        self.nameTXT.setStyleSheet("color:white;")
-        self.nameTXT.setFont(QFont("Times", 20))
-        self.boxesL.addWidget(self.nameTXT)
+        # self.nameTXT = QtWidgets.QLabel()
+        # self.nameTXT.setText("Your Name :")
+        # self.nameTXT.setStyleSheet("color:white;")
+        # self.nameTXT.setFont(QFont("Times", 20))
+        # self.boxesL.addWidget(self.nameTXT)
 
-        self.space = QWidget()
-        self.space.setFixedHeight(30)
-        self.boxesL.addWidget(self.space)
+        # self.space = QWidget()
+        # self.space.setFixedHeight(30)
+        # self.boxesL.addWidget(self.space)
 
-        self.nameBOX = QtWidgets.QLineEdit()
-        self.nameBOX.setStyleSheet(
-            "color:black;background-color:white;padding-left:20;border-radius:10px;"
-        )
-        self.nameBOX.setFont(QFont("Times", 20))
-        self.nameBOX.setFixedSize(600, 60)
-        self.boxesL.addWidget(self.nameBOX)
+        # self.nameBOX = QtWidgets.QLineEdit()
+        # self.nameBOX.setStyleSheet(
+        #     "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        # )
+        # self.nameBOX.setFont(QFont("Times", 20))
+        # self.nameBOX.setFixedSize(600, 60)
+        # self.boxesL.addWidget(self.nameBOX)
 
         self.space = QWidget()
         self.space.setFixedHeight(30)
@@ -97,7 +97,7 @@ class mainWindow(QMainWindow):
         self.boxesL.addWidget(self.space) """
 
         self.studentidTXT = QtWidgets.QLabel()
-        self.studentidTXT.setText("Your ID Number :")
+        self.studentidTXT.setText("Your Student ID Number :")
         self.studentidTXT.setStyleSheet("color:white;")
         self.studentidTXT.setFont(QFont("Times", 20))
         self.boxesL.addWidget(self.studentidTXT)
@@ -118,49 +118,67 @@ class mainWindow(QMainWindow):
         self.space.setFixedHeight(30)
         self.boxesL.addWidget(self.space)
 
-        self.classtakingTXT = QtWidgets.QLabel()
-        self.classtakingTXT.setText("Class You're Taking :")
-        self.classtakingTXT.setStyleSheet("color:white;")
-        self.classtakingTXT.setFont(QFont("Century Gothic", 20))
-        self.boxesL.addWidget(self.classtakingTXT)
+        # self.classtakingTXT = QtWidgets.QLabel()
+        # self.classtakingTXT.setText("Class You're Taking :")
+        # self.classtakingTXT.setStyleSheet("color:white;")
+        # self.classtakingTXT.setFont(QFont("Century Gothic", 20))
+        # self.boxesL.addWidget(self.classtakingTXT)
+
+        # self.space = QWidget()
+        # self.space.setFixedHeight(30)
+        # self.boxesL.addWidget(self.space)
+
+        # self.classtakingBOX = QtWidgets.QLineEdit()
+        # self.classtakingBOX.setStyleSheet(
+        #     "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        # )
+        # self.classtakingBOX.setFont(QFont("Century Gothic", 20))
+        # self.classtakingBOX.setFixedSize(600, 60)
+        # self.boxesL.addWidget(self.classtakingBOX)
+
+        self.courseidTXT = QtWidgets.QLabel()
+        self.courseidTXT.setText("Your Course ID :")
+        self.courseidTXT.setStyleSheet("color:white;")
+        self.courseidTXT.setFont(QFont("Century Gothic", 20))
+        self.boxesL.addWidget(self.courseidTXT)
 
         self.space = QWidget()
         self.space.setFixedHeight(30)
         self.boxesL.addWidget(self.space)
 
-        self.classtakingBOX = QtWidgets.QLineEdit()
-        self.classtakingBOX.setStyleSheet(
+        self.courseidBOX = QtWidgets.QLineEdit()
+        self.courseidBOX.setStyleSheet(
             "color:black;background-color:white;padding-left:20;border-radius:10px;"
         )
-        self.classtakingBOX.setFont(QFont("Century Gothic", 20))
-        self.classtakingBOX.setFixedSize(600, 60)
-        self.boxesL.addWidget(self.classtakingBOX)
+        self.courseidBOX.setFont(QFont("Century Gothic", 20))
+        self.courseidBOX.setFixedSize(600, 60)
+        self.boxesL.addWidget(self.courseidBOX)
 
         self.space = QWidget()
         self.space.setFixedHeight(30)
         self.boxesL.addWidget(self.space)
 
-        self.profnameTXT = QtWidgets.QLabel()
-        self.profnameTXT.setText("Professor Name :")
-        self.profnameTXT.setStyleSheet("color:white;")
-        self.profnameTXT.setFont(QFont("Century Gothic", 20))
-        self.boxesL.addWidget(self.profnameTXT)
+        # self.profnameTXT = QtWidgets.QLabel()
+        # self.profnameTXT.setText("Professor Name :")
+        # self.profnameTXT.setStyleSheet("color:white;")
+        # self.profnameTXT.setFont(QFont("Century Gothic", 20))
+        # self.boxesL.addWidget(self.profnameTXT)
 
-        self.space = QWidget()
-        self.space.setFixedHeight(30)
-        self.boxesL.addWidget(self.space)
+        # self.space = QWidget()
+        # self.space.setFixedHeight(30)
+        # self.boxesL.addWidget(self.space)
 
-        self.profnameBOX = QtWidgets.QLineEdit()
-        self.profnameBOX.setStyleSheet(
-            "color:black;background-color:white;padding-left:20;border-radius:10px;"
-        )
-        self.profnameBOX.setFont(QFont("Century Gothic", 20))
-        self.profnameBOX.setFixedSize(600, 60)
-        self.boxesL.addWidget(self.profnameBOX)
+        # self.profnameBOX = QtWidgets.QLineEdit()
+        # self.profnameBOX.setStyleSheet(
+        #     "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        # )
+        # self.profnameBOX.setFont(QFont("Century Gothic", 20))
+        # self.profnameBOX.setFixedSize(600, 60)
+        # self.boxesL.addWidget(self.profnameBOX)
 
-        self.space = QWidget()
-        self.space.setFixedHeight(30)
-        self.boxesL.addWidget(self.profnameBOX)
+        # self.space = QWidget()
+        # self.space.setFixedHeight(30)
+        # self.boxesL.addWidget(self.profnameBOX)
 
         self.ratingTXT = QtWidgets.QLabel()
         self.ratingTXT.setText("Your Class Rating (out of 5) :")
@@ -325,23 +343,21 @@ class mainWindow(QMainWindow):
         c = conn.cursor()
         c.execute(
             """CREATE TABLE IF NOT EXISTS reviews (
-                ID integer PRIMARY KEY,
-                Name text NOT NULL,
-                'Student ID' integer,
-                Class text NOT NULL,
-                'Prof Name' integer NOT NULL,
+                review_id integer PRIMARY KEY,
                 Rating text NOT NULL,
-                'Review' text NOT NULL
+                student_id integer NOT NULL,
+                course_id integer NOT NULL,
+                'Review' text NOT NULL,
+                FOREIGN KEY ('student_id') REFERENCES students (student_id),
+                FOREIGN KEY ('course_id') REFERENCES courses (course_id)
                 )"""
         )
 
         c.execute(
-            "INSERT INTO reviews(Name, Class, 'Student ID', 'Prof Name', Rating, Review) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO reviews('student_id', 'course_id', Rating, Review) VALUES (?, ?, ?, ?)",
             (
-                str(self.nameBOX.text().upper()),
-                str(self.classtakingBOX.text().upper()),
-                str(self.studentidBOX.text()),
-                str(self.profnameBOX.text().upper()),
+                self.studentidBOX.text(),
+                self.courseidBOX.text(),
                 str(self.ratingBOX.text()),
                 str(self.reviewBOX.text().upper()),
             ),
@@ -350,11 +366,11 @@ class mainWindow(QMainWindow):
         conn.commit()
         conn.close()
 
-        name = self.nameBOX.text()
 
-        acc_type = self.combo.currentText()
+
+        
         # self.check_taboo()
-        self.mainpage_home()
+        self.close()
 
     def check_taboo(self):
         conn = sqlite3.connect("gsz.db")
@@ -391,34 +407,45 @@ class mainWindow(QMainWindow):
                                 SET Review = taboo_word
                                 WHERE ID = row[0]"""
                     )
-
-                    conn.commit()
                     self.receive_warning_std(ID)
+        conn.commit()
+        conn.close()
 
     def toAsterisk(word):
         stars = "*" * len(word)
         word = stars
         return word
 
-    def create_id(self):
-        letters = string.ascii_uppercase
-        return "".join(random.choice(letters) for i in range(10))
+    def calculate_average_rating(self):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        c.execute(''' SELECT avg(Rating) From reviews WHERE course_id : course_id ''',
+                                {'course_id': self.courseidTXT})
+        course_rating = c.fetchone()[0]
+        c.execute(""" UPDATE courses SET course_rating = :course_rating
+                                WHERE course_id = course_id """,
+                    {'course_id': self.course_id, 'course_rating' : course_rating})
+        conn.commit()
+        c.close()
 
     def receive_warning_instructor(instructor_id):
-        conn = sqlite3.connect("instructors.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
-
+        # get current warning_count
         c.execute(
-            "SELECT warning_count from instructor where instructor_id = :instructor_id",
-            {"instructor_id": instructor_id},
+        "SELECT warning_count From instructors where instructor_id = :instructor_id",
+        {"instructor_id": instructor_id},
         )
-        new_warning_count = c.fetchone()[0] + 1
+        new_warning_count = (
+            c.fetchone()[0] + 1
+        )  # c.fetchone()[0] isolate variable from tuple
+        # print(new_warning_count)
+        # update student warning_count
         c.execute(
-            """UPDATE instructor SET warning_count = :new_warning_count
-                        WHERE instructor_id =:instructor_id""",
+            """UPDATE instructors SET warning_count = :new_warning_count
+                         WHERE instructor_id =:instructor_id""",
             {"instructor_id": instructor_id, "new_warning_count": new_warning_count},
         )
-
         conn.commit()
         conn.close()
 

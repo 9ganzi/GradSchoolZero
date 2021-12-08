@@ -1055,7 +1055,7 @@ class Instructor(User):
 # conn.close()
 
 # # delete a table
-# sql = "DROP TABLE complaints"
+# sql = "DROP TABLE reviews"
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(sql)
