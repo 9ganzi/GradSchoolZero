@@ -626,7 +626,7 @@ class Instructor(User):
             conn.close()
             return True
         conn.close()
-        self.recieve_warning()
+        self.receive_warning()
         return False
 
     def complain(self, complainee_id, course_id, description, complaint_type):
