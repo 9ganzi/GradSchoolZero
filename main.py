@@ -1040,7 +1040,7 @@ class mainWindow(QMainWindow):
         self.highestGPAW.setStyleSheet("border: 1px solid white;border-radius:15px;")
 
         self.highestGPATXT = QtWidgets.QLabel()
-        self.highestGPATXT.setText("Highest GPA Students")
+        self.highestGPATXT.setText(display_honor_roll())
         self.highestGPATXT.setFont(QFont("Century Gothic", 20))
         self.highestGPATXT.setStyleSheet("border:0;color:white;")
 
