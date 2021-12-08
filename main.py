@@ -402,7 +402,7 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.scroll)
 
         # checking if any buttons is clicked
-        self.backToMainBTN.clicked.connect(self.startup_page)
+        self.backToMainBTN.clicked.connect(self.mainpage_home_student)
         # self.submitBTN.clicked.connect(self.add_review_page)
         self.submitFBTN.clicked.connect(self.add_review)
 
