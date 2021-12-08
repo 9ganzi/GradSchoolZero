@@ -1,6 +1,5 @@
 import sqlite3
-
-from pandas.core.indexing import _IndexSlice
+#from pandas.core.indexing import _IndexSlice
 
 # import task5
 import display_db
@@ -1033,14 +1032,6 @@ class mainWindow(QMainWindow):
         self.space = QWidget()
         self.space.setFixedHeight(20)
         self.boxesL.addWidget(self.space)
-
-        self.forgotPass = QtWidgets.QPushButton()
-        self.forgotPass.setCursor(QCursor(Qt.PointingHandCursor))
-        self.forgotPass.setText("Forgotten your password ?")
-        self.forgotPass.setFont(QFont("Century Gothic", 16))
-        self.forgotPass.setStyleSheet("background-color: transparent;color:white;")
-
-        self.boxesL.addWidget(self.forgotPass)
 
         self.space = QWidget()
         self.space.setFixedHeight(20)
