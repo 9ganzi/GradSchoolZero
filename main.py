@@ -4013,6 +4013,9 @@ c.execute(
         num_courses_taken integer NOT NULL,
         honor_count integer NOT NULL,
         warning_count integer NOT NULL,
+        semester_gpa real,
+        is_suspended integer DEFAULT 0,
+        degree text, 
         FOREIGN KEY ('user_id') REFERENCES users (user_id)
         )"""
 )
