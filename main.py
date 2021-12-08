@@ -2985,7 +2985,7 @@ class mainWindow(QMainWindow):
         self.account.clicked.connect(self.mainpage_account_registrar)
         self.logoutBTN.clicked.connect(self.startup_page)
         self.help.clicked.connect(self.mainpage_help_registrar)
-        # self.ComplaintBTN.clicked.connect(self.student_compliant_page)
+        self.ComplaintBTN.clicked.connect(self.compliant_page_registrar)
         self.classes.clicked.connect(self.mainpage_classes_registrar)
 
     def mainpage_account_registrar(self):
