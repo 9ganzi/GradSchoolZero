@@ -3,7 +3,7 @@ import sqlite3
 
 # ensure Course gpa btwn 2.5 -3.5
 def is_fair():
-    conn = sqlite3.connect("course.db")
+    conn = sqlite3.connect("gsz.db")
     c = conn.cursor() # assume all classes are fair at start
     c.execute(""" UPDATE courses SET is_fair = False WHERE course_gpa NOT BETWEEN 2.5 AND 3.5 """)
     conn.commit()
@@ -31,7 +31,7 @@ class Course:
     
     # take average of all grades then set that to course_gpa
     def calculate_course_gpa(self):
-        conn = sqlite3.connect("enrollment.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(""" SELECT avg(grade) From enrollments WHERE course_id : course_id """,
                                {'course_id': self.course_id})
@@ -46,7 +46,7 @@ class Course:
    # reset course info at end of semester
     @classmethod
     def reset_courses(cls):
-        conn = sqlite3.connect("course.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute("""UPDATE student SET semester_gpa = :semester_gpa, 
                     enroll_count = :enroll_count,

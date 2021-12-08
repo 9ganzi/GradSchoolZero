@@ -41,7 +41,7 @@ class User:
 # fire an instructor ( can only be accessed by registrar on their page)
 # input a specfic instructor_id, deletes instructor from database
 def fire_instructor(instructor_id):
-    conn = sqlite3.connect("instructor.db")
+    conn = sqlite3.connect("gsz.db")
     c = conn.cursor()
     c.execute(
         "DELETE FROM instructors WHERE instructor_id = :instructor_id",
@@ -54,7 +54,7 @@ def fire_instructor(instructor_id):
 # drop student from program ( can only be accessed by registrar on their page)
 # given student class, delete student from database
 def terminate_student(student):
-    conn = sqlite3.connect("student.db")
+    conn = sqlite3.connect("gsz.db")
     c = conn.cursor()
     c.execute(
         "DELETE * FROM students WHERE student_id = :student_id",
@@ -67,7 +67,7 @@ def terminate_student(student):
 # drop student from program ( can only be accessed by registrar on their page)
 # given student_id, delete student from database
 def terminate_student(student_id):
-    conn = sqlite3.connect("student.db")
+    conn = sqlite3.connect("gsz.db")
     c = conn.cursor()
     c.execute(
         "DELETE * FROM students WHERE student_id = :student_id",
@@ -80,7 +80,7 @@ def terminate_student(student_id):
 # graduates a student by setting degree to master ( can only be accessed by registrar on their page)
 # inputs a student class, alterativelty should we just delete student from database as well
 def graduate_student(student):
-    conn = sqlite3.connect("student.db")
+    conn = sqlite3.connect("gsz.db")
     c = conn.cursor()
     c.execute(
         """UPDATE student SET degree = :degree
@@ -95,7 +95,7 @@ def graduate_student(student):
 
 
 def issue_warning_std(student_id):
-    conn = sqlite3.connect("student.db")
+    conn = sqlite3.connect("gsz.db")
     c = conn.cursor()
     # get current warning_count
     c.execute(
@@ -120,7 +120,7 @@ def issue_warning_std(student_id):
 
 
 def issue_warning_instuctor(instructor_id):
-    conn = sqlite3.connect("instructor.db")
+    conn = sqlite3.connect("gsz.db")
     c = conn.cursor()
     # get current warning_count
     c.execute(
@@ -183,13 +183,14 @@ class Registrar(User):
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
-            "SELECT email FROM applicants WHERE applicant_id = ?", (applicant_id,)
+            "SELECT email, first FROM applicants WHERE applicant_id = ?",
+            (applicant_id,),
         )
         recipient = c.fetchone()
-        subject = "Your application is reviewed"
+        subject = f"Hi {recipient[1]}, your application is reviewed"
         approve = "Welcome, you are approved :)"
         deny = "Sorry, you are not approved :("
-        if decision == 1:
+        if decision == "approve":
             msg = f"Subject: {subject}\n\n{approve}"
             generated_id = generate_random()
             generated_password = generate_random()
@@ -207,7 +208,7 @@ class Registrar(User):
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
             server.login(sender, password)
-            server.sendmail(sender, recipient, msg)
+            server.sendmail(sender, recipient[0], msg)
         self.delete_applicant(applicant_id)
 
     def add_user(self, applicant_id, generated_id, generated_password):
@@ -319,12 +320,12 @@ class Registrar(User):
 
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
-# registrar1 = Registrar(7)
-# print(registrar1.is_valid_applicant(1))
-# print(registrar1.is_valid_applicant(2))
-# print(registrar1.is_valid_applicant(3))
-# print(registrar1.is_valid_applicant(6))
-# print(registrar1.is_valid_applicant(7))
+# reg1 = Registrar(1)
+# reg1.email_result(1, 'approve', "a"
+# reg1.email_result(2, 'approve', "b"
+# reg1.email_result(3, 'approve', "c"
+# reg1.email_result(4, 'approve', "d"
+# reg1.email_result(5, 'approve', "e"
 # conn.commit()
 # conn.close()
 
@@ -443,7 +444,7 @@ class Student(User):
     # issue warning to student
     def receive_warning(self):
         new_warning_count = self.warning_count + 1
-        conn = sqlite3.connect("student.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """UPDATE student SET warning_count = :new_warning_count
@@ -456,7 +457,7 @@ class Student(User):
     # remove a warning from student class
     def remove_warning(self):
         new_warning_count = self.warning_count - 1
-        conn = sqlite3.connect("student.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """UPDATE student SET warning_count = :new_warning_count
@@ -477,7 +478,7 @@ class Student(User):
     # if GPA < 2 or failed a course twice, if true then terminate
     def is_failing(self):
         if self.gpa < 2 or self.failed_twice():
-            conn = sqlite3.connect("student.db")
+            conn = sqlite3.connect("gsz.db")
             c = conn.cursor()
             c.execute("DELETE * FROM student WHERE student_id = ?", (self.student_id,))
             conn.commit()
@@ -488,7 +489,7 @@ class Student(User):
     # check to see if student failed class twice
     def failed_twice(self):
         failing_grade = 2.0  # or should it an 'F'
-        conn = sqlite3.connect("course_history.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """SELECT course_id FROM course_history WHERE grade < :failing_grade
@@ -531,7 +532,7 @@ class Student(User):
     @classmethod
     def reset_semester_grades(cls):
         semester_gpa = "NULL"
-        conn = sqlite3.connect("student.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """UPDATE students SET semester_gpa = :semester_gpa """,
@@ -581,7 +582,7 @@ class Instructor(User):
 
     def receive_warning(self):
         new_warning_count = self.warning_count + 1
-        conn = sqlite3.connect("instructor.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """UPDATE instructor SET warning_count = :new_warning_count
@@ -596,7 +597,7 @@ class Instructor(User):
 
     # assign grades to students during grading period
     def assign_grade(self, student, course, grade):
-        conn = sqlite3.connect("enrollment.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """UPDATE enrollments SET grade = :grade
@@ -613,7 +614,7 @@ class Instructor(User):
 
     # check if all students are graded, give warning otherwise
     def is_all_graded(self):
-        conn = sqlite3.connect("enrollment.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """SELECT grade FROM enrollments
@@ -709,23 +710,23 @@ class Instructor(User):
 #         )"""
 # )
 # many_applicants = [
-#     ("Kevin", "Durant", "Kevin_Durant@email.com", "3.7", "None", 6, "student"),
-#     ("Lebron", "James", "Lebron_James@email.com", "2.7", "None", 6, "student"),
-#     ("John", "Doe", "John_Doe@email.com", "5", None, 3, "student"),
+#     ("Kevin", "Durant", "gutiday14@gmail.com", "3.7", "None", 6, "student"),
+#     ("Lebron", "James", "gutiday14@gmail.com", "2.7", "None", 6, "student"),
+#     ("John", "Doe", "gutiday14@gmail.com", "5", None, 3, "student"),
 #     (
 #         "Jane",
 #         "Doe",
-#         "Jane_Doe@email.com",
+#         "gutiday14@gmail.com",
 #         None,
 #         "I'm a good teacher",
 #         None,
 #         "instructor",
 #     ),
-#     ("Kevin", "Hart", "Kevin_Hart@email.com", "3.7", "None", 6, "student"),
+#     ("Kevin", "Hart", "gutiday14@gmail.com", "3.7", "None", 6, "student"),
 #     (
 #         "Ashley",
 #         "Doe",
-#         "Ashley_Doe@email.com",
+#         "gutiday14@gmail.com",
 #         None,
 #         "I'm a bad teacher",
 #         None,
@@ -808,20 +809,23 @@ class Instructor(User):
 #         num_courses_taken integer NOT NULL,
 #         honor_count integer NOT NULL,
 #         warning_count integer NOT NULL,
+#         semester_gpa real,
+#         is_suspended integer NOT NULL,
+#         degree text,
 #         FOREIGN KEY ('user_id') REFERENCES users (user_id)
 #         )"""
 # )
 # c.execute(
-#     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken) VALUES (?, ?, ?, ?, ?)""",
-#     (6, 5, 0, 0, 2),
+#     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken, is_suspended) VALUES (?, ?, ?, ?, ?, ?)""",
+#     (6, 5, 0, 0, 2, 0),
 # )
 # c.execute(
-#     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken) VALUES (?, ?, ?, ?, ?)""",
-#     (7, 3.5, 0, 0, 5),
+#     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken, is_suspended) VALUES (?, ?, ?, ?, ?, ?)""",
+#     (7, 3.5, 0, 0, 5, 0),
 # )
 # c.execute(
-#     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken) VALUES (?, ?, ?, ?, ?)""",
-#     (8, 2.8, 0, 0, 3),
+#     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken, is_suspended) VALUES (?, ?, ?, ?, ?, ?)""",
+#     (8, 2.8, 0, 0, 3, 0),
 # )
 # conn.commit()
 # conn.close()
@@ -992,11 +996,11 @@ class Instructor(User):
 # c = conn.cursor()
 # c.execute("SELECT * FROM users WHERE user_id=1")
 # args = c.fetchone()
-# registrar1 = Registrar(args[0])
+# reg1 = Registrar(args[0])
 # c.execute("SELECT * FROM instructors WHERE instructor_id=1")
 # args = c.fetchone()
 # instructor1 = Instructor(args[0])
-# registrar1.course_set_up("CSC 33500", "Tu 12:00 - 1:15, We 12:00 - 2:30", args[0], 25)
+# reg1.course_set_up("CSC 33500", "Tu 12:00 - 1:15, We 12:00 - 2:30", args[0], 25)
 
 
 # conn = sqlite3.connect("gsz.db")
@@ -1021,11 +1025,11 @@ class Instructor(User):
 # conn.commit()
 # conn.close()
 
-# # delete a row
+# delete a row
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # sql = """DELETE FROM applicants WHERE applicant_id = ?"""
-# c.execute(sql, (12,))
+# c.execute(sql, (6,))
 # c.execute(sql, (13,))
 # c.execute(sql, (14,))
 # c.execute(sql, (15,))

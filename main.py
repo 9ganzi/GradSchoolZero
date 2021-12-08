@@ -7,7 +7,7 @@ import display_db
 import sys
 import csv
 import os
-from user import Registrar, Student, Instructor, generate_random
+from user import Registrar, Student, Instructor
 import random
 import string
 from PyQt5 import QtWidgets
@@ -95,10 +95,6 @@ class mainWindow(QMainWindow):
         self.setWindowTitle("Collage App")
         self.setFixedSize(1260, 800)
         self.startup_page()
-
-        # -----------------------------------------#
-        # self.justification()
-        # -----------comment this line!!-----------#
 
     def addApplicant(self, user_type):
         conn = sqlite3.connect("gsz.db")
@@ -3177,30 +3173,50 @@ class mainWindow(QMainWindow):
                 "QPushButton:pressed{background-color: #b30707;border-style: inset;}"
             )
 
-    def justification(self):
-        dlg = QDialog()
-        b1 = QPushButton("submit", dlg)
-        b1.move(50, 50)
+    def getJustification(self):
+        justification = self.justify_entry.text()
+        self.filePath = justification
+        self.dlg.accept()
 
-        dlg.setWindowTitle("Dialog")
-        dlg.setWindowModality(Qt.ApplicationModal)
-        dlg.exec_()
-        pass
+    def justification(self, msg):
+        self.filePath = None
+        self.dlg = QDialog()
+        self.justify = QtWidgets.QLabel(self.dlg)
+        self.justify.setText(msg)
+        self.justify.setFont(QFont("Century Gothic", 10))
+        self.justify.move(10, 10)
+        self.justify_entry = QtWidgets.QLineEdit(self.dlg)
+        self.justify_entry.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.justify_entry.setFont(QFont("Century Gothic", 16))
+        self.justify_entry.setFixedSize(150, 17)
+        self.justify_entry.move(20, 30)
 
-    def submit_application(self, ids, cboxes):
+        self.b1 = QPushButton("submit", self.dlg)
+        self.b1.move(50, 60)
+        self.b1.clicked.connect(self.getJustification)
+        self.b1.show()
+        self.dlg.setWindowTitle("Dialog")
+        self.dlg.setWindowModality(Qt.ApplicationModal)
+        self.dlg.exec_()
+
+    def submit_application(self, ids, decisions):
+        decisions = list(map(lambda x: x.currentText(), decisions))
         global user
         conn = sqlite3.connect("gsz.db")
-        index = 0
-        for id in ids:
-            if user.is_valid_applicant(id) and (cboxes[index].currentText() == "deny"):
+        for id, decision in zip(ids, decisions):
+            if user.is_valid_applicant(id) and (decision == "deny"):
                 conn = sqlite3.connect("gsz.db")
                 c = conn.cursor()
                 sql = "SELECT first, last, GPA FROM applicants WHERE applicant_id = ?"
                 c.execute(sql, (id,))
                 app_info = c.fetchone()
-                # pop_up box
-                # print(f"Why? {app_info[0]} {app_info[1]}'s GPA is {app_info[2]}?")
-            index += 1
+                msg = f"Why? {app_info[0]} {app_info[1]}'s GPA is {app_info[2]}?"
+                self.justification(msg)
+                user.email_result(id, decision, self.justification)
+            else:
+                user.email_result(id, decision, None)
         self.mainpage_home_registrar()
 
     def applications(self):
@@ -3257,7 +3273,7 @@ class mainWindow(QMainWindow):
         self.view = QTableView()
         self.view.setModel(self.model)
         ids = []
-        cboxes = []
+        decisions = []
         index = 0
         for row in df["applicant_id"]:
             ids.append(row)
@@ -3270,7 +3286,7 @@ class mainWindow(QMainWindow):
             )
             x = self.view.model().index(index, 7)
             self.view.setIndexWidget(x, c)
-            cboxes.append(c)
+            decisions.append(c)
             index += 1
         self.view.resize(800, 600)
         self.view.show()
@@ -3398,7 +3414,7 @@ class mainWindow(QMainWindow):
         # checking if any buttons is clicked
 
         self.backToHomeBTN.clicked.connect(self.mainpage_home_registrar)
-        self.submitBTN.clicked.connect(lambda: self.submit_application(ids, cboxes))
+        self.submitBTN.clicked.connect(lambda: self.submit_application(ids, decisions))
 
         # Aiman 11/6 end
 
