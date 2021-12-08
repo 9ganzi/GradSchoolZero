@@ -41,7 +41,7 @@ class User:
 # fire an instructor ( can only be accessed by registrar on their page)
 # input a specfic instructor_id, deletes instructor from database
 def fire_instructor(instructor_id):
-    conn = sqlite3.connect("instructor.db")
+    conn = sqlite3.connect("gsz.db")
     c = conn.cursor()
     c.execute(
         "DELETE FROM instructors WHERE instructor_id = :instructor_id",
@@ -54,7 +54,7 @@ def fire_instructor(instructor_id):
 # drop student from program ( can only be accessed by registrar on their page)
 # given student class, delete student from database
 def terminate_student(student):
-    conn = sqlite3.connect("student.db")
+    conn = sqlite3.connect("gsz.db")
     c = conn.cursor()
     c.execute(
         "DELETE * FROM students WHERE student_id = :student_id",
@@ -67,7 +67,7 @@ def terminate_student(student):
 # drop student from program ( can only be accessed by registrar on their page)
 # given student_id, delete student from database
 def terminate_student(student_id):
-    conn = sqlite3.connect("student.db")
+    conn = sqlite3.connect("gsz.db")
     c = conn.cursor()
     c.execute(
         "DELETE * FROM students WHERE student_id = :student_id",
@@ -80,7 +80,7 @@ def terminate_student(student_id):
 # graduates a student by setting degree to master ( can only be accessed by registrar on their page)
 # inputs a student class, alterativelty should we just delete student from database as well
 def graduate_student(student):
-    conn = sqlite3.connect("student.db")
+    conn = sqlite3.connect("gsz.db")
     c = conn.cursor()
     c.execute(
         """UPDATE student SET degree = :degree
@@ -95,7 +95,7 @@ def graduate_student(student):
 
 
 def issue_warning_std(student_id):
-    conn = sqlite3.connect("student.db")
+    conn = sqlite3.connect("gsz.db")
     c = conn.cursor()
     # get current warning_count
     c.execute(
@@ -120,7 +120,7 @@ def issue_warning_std(student_id):
 
 
 def issue_warning_instuctor(instructor_id):
-    conn = sqlite3.connect("instructor.db")
+    conn = sqlite3.connect("gsz.db")
     c = conn.cursor()
     # get current warning_count
     c.execute(
@@ -443,7 +443,7 @@ class Student(User):
     # issue warning to student
     def receive_warning(self):
         new_warning_count = self.warning_count + 1
-        conn = sqlite3.connect("student.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """UPDATE student SET warning_count = :new_warning_count
@@ -456,7 +456,7 @@ class Student(User):
     # remove a warning from student class
     def remove_warning(self):
         new_warning_count = self.warning_count - 1
-        conn = sqlite3.connect("student.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """UPDATE student SET warning_count = :new_warning_count
@@ -477,7 +477,7 @@ class Student(User):
     # if GPA < 2 or failed a course twice, if true then terminate
     def is_failing(self):
         if self.gpa < 2 or self.failed_twice():
-            conn = sqlite3.connect("student.db")
+            conn = sqlite3.connect("gsz.db")
             c = conn.cursor()
             c.execute("DELETE * FROM student WHERE student_id = ?", (self.student_id,))
             conn.commit()
@@ -488,7 +488,7 @@ class Student(User):
     # check to see if student failed class twice
     def failed_twice(self):
         failing_grade = 2.0  # or should it an 'F'
-        conn = sqlite3.connect("course_history.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """SELECT course_id FROM course_history WHERE grade < :failing_grade
@@ -531,7 +531,7 @@ class Student(User):
     @classmethod
     def reset_semester_grades(cls):
         semester_gpa = "NULL"
-        conn = sqlite3.connect("student.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """UPDATE students SET semester_gpa = :semester_gpa """,
@@ -581,7 +581,7 @@ class Instructor(User):
 
     def receive_warning(self):
         new_warning_count = self.warning_count + 1
-        conn = sqlite3.connect("instructor.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """UPDATE instructor SET warning_count = :new_warning_count
@@ -596,7 +596,7 @@ class Instructor(User):
 
     # assign grades to students during grading period
     def assign_grade(self, student, course, grade):
-        conn = sqlite3.connect("enrollment.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """UPDATE enrollments SET grade = :grade
@@ -613,7 +613,7 @@ class Instructor(User):
 
     # check if all students are graded, give warning otherwise
     def is_all_graded(self):
-        conn = sqlite3.connect("enrollment.db")
+        conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
             """SELECT grade FROM enrollments
@@ -808,20 +808,23 @@ class Instructor(User):
 #         num_courses_taken integer NOT NULL,
 #         honor_count integer NOT NULL,
 #         warning_count integer NOT NULL,
+#         semester_gpa real,
+#         is_suspended integer NOT NULL,
+#         degree text,
 #         FOREIGN KEY ('user_id') REFERENCES users (user_id)
 #         )"""
 # )
 # c.execute(
-#     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken) VALUES (?, ?, ?, ?, ?)""",
-#     (6, 5, 0, 0, 2),
+#     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken, is_suspended) VALUES (?, ?, ?, ?, ?, ?)""",
+#     (6, 5, 0, 0, 2, 0),
 # )
 # c.execute(
-#     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken) VALUES (?, ?, ?, ?, ?)""",
-#     (7, 3.5, 0, 0, 5),
+#     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken, is_suspended) VALUES (?, ?, ?, ?, ?, ?)""",
+#     (7, 3.5, 0, 0, 5, 0),
 # )
 # c.execute(
-#     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken) VALUES (?, ?, ?, ?, ?)""",
-#     (8, 2.8, 0, 0, 3),
+#     """INSERT INTO students(user_id, gpa, honor_count, warning_count, num_courses_taken, is_suspended) VALUES (?, ?, ?, ?, ?, ?)""",
+#     (8, 2.8, 0, 0, 3, 0),
 # )
 # conn.commit()
 # conn.close()

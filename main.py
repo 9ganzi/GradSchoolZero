@@ -1,9 +1,9 @@
 import sqlite3
 
-from pandas.core.indexing import _IndexSlice
+#from pandas.core.indexing import _IndexSlice
 
 # import task5
-import display_db
+#import display_db
 import sys
 import csv
 import os
@@ -750,7 +750,9 @@ class mainWindow(QMainWindow):
         self.mainW.setLayout(self.mainL)
         self.setCentralWidget(self.mainW)
 
+
         self.back.clicked.connect(self.mainpage_home_student)
+
 
     def signup_page(self):
         # setting background colour for the page
@@ -1227,9 +1229,7 @@ class mainWindow(QMainWindow):
         self.home.clicked.connect(self.mainpage_home_student)
         self.account.clicked.connect(self.mainpage_account)
         self.logoutBTN.clicked.connect(self.startup_page)
-        self.help.clicked.connect(self.mainpage_help)
-        self.ComplaintBTN.clicked.connect(self.student_compliant_page)
-        self.classes.clicked.connect(self.mainpage_classes)
+
 
     def mainpage_account(self):
         global id
@@ -3474,6 +3474,9 @@ c.execute(
         num_courses_taken integer NOT NULL,
         honor_count integer NOT NULL,
         warning_count integer NOT NULL,
+        semester_gpa real,
+        is_suspended integer NOT NULL,
+        degree text,
         FOREIGN KEY ('user_id') REFERENCES users (user_id)
         )"""
 )
