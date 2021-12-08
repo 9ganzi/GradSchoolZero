@@ -732,6 +732,17 @@ class mainWindow(QMainWindow):
         self.space.setFixedHeight(18)
         self.boxesL.addWidget(self.space)
 
+        self.submitFBTN = QtWidgets.QPushButton()
+        self.submitFBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.submitFBTN.setText("Submit Review")
+        self.submitFBTN.setFont(QFont("Century Gothic", 20))
+        self.submitFBTN.setFixedSize(180, 60)
+        self.submitFBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.boxesL.addWidget(self.submitFBTN)
+
         self.back = QtWidgets.QPushButton()
         self.back.setText("Back")
         self.back.setFont(QFont("Century Gothic", 20))
@@ -751,6 +762,17 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.mainW)
 
         self.back.clicked.connect(self.mainpage_home_student)
+        self.submitFBTN.clicked.connect(self.complain)
+
+    def complain(self, complainee_id, course_id, description, complaint_type):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        sql = "INSERT INTO complaints(complainant_id, course_id, complainee_id, description, complaint_type) VALUES(?, ?, ?, ?, ?)"
+        c.execute(
+            sql, (self.user_id, course_id, complainee_id, description, complaint_type)
+        )
+        conn.commit()
+        conn.close()
 
     def signup_page(self):
         # setting background colour for the page
