@@ -54,7 +54,7 @@ comboBox_stylesheet = (
     "color:black;"
     "background:white;"
     "selection-background-color: #076DF2;"
-    "selection-color: black;"
+    "selection-color: bl`ack;"
     "border: 2px solid #076DF2};"
     "border-top: 0px;"
 )
@@ -628,7 +628,7 @@ class mainWindow(QMainWindow):
         self.signUpInstructor.clicked.connect(self.instructorSignUp)
         self.signUpStudent.clicked.connect(self.studentSignUp)
 
-    def compliant_page(self):
+    def student_compliant_page(self):
         self.setStyleSheet("background-color:#031926;")
         self.mainW = QWidget()
         self.mainL = QHBoxLayout()
@@ -750,7 +750,7 @@ class mainWindow(QMainWindow):
         self.mainW.setLayout(self.mainL)
         self.setCentralWidget(self.mainW)
 
-        self.back.clicked.connect(self.mainpage_home_registrar)
+        self.back.clicked.connect(self.mainpage_home_student)
 
     def signup_page(self):
         # setting background colour for the page
@@ -1181,16 +1181,16 @@ class mainWindow(QMainWindow):
         )
         self.BTNSL.addWidget(self.ComplaintBTN)
 
-        self.backToStartupBTN = QtWidgets.QPushButton()
-        self.backToStartupBTN.setText("Back")
-        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
-        self.backToStartupBTN.setFixedSize(180, 60)
-        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
-        self.backToStartupBTN.setStyleSheet(
+        self.logoutBTN = QtWidgets.QPushButton()
+        self.logoutBTN.setText("Logout")
+        self.logoutBTN.setFont(QFont("Century Gothic", 20))
+        self.logoutBTN.setFixedSize(180, 60)
+        self.logoutBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.logoutBTN.setStyleSheet(
             "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
             "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
         )
-        self.BTNSL.addWidget(self.backToStartupBTN)
+        self.BTNSL.addWidget(self.logoutBTN)
 
         self.BTNSW.setLayout(self.BTNSL)
 
@@ -1224,11 +1224,11 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.scroll)
 
         # checking if any buttons is clicked
-        self.home.clicked.connect(self.mainpage_home)
+        self.home.clicked.connect(self.mainpage_home_student)
         self.account.clicked.connect(self.mainpage_account)
-        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+        self.logoutBTN.clicked.connect(self.startup_page)
         self.help.clicked.connect(self.mainpage_help)
-        self.ComplaintBTN.clicked.connect(self.compliant_page)
+        self.ComplaintBTN.clicked.connect(self.student_compliant_page)
         self.classes.clicked.connect(self.mainpage_classes)
 
     def mainpage_account(self):
@@ -1405,7 +1405,7 @@ class mainWindow(QMainWindow):
 
         # checking if any buttons is clicked
 
-        self.home.clicked.connect(self.mainpage_home)
+        self.home.clicked.connect(self.mainpage_home_student)
         self.account.clicked.connect(self.mainpage_account)
         self.help.clicked.connect(self.mainpage_help)
         self.logOut.clicked.connect(self.logout)
@@ -1476,35 +1476,35 @@ class mainWindow(QMainWindow):
         self.logoL = QVBoxLayout()
         self.logoL.setContentsMargins(0, 0, 0, 0)
 
-        self.BTNSW = QWidget()
-        self.BTNSL = QHBoxLayout()
+        # self.BTNSW = QWidget()
+        # self.BTNSL = QHBoxLayout()
 
-        self.backToStartupBTN = QtWidgets.QPushButton()
-        self.backToStartupBTN.setText("Back")
-        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
-        self.backToStartupBTN.setFixedSize(180, 60)
-        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
-        self.backToStartupBTN.setStyleSheet(
-            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
-        )
-        self.BTNSL.addWidget(self.backToStartupBTN)
+        # self.backToStartupBTN = QtWidgets.QPushButton()
+        # self.backToStartupBTN.setText("Back")
+        # self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        # self.backToStartupBTN.setFixedSize(180, 60)
+        # self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        # self.backToStartupBTN.setStyleSheet(
+        #     "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+        #     "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        # )
+        # self.BTNSL.addWidget(self.backToStartupBTN)
 
-        self.BTNSW.setLayout(self.BTNSL)
+        # self.BTNSW.setLayout(self.BTNSL)
 
-        self.logo = QtWidgets.QLabel(self.logoW)
-        self.logo.setFixedHeight(200)
-        self.logo.setFixedWidth(200)
-        self.logo.setPixmap(QPixmap("logo.png"))
-        self.space = QWidget()
-        self.space.setFixedHeight(385)
+        # self.logo = QtWidgets.QLabel(self.logoW)
+        # self.logo.setFixedHeight(200)
+        # self.logo.setFixedWidth(200)
+        # self.logo.setPixmap(QPixmap("logo.png"))
+        # self.space = QWidget()
+        # self.space.setFixedHeight(385)
 
-        self.logoL.addWidget(self.logo)
-        self.logoL.addWidget(self.space)
-        self.logoL.addWidget(self.BTNSW)
+        # self.logoL.addWidget(self.logo)
+        # self.logoL.addWidget(self.space)
+        # self.logoL.addWidget(self.BTNSW)
 
-        self.logoW.setLayout(self.logoL)
-        self.main_contentL.addWidget(self.logoW)
+        # self.logoW.setLayout(self.logoL)
+        # self.main_contentL.addWidget(self.logoW)
         self.main_contentW.setLayout(self.main_contentL)
 
         self.mainW.setLayout(self.mainL)
@@ -1522,11 +1522,11 @@ class mainWindow(QMainWindow):
 
         # checking if any buttons is clicked
 
-        self.home.clicked.connect(self.mainpage_home)
+        self.home.clicked.connect(self.mainpage_home_student)
         self.account.clicked.connect(self.mainpage_account)
         self.help.clicked.connect(self.mainpage_help)
         self.classes.clicked.connect(self.mainpage_classes)
-        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+        # self.backToStartupBTN.clicked.connect(self.StartupStudent)
 
     def mainpage_classes(self):
         # setting background colour for the page
@@ -1695,11 +1695,11 @@ class mainWindow(QMainWindow):
 
         # checking if any buttons is clicked
 
-        self.home.clicked.connect(self.mainpage_home)
+        self.home.clicked.connect(self.mainpage_home_student)
         self.account.clicked.connect(self.mainpage_account)
         self.help.clicked.connect(self.mainpage_help)
         self.classes.clicked.connect(self.mainpage_classes)
-        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+        self.backToStartupBTN.clicked.connect(self.mainpage_home_student)
 
     def mainpage_home_instructor(self):
         # setting background colour for the page
@@ -1779,16 +1779,16 @@ class mainWindow(QMainWindow):
         )
         self.BTNSL.addWidget(self.ComplaintBTN)
 
-        self.backToStartupBTN = QtWidgets.QPushButton()
-        self.backToStartupBTN.setText("Back")
-        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
-        self.backToStartupBTN.setFixedSize(180, 60)
-        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
-        self.backToStartupBTN.setStyleSheet(
+        self.logoutBTN = QtWidgets.QPushButton()
+        self.logoutBTN.setText("Logout")
+        self.logoutBTN.setFont(QFont("Century Gothic", 20))
+        self.logoutBTN.setFixedSize(180, 60)
+        self.logoutBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.logoutBTN.setStyleSheet(
             "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
             "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
         )
-        self.BTNSL.addWidget(self.backToStartupBTN)
+        self.BTNSL.addWidget(self.logoutBTN)
 
         self.BTNSW.setLayout(self.BTNSL)
 
@@ -1824,9 +1824,10 @@ class mainWindow(QMainWindow):
         # checking if any buttons is clicked
         self.home.clicked.connect(self.mainpage_home_instructor)
         self.account.clicked.connect(self.mainpage_account_instructor)
-        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+        # self.logoutBTN.clicked.connect(self.StartupStudent)
         self.help.clicked.connect(self.mainpage_help_instructor)
-        self.ComplaintBTN.clicked.connect(self.compliant_page)
+        # self.ComplaintBTN.clicked.connect(self.student_compliant_page)
+        # create new page, 'instructor_compliant_page'
         self.classes.clicked.connect(self.mainpage_classes_instructor)
 
     def mainpage_account_instructor(self):
@@ -2077,16 +2078,16 @@ class mainWindow(QMainWindow):
         self.BTNSW = QWidget()
         self.BTNSL = QHBoxLayout()
 
-        self.backToStartupBTN = QtWidgets.QPushButton()
-        self.backToStartupBTN.setText("Back")
-        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
-        self.backToStartupBTN.setFixedSize(180, 60)
-        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
-        self.backToStartupBTN.setStyleSheet(
+        self.logoutBTN = QtWidgets.QPushButton()
+        self.logoutBTN.setText("Back")
+        self.logoutBTN.setFont(QFont("Century Gothic", 20))
+        self.logoutBTN.setFixedSize(180, 60)
+        self.logoutBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.logoutBTN.setStyleSheet(
             "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
             "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
         )
-        self.BTNSL.addWidget(self.backToStartupBTN)
+        self.BTNSL.addWidget(self.logoutBTN)
 
         self.BTNSW.setLayout(self.BTNSL)
 
@@ -2124,7 +2125,7 @@ class mainWindow(QMainWindow):
         self.account.clicked.connect(self.mainpage_account_instructor)
         self.help.clicked.connect(self.mainpage_help_instructor)
         self.classes.clicked.connect(self.mainpage_classes_instructor)
-        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+        # self.logoutBTN.clicked.connect(self.startup_page)
 
     def mainpage_classes_instructor(self):
         # setting background colour for the page
@@ -2189,21 +2190,21 @@ class mainWindow(QMainWindow):
         self.logoL = QVBoxLayout()
         self.logoL.setContentsMargins(0, 0, 0, 0)
 
-        self.BTNSW = QWidget()
-        self.BTNSL = QHBoxLayout()
+        # self.BTNSW = QWidget()
+        # self.BTNSL = QHBoxLayout()
 
-        self.backToStartupBTN = QtWidgets.QPushButton()
-        self.backToStartupBTN.setText("Back")
-        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
-        self.backToStartupBTN.setFixedSize(180, 60)
-        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
-        self.backToStartupBTN.setStyleSheet(
-            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
-        )
-        self.BTNSL.addWidget(self.backToStartupBTN)
+        # self.backToStartupBTN = QtWidgets.QPushButton()
+        # self.backToStartupBTN.setText("Back")
+        # self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        # self.backToStartupBTN.setFixedSize(180, 60)
+        # self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        # self.backToStartupBTN.setStyleSheet(
+        #     "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+        #     "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        # )
+        # self.BTNSL.addWidget(self.backToStartupBTN)
 
-        self.BTNSW.setLayout(self.BTNSL)
+        # self.BTNSW.setLayout(self.BTNSL)
 
         self.logo = QtWidgets.QLabel(self.logoW)
         self.logo.setFixedHeight(200)
@@ -2239,7 +2240,7 @@ class mainWindow(QMainWindow):
         self.account.clicked.connect(self.mainpage_account_instructor)
         self.help.clicked.connect(self.mainpage_help_instructor)
         self.classes.clicked.connect(self.mainpage_classes_instructor)
-        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+        # self.backToStartupBTN.clicked.connect(self.StartupStudent)
 
     def mainpage_home_registrar(self):
         # setting background colour for the page
@@ -2329,16 +2330,16 @@ class mainWindow(QMainWindow):
         )
         self.BTNSL.addWidget(self.applicationsBTN)
 
-        self.backToStartupBTN = QtWidgets.QPushButton()
-        self.backToStartupBTN.setText("Back")
-        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
-        self.backToStartupBTN.setFixedSize(180, 60)
-        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
-        self.backToStartupBTN.setStyleSheet(
+        self.logoutBTN = QtWidgets.QPushButton()
+        self.logoutBTN.setText("Logout")
+        self.logoutBTN.setFont(QFont("Century Gothic", 20))
+        self.logoutBTN.setFixedSize(180, 60)
+        self.logoutBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.logoutBTN.setStyleSheet(
             "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
             "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
         )
-        self.BTNSL.addWidget(self.backToStartupBTN)
+        self.BTNSL.addWidget(self.logoutBTN)
 
         self.BTNSW.setLayout(self.BTNSL)
 
@@ -2375,9 +2376,9 @@ class mainWindow(QMainWindow):
         self.home.clicked.connect(self.mainpage_home_registrar)
         self.applicationsBTN.clicked.connect(self.applications)  # Aiman 11/6
         self.account.clicked.connect(self.mainpage_account_registrar)
-        # self.backToStartupBTN.clicked.connect(self.StartupStudent)
+        self.logoutBTN.clicked.connect(self.startup_page)
         self.help.clicked.connect(self.mainpage_help_registrar)
-        self.ComplaintBTN.clicked.connect(self.compliant_page)
+        # self.ComplaintBTN.clicked.connect(self.student_compliant_page)
         self.classes.clicked.connect(self.mainpage_classes_registrar)
 
     def mainpage_account_registrar(self):
@@ -2625,34 +2626,34 @@ class mainWindow(QMainWindow):
         self.logoL = QVBoxLayout()
         self.logoL.setContentsMargins(0, 0, 0, 0)
 
-        self.BTNSW = QWidget()
-        self.BTNSL = QHBoxLayout()
+        # self.BTNSW = QWidget()
+        # self.BTNSL = QHBoxLayout()
 
-        self.backToStartupBTN = QtWidgets.QPushButton()
-        self.backToStartupBTN.setText("Back")
-        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
-        self.backToStartupBTN.setFixedSize(180, 60)
-        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
-        self.backToStartupBTN.setStyleSheet(
-            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
-        )
-        self.BTNSL.addWidget(self.backToStartupBTN)
+        # self.backToStartupBTN = QtWidgets.QPushButton()
+        # self.backToStartupBTN.setText("Back")
+        # self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        # self.backToStartupBTN.setFixedSize(180, 60)
+        # self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        # self.backToStartupBTN.setStyleSheet(
+        #     "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+        #     "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        # )
+        # self.BTNSL.addWidget(self.backToStartupBTN)
 
-        self.BTNSW.setLayout(self.BTNSL)
+        # self.BTNSW.setLayout(self.BTNSL)
 
-        self.logo = QtWidgets.QLabel(self.logoW)
-        self.logo.setFixedHeight(200)
-        self.logo.setFixedWidth(200)
-        self.logo.setPixmap(QPixmap("logo.png"))
-        self.space = QWidget()
-        self.space.setFixedHeight(385)
+        # self.logo = QtWidgets.QLabel(self.logoW)
+        # self.logo.setFixedHeight(200)
+        # self.logo.setFixedWidth(200)
+        # self.logo.setPixmap(QPixmap("logo.png"))
+        # self.space = QWidget()
+        # self.space.setFixedHeight(385)
 
-        self.logoL.addWidget(self.logo)
-        self.logoL.addWidget(self.space)
-        self.logoL.addWidget(self.BTNSW)
+        # self.logoL.addWidget(self.logo)
+        # self.logoL.addWidget(self.space)
+        # self.logoL.addWidget(self.BTNSW)
 
-        self.logoW.setLayout(self.logoL)
+        # self.logoW.setLayout(self.logoL)
         self.main_contentL.addWidget(self.logoW)
         self.main_contentW.setLayout(self.main_contentL)
 
@@ -2675,7 +2676,7 @@ class mainWindow(QMainWindow):
         self.account.clicked.connect(self.mainpage_account_registrar)
         self.help.clicked.connect(self.mainpage_help_registrar)
         self.classes.clicked.connect(self.mainpage_classes_registrar)
-        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+        # self.backToStartupBTN.clicked.connect(self.mainpage)
 
     def mainpage_classes_registrar(self):
         global comboBox_stylesheet
@@ -2744,18 +2745,18 @@ class mainWindow(QMainWindow):
         self.BTNSW = QWidget()
         self.BTNSL = QHBoxLayout()
 
-        self.backToStartupBTN = QtWidgets.QPushButton()
-        self.backToStartupBTN.setText("Back")
-        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
-        self.backToStartupBTN.setFixedSize(180, 60)
-        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
-        self.backToStartupBTN.setStyleSheet(
-            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
-        )
-        self.BTNSL.addWidget(self.backToStartupBTN)
+        # self.backToStartupBTN = QtWidgets.QPushButton()
+        # self.backToStartupBTN.setText("Back")
+        # self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        # self.backToStartupBTN.setFixedSize(180, 60)
+        # self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        # self.backToStartupBTN.setStyleSheet(
+        #     "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+        #     "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        # )
+        # self.BTNSL.addWidget(self.backToStartupBTN)
 
-        self.BTNSW.setLayout(self.BTNSL)
+        # self.BTNSW.setLayout(self.BTNSL)
 
         self.logo = QtWidgets.QLabel(self.logoW)
         self.logo.setFixedHeight(200)
@@ -3135,7 +3136,7 @@ class mainWindow(QMainWindow):
         self.account.clicked.connect(self.mainpage_account_registrar)
         self.help.clicked.connect(self.mainpage_help_registrar)
         self.classes.clicked.connect(self.mainpage_classes_registrar)
-        self.backToStartupBTN.clicked.connect(self.StartupStudent)
+        # self.backToStartupBTN.clicked.connect(self.StartupStudent)
 
         # Aiman 11/6
 
