@@ -87,6 +87,45 @@ classes = [
 
 # Aiman end
 
+# Display top 5 students with highest gpa
+def display_honor_roll():
+    conn = sqlite3.connect("gsz.db")
+    c = conn.cursor()
+    honor_students_join = c.execute(
+        """SELECT first, last, gpa FROM users Inner Join students USING(user_id) LIMIT 5""",
+    ).fetchall()
+    result2 = []
+    final_result = "Highest Rated Students: \n\n"
+    for col in zip(*honor_students_join):
+        result2.append(max([len(str(item)) for item in col]))
+    format = "  ".join(["{:<" + str(l) + "}" for l in result2])
+    for row in honor_students_join:
+        final_result += format.format(*row)
+        final_result += "\n"
+    return final_result
+
+
+def issue_warning_instructor(instructor_id):
+    conn = sqlite3.connect("gsz.db")
+    c = conn.cursor()
+    # get current warning_count
+    c.execute(
+        "SELECT warning_count From instructors where instructor_id = :instructor_id",
+        {"instructor_id": instructor_id},
+    )
+    new_warning_count = (
+        c.fetchone()[0] + 1
+    )  # c.fetchone()[0] isolate variable from tuple
+    # print(new_warning_count)
+    # update student warning_count
+    c.execute(
+        """UPDATE instructors SET warning_count = :new_warning_count
+                        WHERE instructor_id =:instructor_id""",
+        {"instructor_id": instructor_id, "new_warning_count": new_warning_count},
+    )
+    conn.commit()
+    conn.close()
+
 
 class mainWindow(QMainWindow):
     # the innit function with main app attributes
@@ -95,6 +134,364 @@ class mainWindow(QMainWindow):
         self.setWindowTitle("Collage App")
         self.setFixedSize(1260, 800)
         self.startup_page()
+
+        # -----------------------------------------#
+        # self.justification()
+        # -----------comment this line!!-----------#
+
+    # Joel review
+    def add_review_page(self):
+        # setting background colour for the page
+        self.setStyleSheet("background-color:#031926;")
+        # main layout and widget
+        self.scroll = QtWidgets.QScrollArea()
+        self.mainW = QWidget()
+        self.mainL = QHBoxLayout()
+        # ----------------Design-----------------
+
+        self.boxesW = QWidget()
+        self.boxesL = QVBoxLayout()
+
+        # self.nameTXT = QtWidgets.QLabel()
+        # self.nameTXT.setText("Your Name :")
+        # self.nameTXT.setStyleSheet("color:white;")
+        # self.nameTXT.setFont(QFont("Times", 20))
+        # self.boxesL.addWidget(self.nameTXT)
+
+        # self.space = QWidget()
+        # self.space.setFixedHeight(30)
+        # self.boxesL.addWidget(self.space)
+
+        # self.nameBOX = QtWidgets.QLineEdit()
+        # self.nameBOX.setStyleSheet(
+        #     "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        # )
+        # self.nameBOX.setFont(QFont("Times", 20))
+        # self.nameBOX.setFixedSize(600, 60)
+        # self.boxesL.addWidget(self.nameBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(30)
+        self.boxesL.addWidget(self.space)
+
+        """ self.emailTXT = QtWidgets.QLabel()
+        self.emailTXT.setText("E-mail :")
+        self.emailTXT.setStyleSheet("color:white;")
+        self.emailTXT.setFont(QFont("Century Gothic", 20))
+        self.boxesL.addWidget(self.emailTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(30)
+        self.boxesL.addWidget(self.space)
+
+        self.emailBOX = QtWidgets.QLineEdit()
+        self.emailBOX.setStyleSheet("color:black;background-color:white;padding-left:20;border-radius:10px;")
+        self.emailBOX.setFont(QFont("Century Gothic", 20))
+        self.emailBOX.setFixedSize(600, 60)
+        self.boxesL.addWidget(self.emailBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(30)
+        self.boxesL.addWidget(self.space) """
+
+        self.studentidTXT = QtWidgets.QLabel()
+        self.studentidTXT.setText("Your Student ID Number :")
+        self.studentidTXT.setStyleSheet("color:white;")
+        self.studentidTXT.setFont(QFont("Times", 20))
+        self.boxesL.addWidget(self.studentidTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(30)
+        self.boxesL.addWidget(self.space)
+
+        self.studentidBOX = QtWidgets.QLineEdit()
+        self.studentidBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.studentidBOX.setFont(QFont("Times", 20))
+        self.studentidBOX.setFixedSize(600, 60)
+        self.boxesL.addWidget(self.studentidBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(30)
+        self.boxesL.addWidget(self.space)
+
+        # self.classtakingTXT = QtWidgets.QLabel()
+        # self.classtakingTXT.setText("Class You're Taking :")
+        # self.classtakingTXT.setStyleSheet("color:white;")
+        # self.classtakingTXT.setFont(QFont("Century Gothic", 20))
+        # self.boxesL.addWidget(self.classtakingTXT)
+
+        # self.space = QWidget()
+        # self.space.setFixedHeight(30)
+        # self.boxesL.addWidget(self.space)
+
+        # self.classtakingBOX = QtWidgets.QLineEdit()
+        # self.classtakingBOX.setStyleSheet(
+        #     "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        # )
+        # self.classtakingBOX.setFont(QFont("Century Gothic", 20))
+        # self.classtakingBOX.setFixedSize(600, 60)
+        # self.boxesL.addWidget(self.classtakingBOX)
+
+        self.courseidTXT = QtWidgets.QLabel()
+        self.courseidTXT.setText("Your Course ID :")
+        self.courseidTXT.setStyleSheet("color:white;")
+        self.courseidTXT.setFont(QFont("Century Gothic", 20))
+        self.boxesL.addWidget(self.courseidTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(30)
+        self.boxesL.addWidget(self.space)
+
+        self.courseidBOX = QtWidgets.QLineEdit()
+        self.courseidBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.courseidBOX.setFont(QFont("Century Gothic", 20))
+        self.courseidBOX.setFixedSize(600, 60)
+        self.boxesL.addWidget(self.courseidBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(30)
+        self.boxesL.addWidget(self.space)
+
+        # self.profnameTXT = QtWidgets.QLabel()
+        # self.profnameTXT.setText("Professor Name :")
+        # self.profnameTXT.setStyleSheet("color:white;")
+        # self.profnameTXT.setFont(QFont("Century Gothic", 20))
+        # self.boxesL.addWidget(self.profnameTXT)
+
+        # self.space = QWidget()
+        # self.space.setFixedHeight(30)
+        # self.boxesL.addWidget(self.space)
+
+        # self.profnameBOX = QtWidgets.QLineEdit()
+        # self.profnameBOX.setStyleSheet(
+        #     "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        # )
+        # self.profnameBOX.setFont(QFont("Century Gothic", 20))
+        # self.profnameBOX.setFixedSize(600, 60)
+        # self.boxesL.addWidget(self.profnameBOX)
+
+        # self.space = QWidget()
+        # self.space.setFixedHeight(30)
+        # self.boxesL.addWidget(self.profnameBOX)
+
+        self.ratingTXT = QtWidgets.QLabel()
+        self.ratingTXT.setText("Your Class Rating (out of 5) :")
+        self.ratingTXT.setStyleSheet("color:white;")
+        self.ratingTXT.setFont(QFont("Century Gothic", 20))
+        self.boxesL.addWidget(self.ratingTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(30)
+        self.boxesL.addWidget(self.space)
+
+        self.ratingBOX = QtWidgets.QLineEdit()
+        self.ratingBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.ratingBOX.setFont(QFont("Century Gothic", 20))
+        self.ratingBOX.setFixedSize(600, 60)
+        self.boxesL.addWidget(self.ratingBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(30)
+        self.boxesL.addWidget(self.space)
+
+        self.reviewTXT = QtWidgets.QLabel()
+        self.reviewTXT.setText("Your Review :")
+        self.reviewTXT.setStyleSheet("color:white;")
+        self.reviewTXT.setFont(QFont("Century Gothic", 20))
+        self.boxesL.addWidget(self.reviewTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(30)
+        self.boxesL.addWidget(self.space)
+
+        self.reviewBOX = QtWidgets.QLineEdit()
+        self.reviewBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.reviewBOX.setFont(QFont("Century Gothic", 20))
+        self.reviewBOX.setFixedSize(600, 60)
+        self.boxesL.addWidget(self.reviewBOX)
+
+        self.boxesW.setLayout(self.boxesL)
+        self.mainL.addWidget(self.boxesW)
+        self.mainW.setLayout(self.mainL)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(30)
+        self.boxesL.addWidget(self.space)
+
+        self.buttonsW = QWidget()
+        self.buttonsL = QHBoxLayout()
+
+        self.submitFBTN = QtWidgets.QPushButton()
+        self.submitFBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.submitFBTN.setText("Submit Review")
+        self.submitFBTN.setFont(QFont("Century Gothic", 20))
+        self.submitFBTN.setFixedSize(180, 60)
+        self.submitFBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.buttonsW = QWidget()
+        self.buttonsL.addWidget(self.submitFBTN)
+
+        self.space = QWidget()
+        self.space.setFixedWidth(30)
+        self.buttonsL.addWidget(self.space)
+
+        self.backToMainBTN = QtWidgets.QPushButton()
+        self.backToMainBTN.setText("Back")
+        self.backToMainBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.backToMainBTN.setFont(QFont("Century Gothic", 20))
+        self.backToMainBTN.setFixedSize(180, 60)
+        self.backToMainBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.buttonsL.addWidget(self.backToMainBTN)
+        self.buttonsW.setLayout(self.buttonsL)
+        self.combo = QtWidgets.QComboBox()
+        self.combo.setStyleSheet(
+            "QComboBox{color:white;background-color:#076DF2;border-radius:10;"
+            "margin-left:110px;padding-left:10px;}"
+            "QComboBox::drop-down { "
+            "subcontrol-origin: padding;"
+            "subcontrol-position: top right; "
+            "width: 15px; "
+            "border-left-width: 1px; "
+            "border-left-color: #076DF2; "
+            "border-left-style: solid; "
+            "border-top-right-radius: 10px; "
+            "border-bottom-right-radius: 10px; "
+            "}"
+            "QComboBox:on{border-bottom-right-radius:0;border-bottom-left-radius:0;}"
+            "QComboBox QAbstractItemView {"
+            "background:#076DF2;"
+            "selection-background-color: #03469e;}"
+        )
+
+        self.combo.setFont(QFont("Myriad Pro", 18))
+        self.combo.setFixedSize(500, 50)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(20)
+        self.boxesL.addWidget(self.combo)
+
+        self.boxesL.addWidget(self.buttonsW)
+
+        self.boxesW.setLayout(self.boxesL)
+        self.mainL.addWidget(self.boxesW)
+        self.mainW.setLayout(self.mainL)
+
+        self.space = QWidget()
+        self.space.setFixedWidth(180)
+
+        self.mainL.addWidget(self.space)
+
+        self.tipsW = QWidget()
+        self.tipsL = QVBoxLayout()
+
+        self.tipsW.setFixedSize(400, 600)
+        self.tipsW.setStyleSheet("border: 1px solid white;border-radius: 10px;")
+
+        self.tipsTXT = QtWidgets.QTextEdit()
+        self.tipsTXT.setText(
+            "\nA student who is in class can write reviews of this case and assign stars (1 worst to 5 best), which will be summarized in the class, no one else except the registrars know who rated which class. The instructor of any course receiving average rating <2 will be warned. An instructor who accumulated 3 warnings will be suspended. The student cannot rate the class after the instructor post the grade. Reviews with 1 or 2 taboo words (the list of taboo words are set up by registrars) will be shown but those words are changed to * and the author receives one warning; whereas reviews with >=3 taboo’s words are not shown in the systems and the author will receive 2 warnings."
+        )
+
+        self.tipsTXT.setFont(QFont("Century Gothic", 20))
+        self.tipsTXT.setAlignment(Qt.AlignHCenter)
+        self.tipsTXT.setStyleSheet("color:white;border:0;")
+
+        self.tipsL.addWidget(self.tipsTXT)
+
+        self.tipsW.setLayout(self.tipsL)
+        self.mainL.addWidget(self.tipsW)
+
+        # -------------End of Design-------------
+
+        # scroll settings
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.scroll.setWidget(self.mainW)
+        self.setCentralWidget(self.scroll)
+
+        # checking if any buttons is clicked
+        self.backToMainBTN.clicked.connect(self.mainpage_home_student)
+        # self.submitBTN.clicked.connect(self.add_review_page)
+        self.submitFBTN.clicked.connect(self.add_review)
+
+    def add_review(self):
+        # global id
+        # global acc_type
+        # global name
+        # global email
+
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        c.execute(
+            """CREATE TABLE IF NOT EXISTS reviews (
+                review_id integer PRIMARY KEY,
+                Rating text NOT NULL,
+                student_id integer NOT NULL,
+                course_id integer NOT NULL,
+                'Review' text NOT NULL,
+                FOREIGN KEY ('student_id') REFERENCES students (student_id),
+                FOREIGN KEY ('course_id') REFERENCES courses (course_id)
+                )"""
+        )
+
+        c.execute(
+            "INSERT INTO reviews('student_id', 'course_id', Rating, Review) VALUES (?, ?, ?, ?)",
+            (
+                self.studentidBOX.text(),
+                self.courseidBOX.text(),
+                str(self.ratingBOX.text()),
+                str(self.reviewBOX.text().upper()),
+            ),
+        )
+
+        conn.commit()
+        conn.close()
+
+        # if course rating < 2 issue warning to instructor
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        inst_id = c.execute(
+            """SELECT instructor_id FROM Courses WHERE course_id = (SELECT course_id FROM Enrollments WHERE student_id=?) """,
+            (user.student_id,),
+        ).fetchone()[0]
+
+        # conn = sqlite3.connect("gsz.db")
+        # c = conn.cursor()
+        # c.execute(
+        #         '''SELECT instructor_id FROM courses
+        #                     WHERE course_id =: course_id''',
+        #         {"course_id": self.course_id},
+        #     )
+        # instructor_id = c.fetchone[0]
+
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        c.execute(
+            """ SELECT avg(rating) From reviews WHERE course_id = (Select course_id FROM Courses WHERE instructor_id =:instructor_id)""",
+            {"instructor_id": inst_id},
+        )
+        course_rating = c.fetchone()[0]
+        conn.close()
+        if course_rating < 2:
+            issue_warning_instructor(inst_id)
+
+        self.mainpage_home_student()
 
     def addApplicant(self, user_type):
         conn = sqlite3.connect("gsz.db")
@@ -129,6 +526,163 @@ class mainWindow(QMainWindow):
         conn.commit()
         conn.close()
         self.startup_page()
+
+    # Michael Start
+    # instructor assign grades using student_id, course_id and grade
+    # updates enrollments + students table
+    def assign_grade(self):
+        conn = sqlite3.connect("gsz.db")  # update enrollments
+        c = conn.cursor()
+        c.execute(
+            """UPDATE enrollments SET grade=:grade
+                        WHERE student_id=:student_id
+                        AND course_id=:course_id""",
+            {
+                "grade": self.gradeBOX.text(),
+                "student_id": self.studentIDBOX.text(),
+                "course_id": self.courseIDBOX.text(),
+            },
+        )
+        conn.commit()
+        conn.close()
+        # update students
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        c.execute(
+            """UPDATE students SET semester_gpa=:grade
+                        WHERE student_id=:student_id""",
+            {"grade": self.gradeBOX.text(), "student_id": self.studentIDBOX.text()},
+        )
+        conn.commit()
+        conn.close()
+        self.mainpage_home_instructor()
+
+    def assign_grade_page(self):
+        # setting background colour for the page
+        self.setStyleSheet("background-color:#031926;")
+        self.mainW = QWidget()
+        self.mainL = QHBoxLayout()
+
+        self.boxesMegaW = QWidget()
+        self.boxesMegaL = QHBoxLayout()
+
+        self.boxesW = QWidget()
+        self.boxesL = QVBoxLayout()
+        self.boxesL.setAlignment(Qt.AlignCenter)
+
+        self.boxesW2 = QWidget()
+        self.boxesL2 = QVBoxLayout()
+        self.boxesL2.setAlignment(Qt.AlignCenter)
+
+        self.studentIDTXT = QtWidgets.QLabel()
+        self.studentIDTXT.setText("Student ID :")
+        self.studentIDTXT.setStyleSheet("color:white;")
+        self.studentIDTXT.setFont(QFont("Century Gothic", 16))
+        self.boxesL.addWidget(self.studentIDTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(12)
+        self.boxesL.addWidget(self.space)
+
+        self.studentIDBOX = QtWidgets.QLineEdit()
+        self.studentIDBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.studentIDBOX.setFont(QFont("Century Gothic", 16))
+        self.studentIDBOX.setFixedSize(300, 30)
+        self.boxesL.addWidget(self.studentIDBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(12)
+        self.boxesL.addWidget(self.space)
+
+        self.courseIDTXT = QtWidgets.QLabel()
+        self.courseIDTXT.setText("Course ID :")
+        self.courseIDTXT.setStyleSheet("color:white;")
+        self.courseIDTXT.setFont(QFont("Century Gothic", 16))
+        self.boxesL.addWidget(self.courseIDTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(12)
+        self.boxesL.addWidget(self.space)
+
+        self.courseIDBOX = QtWidgets.QLineEdit()
+        self.courseIDBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.courseIDBOX.setFont(QFont("Century Gothic", 16))
+        self.courseIDBOX.setFixedSize(300, 30)
+        self.boxesL.addWidget(self.courseIDBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(12)
+        self.boxesL.addWidget(self.space)
+
+        self.gradeTXT = QtWidgets.QLabel()
+        self.gradeTXT.setText("Final Grade :")
+        self.gradeTXT.setStyleSheet("color:white;")
+        self.gradeTXT.setFont(QFont("Century Gothic", 16))
+        self.boxesL.addWidget(self.gradeTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(12)
+        self.boxesL.addWidget(self.space)
+
+        self.gradeBOX = QtWidgets.QLineEdit()
+        self.gradeBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.gradeBOX.setFont(QFont("Century Gothic", 16))
+        self.gradeBOX.setFixedSize(300, 30)
+        self.boxesL.addWidget(self.gradeBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(12)
+        self.boxesL.addWidget(self.space)
+
+        buttonsL = QHBoxLayout()
+        buttonsW = QWidget()
+
+        self.savegradeBTN = QtWidgets.QPushButton()
+        self.savegradeBTN.setText("Save")
+        self.savegradeBTN.setFont(QFont("Century Gothic", 20))
+        self.savegradeBTN.setFixedSize(140, 40)
+        self.savegradeBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.savegradeBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        buttonsL.addWidget(self.savegradeBTN)
+
+        self.backBTN = QtWidgets.QPushButton()
+        self.backBTN.setText("Back")
+        self.backBTN.setFont(QFont("Century Gothic", 20))
+        self.backBTN.setFixedSize(140, 40)
+        self.backBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.backBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        buttonsL.addWidget(self.backBTN)
+
+        buttonsW.setLayout(buttonsL)
+        self.boxesL.addWidget(buttonsW)
+
+        self.boxesW.setLayout(self.boxesL)
+        self.boxesW2.setLayout(self.boxesL2)
+
+        self.boxesMegaL.addWidget(self.boxesW)
+        self.boxesMegaL.addWidget(self.boxesW2)
+        self.boxesMegaW.setLayout(self.boxesMegaL)
+        self.mainL.addWidget(self.boxesMegaW)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.setCentralWidget(self.mainW)
+
+        self.savegradeBTN.clicked.connect(lambda: self.assign_grade())  # michael
+        self.backBTN.clicked.connect(self.mainpage_home_instructor)
+        # Michael End
 
     def instructorSignUp(self):
         # setting background colour for the page
@@ -534,7 +1088,7 @@ class mainWindow(QMainWindow):
         self.highestGPAW.setStyleSheet("border: 1px solid white;border-radius:15px;")
 
         self.highestGPATXT = QtWidgets.QLabel()
-        self.highestGPATXT.setText("Highest GPA Students")
+        self.highestGPATXT.setText(display_honor_roll())
         self.highestGPATXT.setFont(QFont("Century Gothic", 20))
         self.highestGPATXT.setStyleSheet("border:0;color:white;")
 
@@ -1030,14 +1584,6 @@ class mainWindow(QMainWindow):
         self.space.setFixedHeight(20)
         self.boxesL.addWidget(self.space)
 
-        self.forgotPass = QtWidgets.QPushButton()
-        self.forgotPass.setCursor(QCursor(Qt.PointingHandCursor))
-        self.forgotPass.setText("Forgotten your password ?")
-        self.forgotPass.setFont(QFont("Century Gothic", 16))
-        self.forgotPass.setStyleSheet("background-color: transparent;color:white;")
-
-        self.boxesL.addWidget(self.forgotPass)
-
         self.space = QWidget()
         self.space.setFixedHeight(20)
         self.boxesL.addWidget(self.space)
@@ -1199,6 +1745,16 @@ class mainWindow(QMainWindow):
         )
         self.BTNSL.addWidget(self.ComplaintBTN)
 
+        self.reviewBTN = QtWidgets.QPushButton()  # Michael test
+        self.reviewBTN.setFont(QFont("Century Gothic", 20))
+        self.reviewBTN.setFixedSize(180, 60)
+        self.reviewBTN.setText("Review")
+        self.reviewBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.BTNSL.addWidget(self.reviewBTN)
+
         self.logoutBTN = QtWidgets.QPushButton()
         self.logoutBTN.setText("Logout")
         self.logoutBTN.setFont(QFont("Century Gothic", 20))
@@ -1248,6 +1804,7 @@ class mainWindow(QMainWindow):
         self.help.clicked.connect(self.mainpage_help)
         self.ComplaintBTN.clicked.connect(self.student_compliant_page)
         self.classes.clicked.connect(self.mainpage_classes)
+        self.reviewBTN.clicked.connect(self.add_review_page)  # Michael Test
 
     def mainpage_account(self):
         global id
@@ -1797,6 +2354,16 @@ class mainWindow(QMainWindow):
         )
         self.BTNSL.addWidget(self.ComplaintBTN)
 
+        self.assignGradeBTN = QtWidgets.QPushButton()  # Michael test
+        self.assignGradeBTN.setFont(QFont("Century Gothic", 20))
+        self.assignGradeBTN.setFixedSize(180, 60)
+        self.assignGradeBTN.setText("Assign Grade")
+        self.assignGradeBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.BTNSL.addWidget(self.assignGradeBTN)
+
         self.logoutBTN = QtWidgets.QPushButton()
         self.logoutBTN.setText("Logout")
         self.logoutBTN.setFont(QFont("Century Gothic", 20))
@@ -1847,6 +2414,7 @@ class mainWindow(QMainWindow):
         # self.ComplaintBTN.clicked.connect(self.student_compliant_page)
         # create new page, 'instructor_compliant_page'
         self.classes.clicked.connect(self.mainpage_classes_instructor)
+        self.assignGradeBTN.clicked.connect(self.assign_grade_page)
 
     def mainpage_account_instructor(self):
         global id
@@ -3512,7 +4080,10 @@ c.execute(
         num_courses_taken integer NOT NULL,
         honor_count integer NOT NULL,
         warning_count integer NOT NULL,
-        FOREIGN KEY ('user_id') REFERENCES users (user_id)
+        semester_gpa real,
+        is_suspended integer DEFAULT 0,
+        degree text, 
+       FOREIGN KEY ('user_id') REFERENCES users (user_id)
         )"""
 )
 conn.commit()
