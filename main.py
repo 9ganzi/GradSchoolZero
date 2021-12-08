@@ -1323,6 +1323,27 @@ class mainWindow(QMainWindow):
         )
         conn.commit()
         conn.close()
+        
+    def compliant_page_registrar(self): #Aiman 11/8
+        self.setStyleSheet('background-color:#031926;')
+        self.mainW = QWidget()
+        self.mainL = QHBoxLayout()
+        self.mainL.setAlignment(Qt.AlignRight)
+
+        self.back = QtWidgets.QPushButton()
+        self.back.setText("Back")
+        self.back.setFont(QFont("Century Gothic", 20))
+        self.back.setFixedSize(180, 60)
+        self.back.setCursor(QCursor(Qt.PointingHandCursor))
+        self.back.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.mainL.addWidget(self.back)
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.setCentralWidget(self.mainW)
+
+        self.back.clicked.connect(self.mainpage_home_registrar)#Aiman 11/8
 
     def signup_page(self):
         # setting background colour for the page
