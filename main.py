@@ -103,6 +103,27 @@ def display_honor_roll():
         final_result += "\n"
     return final_result
 
+def issue_warning_instructor(instructor_id):
+    conn = sqlite3.connect("gsz.db")
+    c = conn.cursor()
+    # get current warning_count
+    c.execute(
+        "SELECT warning_count From instructors where instructor_id = :instructor_id",
+        {"instructor_id": instructor_id},
+    )
+    new_warning_count = (
+        c.fetchone()[0] + 1
+    )  # c.fetchone()[0] isolate variable from tuple
+    # print(new_warning_count)
+    # update student warning_count
+    c.execute(
+        """UPDATE instructors SET warning_count = :new_warning_count
+                        WHERE instructor_id =:instructor_id""",
+        {"instructor_id": instructor_id, "new_warning_count": new_warning_count}
+    )
+    conn.commit()
+    conn.close()
+
 class mainWindow(QMainWindow):
     # the innit function with main app attributes
     def __init__(self):
@@ -408,10 +429,10 @@ class mainWindow(QMainWindow):
 
         
     def add_review(self):
-        global id
-        global acc_type
-        global name
-        global email
+        # global id
+        # global acc_type
+        # global name
+        # global email
 
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
@@ -439,6 +460,32 @@ class mainWindow(QMainWindow):
 
         conn.commit()
         conn.close()
+
+        # if course rating < 2 issue warning to instructor
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        inst_id = c.execute(
+            """SELECT instructor_id FROM Courses WHERE course_id = (SELECT course_id FROM Enrollments WHERE student_id=?) """,
+            (user.student_id,)
+        ).fetchone()[0]
+
+        # conn = sqlite3.connect("gsz.db")
+        # c = conn.cursor()
+        # c.execute(
+        #         '''SELECT instructor_id FROM courses
+        #                     WHERE course_id =: course_id''',
+        #         {"course_id": self.course_id},
+        #     )
+        # instructor_id = c.fetchone[0]
+
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        c.execute(""" SELECT avg(rating) From reviews WHERE course_id = (Select course_id FROM Courses WHERE instructor_id =:instructor_id)""",
+                      {'instructor_id': inst_id})
+        course_rating = c.fetchone()[0]
+        conn.close()
+        if course_rating < 2:
+            issue_warning_instructor(inst_id)
 
         self.mainpage_home_student()
 
