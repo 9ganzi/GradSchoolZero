@@ -1,12 +1,13 @@
 import sqlite3
-#from pandas.core.indexing import _IndexSlice
+
+# from pandas.core.indexing import _IndexSlice
 
 # import task5
 import display_db
 import sys
 import csv
 import os
-from user import Registrar, Student, Instructor, generate_random
+from user import Registrar, Student, Instructor
 import random
 import string
 from PyQt5 import QtWidgets
@@ -103,6 +104,7 @@ def display_honor_roll():
         final_result += "\n"
     return final_result
 
+
 def issue_warning_instructor(instructor_id):
     conn = sqlite3.connect("gsz.db")
     c = conn.cursor()
@@ -119,10 +121,11 @@ def issue_warning_instructor(instructor_id):
     c.execute(
         """UPDATE instructors SET warning_count = :new_warning_count
                         WHERE instructor_id =:instructor_id""",
-        {"instructor_id": instructor_id, "new_warning_count": new_warning_count}
+        {"instructor_id": instructor_id, "new_warning_count": new_warning_count},
     )
     conn.commit()
     conn.close()
+
 
 class mainWindow(QMainWindow):
     # the innit function with main app attributes
@@ -135,7 +138,7 @@ class mainWindow(QMainWindow):
         # -----------------------------------------#
         # self.justification()
         # -----------comment this line!!-----------#
-        
+
     # Joel review
     def add_review_page(self):
         # setting background colour for the page
@@ -427,7 +430,6 @@ class mainWindow(QMainWindow):
         # self.submitBTN.clicked.connect(self.add_review_page)
         self.submitFBTN.clicked.connect(self.add_review)
 
-        
     def add_review(self):
         # global id
         # global acc_type
@@ -466,7 +468,7 @@ class mainWindow(QMainWindow):
         c = conn.cursor()
         inst_id = c.execute(
             """SELECT instructor_id FROM Courses WHERE course_id = (SELECT course_id FROM Enrollments WHERE student_id=?) """,
-            (user.student_id,)
+            (user.student_id,),
         ).fetchone()[0]
 
         # conn = sqlite3.connect("gsz.db")
@@ -480,8 +482,10 @@ class mainWindow(QMainWindow):
 
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
-        c.execute(""" SELECT avg(rating) From reviews WHERE course_id = (Select course_id FROM Courses WHERE instructor_id =:instructor_id)""",
-                      {'instructor_id': inst_id})
+        c.execute(
+            """ SELECT avg(rating) From reviews WHERE course_id = (Select course_id FROM Courses WHERE instructor_id =:instructor_id)""",
+            {"instructor_id": inst_id},
+        )
         course_rating = c.fetchone()[0]
         conn.close()
         if course_rating < 2:
@@ -522,7 +526,7 @@ class mainWindow(QMainWindow):
         conn.commit()
         conn.close()
         self.startup_page()
-    
+
     # Michael Start
     # instructor assign grades using student_id, course_id and grade
     # updates enrollments + students table
@@ -534,10 +538,10 @@ class mainWindow(QMainWindow):
                         WHERE student_id=:student_id
                         AND course_id=:course_id""",
             {
-                'grade': self.gradeBOX.text(),
-                'student_id': self.studentIDBOX.text(),
-                'course_id': self.courseIDBOX.text()
-            }
+                "grade": self.gradeBOX.text(),
+                "student_id": self.studentIDBOX.text(),
+                "course_id": self.courseIDBOX.text(),
+            },
         )
         conn.commit()
         conn.close()
@@ -547,10 +551,8 @@ class mainWindow(QMainWindow):
         c.execute(
             """UPDATE students SET semester_gpa=:grade
                         WHERE student_id=:student_id""",
-            {
-                'grade': self.gradeBOX.text(),
-                'student_id': self.studentIDBOX.text()
-            })
+            {"grade": self.gradeBOX.text(), "student_id": self.studentIDBOX.text()},
+        )
         conn.commit()
         conn.close()
         self.mainpage_home_instructor()
@@ -681,8 +683,7 @@ class mainWindow(QMainWindow):
         self.savegradeBTN.clicked.connect(lambda: self.assign_grade())  # michael
         self.backBTN.clicked.connect(self.mainpage_home_instructor)
         # Michael End
-    
-    
+
     def instructorSignUp(self):
         # setting background colour for the page
         self.setStyleSheet("background-color:#031926;")
@@ -1743,8 +1744,8 @@ class mainWindow(QMainWindow):
             "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
         )
         self.BTNSL.addWidget(self.ComplaintBTN)
-        
-        self.reviewBTN = QtWidgets.QPushButton() # Michael test
+
+        self.reviewBTN = QtWidgets.QPushButton()  # Michael test
         self.reviewBTN.setFont(QFont("Century Gothic", 20))
         self.reviewBTN.setFixedSize(180, 60)
         self.reviewBTN.setText("Review")
@@ -1804,7 +1805,6 @@ class mainWindow(QMainWindow):
         self.ComplaintBTN.clicked.connect(self.student_compliant_page)
         self.classes.clicked.connect(self.mainpage_classes)
         self.reviewBTN.clicked.connect(self.add_review_page)  # Michael Test
-        
 
     def mainpage_account(self):
         global id
@@ -2353,7 +2353,7 @@ class mainWindow(QMainWindow):
             "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
         )
         self.BTNSL.addWidget(self.ComplaintBTN)
-        
+
         self.assignGradeBTN = QtWidgets.QPushButton()  # Michael test
         self.assignGradeBTN.setFont(QFont("Century Gothic", 20))
         self.assignGradeBTN.setFixedSize(180, 60)
@@ -3741,30 +3741,50 @@ class mainWindow(QMainWindow):
                 "QPushButton:pressed{background-color: #b30707;border-style: inset;}"
             )
 
-    def justification(self):
-        dlg = QDialog()
-        b1 = QPushButton("submit", dlg)
-        b1.move(50, 50)
+    def getJustification(self):
+        justification = self.justify_entry.text()
+        self.filePath = justification
+        self.dlg.accept()
 
-        dlg.setWindowTitle("Dialog")
-        dlg.setWindowModality(Qt.ApplicationModal)
-        dlg.exec_()
-        pass
+    def justification(self, msg):
+        self.filePath = None
+        self.dlg = QDialog()
+        self.justify = QtWidgets.QLabel(self.dlg)
+        self.justify.setText(msg)
+        self.justify.setFont(QFont("Century Gothic", 10))
+        self.justify.move(10, 10)
+        self.justify_entry = QtWidgets.QLineEdit(self.dlg)
+        self.justify_entry.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.justify_entry.setFont(QFont("Century Gothic", 16))
+        self.justify_entry.setFixedSize(150, 17)
+        self.justify_entry.move(20, 30)
 
-    def submit_application(self, ids, cboxes):
+        self.b1 = QPushButton("submit", self.dlg)
+        self.b1.move(50, 60)
+        self.b1.clicked.connect(self.getJustification)
+        self.b1.show()
+        self.dlg.setWindowTitle("Dialog")
+        self.dlg.setWindowModality(Qt.ApplicationModal)
+        self.dlg.exec_()
+
+    def submit_application(self, ids, decisions):
+        decisions = list(map(lambda x: x.currentText(), decisions))
         global user
         conn = sqlite3.connect("gsz.db")
-        index = 0
-        for id in ids:
-            if user.is_valid_applicant(id) and (cboxes[index].currentText() == "deny"):
+        for id, decision in zip(ids, decisions):
+            if user.is_valid_applicant(id) and (decision == "deny"):
                 conn = sqlite3.connect("gsz.db")
                 c = conn.cursor()
                 sql = "SELECT first, last, GPA FROM applicants WHERE applicant_id = ?"
                 c.execute(sql, (id,))
                 app_info = c.fetchone()
-                # pop_up box
-                # print(f"Why? {app_info[0]} {app_info[1]}'s GPA is {app_info[2]}?")
-            index += 1
+                msg = f"Why? {app_info[0]} {app_info[1]}'s GPA is {app_info[2]}?"
+                self.justification(msg)
+                user.email_result(id, decision, self.justification)
+            else:
+                user.email_result(id, decision, None)
         self.mainpage_home_registrar()
 
     def applications(self):
@@ -3821,7 +3841,7 @@ class mainWindow(QMainWindow):
         self.view = QTableView()
         self.view.setModel(self.model)
         ids = []
-        cboxes = []
+        decisions = []
         index = 0
         for row in df["applicant_id"]:
             ids.append(row)
@@ -3834,7 +3854,7 @@ class mainWindow(QMainWindow):
             )
             x = self.view.model().index(index, 7)
             self.view.setIndexWidget(x, c)
-            cboxes.append(c)
+            decisions.append(c)
             index += 1
         self.view.resize(800, 600)
         self.view.show()
@@ -3962,7 +3982,7 @@ class mainWindow(QMainWindow):
         # checking if any buttons is clicked
 
         self.backToHomeBTN.clicked.connect(self.mainpage_home_registrar)
-        self.submitBTN.clicked.connect(lambda: self.submit_application(ids, cboxes))
+        self.submitBTN.clicked.connect(lambda: self.submit_application(ids, decisions))
 
         # Aiman 11/6 end
 
