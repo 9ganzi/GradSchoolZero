@@ -440,7 +440,7 @@ class mainWindow(QMainWindow):
         conn.commit()
         conn.close()
 
-        self.mainpage_home_registrar()
+        self.mainpage_home_student()
 
     def addApplicant(self, user_type):
         conn = sqlite3.connect("gsz.db")
