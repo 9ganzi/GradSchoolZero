@@ -183,13 +183,14 @@ class Registrar(User):
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
-            "SELECT email FROM applicants WHERE applicant_id = ?", (applicant_id,)
+            "SELECT email, first FROM applicants WHERE applicant_id = ?",
+            (applicant_id,),
         )
         recipient = c.fetchone()
-        subject = "Your application is reviewed"
+        subject = f"Hi {recipient[1]}, your application is reviewed"
         approve = "Welcome, you are approved :)"
         deny = "Sorry, you are not approved :("
-        if decision == 1:
+        if decision == "approve":
             msg = f"Subject: {subject}\n\n{approve}"
             generated_id = generate_random()
             generated_password = generate_random()
@@ -207,7 +208,7 @@ class Registrar(User):
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
             server.login(sender, password)
-            server.sendmail(sender, recipient, msg)
+            server.sendmail(sender, recipient[0], msg)
         self.delete_applicant(applicant_id)
 
     def add_user(self, applicant_id, generated_id, generated_password):
@@ -319,12 +320,12 @@ class Registrar(User):
 
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
-# registrar1 = Registrar(7)
-# print(registrar1.is_valid_applicant(1))
-# print(registrar1.is_valid_applicant(2))
-# print(registrar1.is_valid_applicant(3))
-# print(registrar1.is_valid_applicant(6))
-# print(registrar1.is_valid_applicant(7))
+# reg1 = Registrar(1)
+# reg1.email_result(1, 'approve', "a"
+# reg1.email_result(2, 'approve', "b"
+# reg1.email_result(3, 'approve', "c"
+# reg1.email_result(4, 'approve', "d"
+# reg1.email_result(5, 'approve', "e"
 # conn.commit()
 # conn.close()
 
@@ -709,23 +710,23 @@ class Instructor(User):
 #         )"""
 # )
 # many_applicants = [
-#     ("Kevin", "Durant", "Kevin_Durant@email.com", "3.7", "None", 6, "student"),
-#     ("Lebron", "James", "Lebron_James@email.com", "2.7", "None", 6, "student"),
-#     ("John", "Doe", "John_Doe@email.com", "5", None, 3, "student"),
+#     ("Kevin", "Durant", "gutiday14@gmail.com", "3.7", "None", 6, "student"),
+#     ("Lebron", "James", "gutiday14@gmail.com", "2.7", "None", 6, "student"),
+#     ("John", "Doe", "gutiday14@gmail.com", "5", None, 3, "student"),
 #     (
 #         "Jane",
 #         "Doe",
-#         "Jane_Doe@email.com",
+#         "gutiday14@gmail.com",
 #         None,
 #         "I'm a good teacher",
 #         None,
 #         "instructor",
 #     ),
-#     ("Kevin", "Hart", "Kevin_Hart@email.com", "3.7", "None", 6, "student"),
+#     ("Kevin", "Hart", "gutiday14@gmail.com", "3.7", "None", 6, "student"),
 #     (
 #         "Ashley",
 #         "Doe",
-#         "Ashley_Doe@email.com",
+#         "gutiday14@gmail.com",
 #         None,
 #         "I'm a bad teacher",
 #         None,
@@ -777,21 +778,21 @@ class Instructor(User):
 #         complaint_id integer PRIMARY KEY,
 #         complainant_id integer NOT NULL,
 #         complainee_id integer NOT NULL,
-#         course_id integer NOT NULL,
+        
 #         description text NOT NULL,
 #         complaint_type text,
 #         FOREIGN KEY ('complainant_id') REFERENCES users (user_id),
-#         FOREIGN KEY ('complainee_id') REFERENCES users (user_id),
-#         FOREIGN KEY ('course_id') REFERENCES courses (course_id)
+#         FOREIGN KEY ('complainee_id') REFERENCES users (user_id)
+        
 #         )"""
 # )
 # many_complaints = [
-#     (9, 6, 3, "loud", "de-register"),
-#     (9, 7, 3, "loud", "de-register"),
-#     (9, 8, 3, "loud", "de-register"),
+#     (9, 6, "loud", "de-register"),
+#     (9, 7, "loud", "de-register"),
+#     (9, 8, "loud", "de-register"),
 # ]
 # c.executemany(
-#     """INSERT INTO complaints(complainant_id, complainee_id, course_id, description, complaint_type) VALUES(?, ?, ?, ?, ?)""",
+#     """INSERT INTO complaints(complainant_id, complainee_id, description, complaint_type) VALUES(?, ?, ?, ?)""",
 #     many_complaints,
 # )
 # conn.commit()
@@ -995,11 +996,11 @@ class Instructor(User):
 # c = conn.cursor()
 # c.execute("SELECT * FROM users WHERE user_id=1")
 # args = c.fetchone()
-# registrar1 = Registrar(args[0])
+# reg1 = Registrar(args[0])
 # c.execute("SELECT * FROM instructors WHERE instructor_id=1")
 # args = c.fetchone()
 # instructor1 = Instructor(args[0])
-# registrar1.course_set_up("CSC 33500", "Tu 12:00 - 1:15, We 12:00 - 2:30", args[0], 25)
+# reg1.course_set_up("CSC 33500", "Tu 12:00 - 1:15, We 12:00 - 2:30", args[0], 25)
 
 
 # conn = sqlite3.connect("gsz.db")
@@ -1024,11 +1025,11 @@ class Instructor(User):
 # conn.commit()
 # conn.close()
 
-# # delete a row
+# delete a row
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # sql = """DELETE FROM applicants WHERE applicant_id = ?"""
-# c.execute(sql, (12,))
+# c.execute(sql, (6,))
 # c.execute(sql, (13,))
 # c.execute(sql, (14,))
 # c.execute(sql, (15,))
@@ -1054,8 +1055,16 @@ class Instructor(User):
 # conn.commit()
 # conn.close()
 
-# # delete a table
-# sql = "DROP TABLE reviews"
+# delete a table
+# sql = "DROP TABLE complaints"
+# conn = sqlite3.connect("gsz.db")
+# c = conn.cursor()
+# c.execute(sql)
+# conn.commit()
+# conn.close()
+
+# # delete a column
+# sql = "ALTER TABLE complaints DROP COLUMN course_id"
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(sql)

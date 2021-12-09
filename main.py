@@ -1,5 +1,6 @@
 import sqlite3
-#from pandas.core.indexing import _IndexSlice
+
+from pandas.core.indexing import _IndexSlice
 
 # import task5
 import display_db
@@ -103,6 +104,60 @@ def display_honor_roll():
         final_result += "\n"
     return final_result
 
+def display_highest_classes():
+    conn = sqlite3.connect("gsz.db")
+    c = conn.cursor()
+    honor_students_join = c.execute(
+        """SELECT course_name, course_rating FROM courses WHERE course_rating IS NOT NULL ORDER BY course_rating DESC LIMIT 5""",
+    ).fetchall()
+    result2 = []
+    final_result = "Highest Rated Courses: \n\n"
+    for col in zip(*honor_students_join):
+        result2.append(max([len(str(item)) for item in col]))
+    format = "  ".join(["{:<" + str(l) + "}" for l in result2])
+    for row in honor_students_join:
+        final_result += format.format(*row)
+        final_result += "\n"
+    return final_result
+
+def display_lowest_classes():
+    conn = sqlite3.connect("gsz.db")
+    c = conn.cursor()
+    honor_students_join = c.execute(
+        """SELECT course_name, course_rating FROM courses WHERE course_rating IS NOT NULL AND course_rating ORDER BY course_rating ASC LIMIT 5""",
+    ).fetchall()
+    result2 = []
+    final_result = "Lowest Rated Courses: \n\n"
+    for col in zip(*honor_students_join):
+        result2.append(max([len(str(item)) for item in col]))
+    format = "  ".join(["{:<" + str(l) + "}" for l in result2])
+    for row in honor_students_join:
+        final_result += format.format(*row)
+        final_result += "\n"
+    return final_result
+
+def issue_warning_instructor(instructor_id):
+    conn = sqlite3.connect("gsz.db")
+    c = conn.cursor()
+    # get current warning_count
+    c.execute(
+        "SELECT warning_count From instructors where instructor_id = :instructor_id",
+        {"instructor_id": instructor_id},
+    )
+    new_warning_count = (
+        c.fetchone()[0] + 1
+    )  # c.fetchone()[0] isolate variable from tuple
+    # print(new_warning_count)
+    # update student warning_count
+    c.execute(
+        """UPDATE instructors SET warning_count = :new_warning_count
+                        WHERE instructor_id =:instructor_id""",
+        {"instructor_id": instructor_id, "new_warning_count": new_warning_count},
+    )
+    conn.commit()
+    conn.close()
+
+
 class mainWindow(QMainWindow):
     # the innit function with main app attributes
     def __init__(self):
@@ -114,8 +169,8 @@ class mainWindow(QMainWindow):
         # -----------------------------------------#
         # self.justification()
         # -----------comment this line!!-----------#
-        
-    # Joel review
+
+# Joel 
     def add_review_page(self):
         # setting background colour for the page
         self.setStyleSheet("background-color:#031926;")
@@ -402,16 +457,15 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.scroll)
 
         # checking if any buttons is clicked
-        self.backToMainBTN.clicked.connect(self.startup_page)
+        self.backToMainBTN.clicked.connect(self.mainpage_home_student)
         # self.submitBTN.clicked.connect(self.add_review_page)
         self.submitFBTN.clicked.connect(self.add_review)
 
-        
     def add_review(self):
-        global id
-        global acc_type
-        global name
-        global email
+        # global id
+        # global acc_type
+        # global name
+        # global email
 
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
@@ -440,7 +494,35 @@ class mainWindow(QMainWindow):
         conn.commit()
         conn.close()
 
-        self.mainpage_home_registrar()
+        # if course rating < 2 issue warning to instructor
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        inst_id = c.execute(
+            """SELECT instructor_id FROM Courses WHERE course_id = (SELECT course_id FROM Enrollments WHERE student_id=?) """,
+            (user.student_id,),
+        ).fetchone()[0]
+
+        # conn = sqlite3.connect("gsz.db")
+        # c = conn.cursor()
+        # c.execute(
+        #         '''SELECT instructor_id FROM courses
+        #                     WHERE course_id =: course_id''',
+        #         {"course_id": self.course_id},
+        #     )
+        # instructor_id = c.fetchone[0]
+
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        c.execute(
+            """ SELECT avg(rating) From reviews WHERE course_id = (Select course_id FROM Courses WHERE instructor_id =:instructor_id)""",
+            {"instructor_id": inst_id},
+        )
+        course_rating = c.fetchone()[0]
+        conn.close()
+        if course_rating < 2:
+            issue_warning_instructor(inst_id)
+
+        self.mainpage_home_student()
 
     def addApplicant(self, user_type):
         conn = sqlite3.connect("gsz.db")
@@ -475,7 +557,7 @@ class mainWindow(QMainWindow):
         conn.commit()
         conn.close()
         self.startup_page()
-    
+
     # Michael Start
     # instructor assign grades using student_id, course_id and grade
     # updates enrollments + students table
@@ -487,10 +569,10 @@ class mainWindow(QMainWindow):
                         WHERE student_id=:student_id
                         AND course_id=:course_id""",
             {
-                'grade': self.gradeBOX.text(),
-                'student_id': self.studentIDBOX.text(),
-                'course_id': self.courseIDBOX.text()
-            }
+                "grade": self.gradeBOX.text(),
+                "student_id": self.studentIDBOX.text(),
+                "course_id": self.courseIDBOX.text(),
+            },
         )
         conn.commit()
         conn.close()
@@ -500,10 +582,8 @@ class mainWindow(QMainWindow):
         c.execute(
             """UPDATE students SET semester_gpa=:grade
                         WHERE student_id=:student_id""",
-            {
-                'grade': self.gradeBOX.text(),
-                'student_id': self.studentIDBOX.text()
-            })
+            {"grade": self.gradeBOX.text(), "student_id": self.studentIDBOX.text()},
+        )
         conn.commit()
         conn.close()
         self.mainpage_home_instructor()
@@ -634,8 +714,7 @@ class mainWindow(QMainWindow):
         self.savegradeBTN.clicked.connect(lambda: self.assign_grade())  # michael
         self.backBTN.clicked.connect(self.mainpage_home_instructor)
         # Michael End
-    
-    
+
     def instructorSignUp(self):
         # setting background colour for the page
         self.setStyleSheet("background-color:#031926;")
@@ -1000,7 +1079,7 @@ class mainWindow(QMainWindow):
         )
 
         self.highestRatedClassesTXT = QtWidgets.QLabel()
-        self.highestRatedClassesTXT.setText("Highest rated classes")
+        self.highestRatedClassesTXT.setText(display_highest_classes())
         self.highestRatedClassesTXT.setFont(QFont("Century Gothic", 20))
         self.highestRatedClassesTXT.setStyleSheet("border:0;color:white;")
 
@@ -1021,7 +1100,7 @@ class mainWindow(QMainWindow):
         )
 
         self.lowestRatedClassesTXT = QtWidgets.QLabel()
-        self.lowestRatedClassesTXT.setText("Lowest rated classes")
+        self.lowestRatedClassesTXT.setText(display_lowest_classes())
         self.lowestRatedClassesTXT.setFont(QFont("Century Gothic", 20))
         self.lowestRatedClassesTXT.setStyleSheet("border:0;color:white;")
 
@@ -1130,7 +1209,7 @@ class mainWindow(QMainWindow):
         self.signUpInstructor.clicked.connect(self.instructorSignUp)
         self.signUpStudent.clicked.connect(self.studentSignUp)
 
-    def student_compliant_page(self):
+    def student_complaint_page(self):
         self.setStyleSheet("background-color:#031926;")
         self.mainW = QWidget()
         self.mainL = QHBoxLayout()
@@ -1213,7 +1292,7 @@ class mainWindow(QMainWindow):
         self.boxesL.addWidget(self.space)
 
         self.complaintTXT = QtWidgets.QLabel()
-        self.complaintTXT.setText("Compliant :")
+        self.complaintTXT.setText("Complaint :")
         self.complaintTXT.setStyleSheet("color:white;")
         self.complaintTXT.setFont(QFont("Century Gothic", 16))
         self.boxesL.addWidget(self.complaintTXT)
@@ -1236,7 +1315,7 @@ class mainWindow(QMainWindow):
 
         self.submitFBTN = QtWidgets.QPushButton()
         self.submitFBTN.setCursor(QCursor(Qt.PointingHandCursor))
-        self.submitFBTN.setText("Submit Review")
+        self.submitFBTN.setText("Submit Complaint")
         self.submitFBTN.setFont(QFont("Century Gothic", 20))
         self.submitFBTN.setFixedSize(180, 60)
         self.submitFBTN.setStyleSheet(
@@ -1266,15 +1345,216 @@ class mainWindow(QMainWindow):
         self.back.clicked.connect(self.mainpage_home_student)
         self.submitFBTN.clicked.connect(self.complain)
 
-    def complain(self, complainee_id, course_id, description, complaint_type):
+    #Joel
+    def complain(self):
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
-        sql = "INSERT INTO complaints(complainant_id, course_id, complainee_id, description, complaint_type) VALUES(?, ?, ?, ?, ?)"
+        # complainee
+        result = c.execute(
+                "SELECT user_id FROM users WHERE first=:first and last=:last ",
+                {"first": self.firstnameBOX.text(), "last": self.lastnameBOX.text()},
+
+        ).fetchone()[0]
+
+        complaint_type = self.reasonofcomplaintBOX.text()
+        description = self.complaintBOX.text()
+
+        sql = "INSERT INTO complaints(complainant_id, complainee_id, description, complaint_type) VALUES(?, ?, ?, ?)"
         c.execute(
-            sql, (self.user_id, course_id, complainee_id, description, complaint_type)
+            sql, (user.user_id, result, description, complaint_type)
         )
         conn.commit()
         conn.close()
+
+        self.mainpage_home_student()
+
+#instructor_complaint
+    def instructor_complaint_page(self):
+        self.setStyleSheet("background-color:#031926;")
+        self.mainW = QWidget()
+        self.mainL = QHBoxLayout()
+
+        self.boxesMegaW = QWidget()
+        self.boxesMegaL = QHBoxLayout()
+
+        self.boxesW = QWidget()
+        self.boxesL = QVBoxLayout()
+        self.boxesL.setAlignment(Qt.AlignCenter)
+
+        self.boxesW2 = QWidget()
+        self.boxesL2 = QVBoxLayout()
+        self.boxesL2.setAlignment(Qt.AlignCenter)
+
+        self.firstNameTXT = QtWidgets.QLabel()
+        self.firstNameTXT.setText("First name :")
+        self.firstNameTXT.setStyleSheet("color:white;")
+        self.firstNameTXT.setFont(QFont("Century Gothic", 16))
+        self.boxesL.addWidget(self.firstNameTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.firstnameBOX = QtWidgets.QLineEdit()
+        self.firstnameBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.firstnameBOX.setFont(QFont("Century Gothic", 16))
+        self.firstnameBOX.setFixedSize(300, 30)
+        self.boxesL.addWidget(self.firstnameBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.lastNameTXT = QtWidgets.QLabel()
+        self.lastNameTXT.setText("Last name :")
+        self.lastNameTXT.setStyleSheet("color:white;")
+        self.lastNameTXT.setFont(QFont("Century Gothic", 16))
+        self.boxesL.addWidget(self.lastNameTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.lastnameBOX = QtWidgets.QLineEdit()
+        self.lastnameBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.lastnameBOX.setFont(QFont("Century Gothic", 16))
+        self.lastnameBOX.setFixedSize(300, 30)
+        self.boxesL.addWidget(self.lastnameBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.reasonofcomplaintTXT = QtWidgets.QLabel()
+        self.reasonofcomplaintTXT.setText("Reason of complaint :")
+        self.reasonofcomplaintTXT.setStyleSheet("color:white;")
+        self.reasonofcomplaintTXT.setFont(QFont("Century Gothic", 16))
+        self.boxesL.addWidget(self.reasonofcomplaintTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.reasonofcomplaintBOX = QtWidgets.QLineEdit()
+        self.reasonofcomplaintBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.reasonofcomplaintBOX.setFont(QFont("Century Gothic", 16))
+        self.reasonofcomplaintBOX.setFixedSize(300, 30)
+        self.boxesL.addWidget(self.reasonofcomplaintBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.complaintTXT = QtWidgets.QLabel()
+        self.complaintTXT.setText("Complaint :")
+        self.complaintTXT.setStyleSheet("color:white;")
+        self.complaintTXT.setFont(QFont("Century Gothic", 16))
+        self.boxesL.addWidget(self.complaintTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.complaintBOX = QtWidgets.QLineEdit()
+        self.complaintBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.complaintBOX.setFont(QFont("Century Gothic", 16))
+        self.complaintBOX.setFixedSize(300, 30)
+        self.boxesL.addWidget(self.complaintBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.complaintypeTXT = QtWidgets.QLabel()
+        self.complaintypeTXT.setText("Complaint Type :")
+        self.complaintypeTXT.setStyleSheet("color:white;")
+        self.complaintypeTXT.setFont(QFont("Century Gothic", 16))
+        self.boxesL.addWidget(self.complaintypeTXT)
+
+        self.complaintypeBOX = QtWidgets.QLineEdit()
+        self.complaintypeBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.complaintypeBOX.setFont(QFont("Century Gothic", 16))
+        self.complaintypeBOX.setFixedSize(300, 30)
+        self.boxesL.addWidget(self.complaintypeBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(18)
+        self.boxesL.addWidget(self.space)
+
+        self.submitFBTN = QtWidgets.QPushButton()
+        self.submitFBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.submitFBTN.setText("Submit Complaint")
+        self.submitFBTN.setFont(QFont("Century Gothic", 20))
+        self.submitFBTN.setFixedSize(180, 60)
+        self.submitFBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.boxesL.addWidget(self.submitFBTN)
+
+        self.back = QtWidgets.QPushButton()
+        self.back.setText("Back")
+        self.back.setFont(QFont("Century Gothic", 20))
+        self.back.setFixedSize(180, 60)
+        self.back.setCursor(QCursor(Qt.PointingHandCursor))
+        self.back.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.boxesL.addWidget(self.back)
+
+        self.boxesW.setLayout(self.boxesL)
+        self.mainL.addWidget(self.boxesW)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.setCentralWidget(self.mainW)
+
+        self.back.clicked.connect(self.mainpage_home_instructor)
+        #self.submitFBTN.clicked.connect(self.complain)
+
+        #instructor complaint
+
+    # def complain(self, complainee_id, course_id, description, complaint_type):
+    #     conn = sqlite3.connect("gsz.db")
+    #     c = conn.cursor()
+    #     sql = "INSERT INTO complaints(complainant_id, course_id, complainee_id, description, complaint_type) VALUES(?, ?, ?, ?, ?)"
+    #     c.execute(
+    #         sql, (self.user_id, course_id, complainee_id, description, complaint_type)
+    #     )
+    #     conn.commit()
+    #     conn.close()
+
+    def complaint_page_registrar(self):
+        self.setStyleSheet('background-color:#031926;')
+        self.mainW = QWidget()
+        self.mainL = QHBoxLayout()
+        self.mainL.setAlignment(Qt.AlignRight)
+
+        self.back = QtWidgets.QPushButton()
+        self.back.setText("Back")
+        self.back.setFont(QFont("Century Gothic", 20))
+        self.back.setFixedSize(180, 60)
+        self.back.setCursor(QCursor(Qt.PointingHandCursor))
+        self.back.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.mainL.addWidget(self.back)
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.setCentralWidget(self.mainW)
+
+        self.back.clicked.connect(self.mainpage_home_registrar)
 
     def signup_page(self):
         # setting background colour for the page
@@ -1696,8 +1976,8 @@ class mainWindow(QMainWindow):
             "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
         )
         self.BTNSL.addWidget(self.ComplaintBTN)
-        
-        self.reviewBTN = QtWidgets.QPushButton() # Michael test
+
+        self.reviewBTN = QtWidgets.QPushButton()  # Michael test
         self.reviewBTN.setFont(QFont("Century Gothic", 20))
         self.reviewBTN.setFixedSize(180, 60)
         self.reviewBTN.setText("Review")
@@ -1754,10 +2034,9 @@ class mainWindow(QMainWindow):
         self.account.clicked.connect(self.mainpage_account)
         self.logoutBTN.clicked.connect(self.startup_page)
         self.help.clicked.connect(self.mainpage_help)
-        self.ComplaintBTN.clicked.connect(self.student_compliant_page)
+        self.ComplaintBTN.clicked.connect(self.student_complaint_page)
         self.classes.clicked.connect(self.mainpage_classes)
         self.reviewBTN.clicked.connect(self.add_review_page)  # Michael Test
-        
 
     def mainpage_account(self):
         global id
@@ -1906,8 +2185,8 @@ class mainWindow(QMainWindow):
 
         self.accountDataL.addWidget(self.accountTypeTXT)
 
-        self.accountType = QtWidgets.QLabel()
-        self.accountType.setText(acc_type)
+        self.accountType = QtWidgets.QLabel()  #Aiman WHY?
+        self.accountType.setText("Student")
         self.accountType.setStyleSheet("color:#0583F2; border:0;")
         self.accountType.setFont(QFont("Century Gothic", 18))
 
@@ -2306,7 +2585,7 @@ class mainWindow(QMainWindow):
             "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
         )
         self.BTNSL.addWidget(self.ComplaintBTN)
-        
+
         self.assignGradeBTN = QtWidgets.QPushButton()  # Michael test
         self.assignGradeBTN.setFont(QFont("Century Gothic", 20))
         self.assignGradeBTN.setFixedSize(180, 60)
@@ -2362,10 +2641,10 @@ class mainWindow(QMainWindow):
         # checking if any buttons is clicked
         self.home.clicked.connect(self.mainpage_home_instructor)
         self.account.clicked.connect(self.mainpage_account_instructor)
-        # self.logoutBTN.clicked.connect(self.StartupStudent)
+        self.logoutBTN.clicked.connect(self.logout)
         self.help.clicked.connect(self.mainpage_help_instructor)
-        # self.ComplaintBTN.clicked.connect(self.student_compliant_page)
-        # create new page, 'instructor_compliant_page'
+        self.ComplaintBTN.clicked.connect(self.instructor_complaint_page)
+        # create new page, 'instructor_complaint_page'
         self.classes.clicked.connect(self.mainpage_classes_instructor)
         self.assignGradeBTN.clicked.connect(self.assign_grade_page)
 
@@ -2517,7 +2796,7 @@ class mainWindow(QMainWindow):
         self.accountDataL.addWidget(self.accountTypeTXT)
 
         self.accountType = QtWidgets.QLabel()
-        self.accountType.setText(acc_type)
+        self.accountType.setText("Instructor")
         self.accountType.setStyleSheet("color:#0583F2; border:0;")
         self.accountType.setFont(QFont("Century Gothic", 18))
 
@@ -2617,16 +2896,16 @@ class mainWindow(QMainWindow):
         self.BTNSW = QWidget()
         self.BTNSL = QHBoxLayout()
 
-        self.logoutBTN = QtWidgets.QPushButton()
-        self.logoutBTN.setText("Back")
-        self.logoutBTN.setFont(QFont("Century Gothic", 20))
-        self.logoutBTN.setFixedSize(180, 60)
-        self.logoutBTN.setCursor(QCursor(Qt.PointingHandCursor))
-        self.logoutBTN.setStyleSheet(
-            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
-        )
-        self.BTNSL.addWidget(self.logoutBTN)
+        #self.logoutBTN = QtWidgets.QPushButton()
+        #self.logoutBTN.setText("Back")
+        #self.logoutBTN.setFont(QFont("Century Gothic", 20))
+        #self.logoutBTN.setFixedSize(180, 60)
+        #self.logoutBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        #self.logoutBTN.setStyleSheet(
+        #    "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+        #    "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        #)
+        #self.BTNSL.addWidget(self.logoutBTN)
 
         self.BTNSW.setLayout(self.BTNSL)
 
@@ -2869,6 +3148,19 @@ class mainWindow(QMainWindow):
         )
         self.BTNSL.addWidget(self.applicationsBTN)
 
+        #Start
+        self.ReviewRegistrarBTN = QtWidgets.QPushButton()
+        self.ReviewRegistrarBTN.setText("Review")
+        self.ReviewRegistrarBTN.setFont(QFont("Century Gothic", 20))
+        self.ReviewRegistrarBTN.setFixedSize(180, 60)
+        self.ReviewRegistrarBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.ReviewRegistrarBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.BTNSL.addWidget(self.ReviewRegistrarBTN)
+        #End
+
         self.logoutBTN = QtWidgets.QPushButton()
         self.logoutBTN.setText("Logout")
         self.logoutBTN.setFont(QFont("Century Gothic", 20))
@@ -2917,8 +3209,9 @@ class mainWindow(QMainWindow):
         self.account.clicked.connect(self.mainpage_account_registrar)
         self.logoutBTN.clicked.connect(self.startup_page)
         self.help.clicked.connect(self.mainpage_help_registrar)
-        # self.ComplaintBTN.clicked.connect(self.student_compliant_page)
+        self.ComplaintBTN.clicked.connect(self.complaint_page_registrar)
         self.classes.clicked.connect(self.mainpage_classes_registrar)
+        self.ReviewRegistrarBTN.clicked.connect(self.review_page_registrar)
 
     def mainpage_account_registrar(self):
         global id
@@ -3067,8 +3360,8 @@ class mainWindow(QMainWindow):
 
         self.accountDataL.addWidget(self.accountTypeTXT)
 
-        self.accountType = QtWidgets.QLabel()
-        self.accountType.setText(acc_type)
+        self.accountType = QtWidgets.QLabel() #Aiman Why
+        self.accountType.setText("Registrar")
         self.accountType.setStyleSheet("color:#0583F2; border:0;")
         self.accountType.setFont(QFont("Century Gothic", 18))
 
@@ -3216,6 +3509,89 @@ class mainWindow(QMainWindow):
         self.help.clicked.connect(self.mainpage_help_registrar)
         self.classes.clicked.connect(self.mainpage_classes_registrar)
         # self.backToStartupBTN.clicked.connect(self.mainpage)
+    
+    #Joel
+    def review_page_registrar(self):
+        # setting background colour for the page
+        self.setStyleSheet("background-color:#031926;")
+        # main layout and widget
+        self.scroll = QtWidgets.QScrollArea()
+        self.mainW = QWidget()
+        self.mainL = QVBoxLayout()
+
+        # ----------------Design-----------------
+
+        self.main_contentW = QWidget()
+        self.main_contentL = QVBoxLayout()
+        self.main_contentL.setAlignment(Qt.AlignTop)
+
+        self.logoW = QWidget()
+        self.logoL = QVBoxLayout()
+        self.logoL.setContentsMargins(0, 0, 0, 0)
+
+        
+
+        review = sqlite3.connect("gsz.db")
+        df = display_db.pd.read_sql_query("SELECT * FROM reviews", review)
+        
+        self.model = display_db.pandasModel(df)
+        self.view = QTableView()
+        self.view.setModel(self.model)
+        ids = []
+        cboxes = []
+        index = 0
+        
+        self.view.resize(800, 600)
+        self.view.show()
+
+        self.main_contentW.setLayout(self.main_contentL)
+
+        self.back = QtWidgets.QPushButton()
+        self.back.setText("Back")
+        self.back.setFont(QFont("Century Gothic", 20))
+        self.back.setFixedSize(180, 60)
+        self.back.setCursor(QCursor(Qt.PointingHandCursor))
+        self.back.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.mainL.addWidget(self.back)
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.setCentralWidget(self.mainW)
+
+        
+
+        # -------------End of Design-------------
+
+        # applicant = sqlite3.connect("gsz.db")
+        # df = display_db.pd.read_sql_query("SELECT * FROM applicants", applicant)
+        # df = df.drop(["num_courses_taken", "applicant_id"], axis=1)
+
+        # model = display_db.pandasModel(df)
+        # view = QTableView()
+        # view.setModel(model)
+        # view.resize(800, 600)
+        # view.show()
+
+        # scroll settings
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.scroll.setWidget(self.mainW)
+        self.setCentralWidget(self.scroll)
+
+        
+        # checking if any buttons is clicked
+
+        self.back.clicked.connect(self.mainpage_home_registrar)
+        
+
+
+        
+
+        #End
 
     def mainpage_classes_registrar(self):
         global comboBox_stylesheet
@@ -3694,30 +4070,50 @@ class mainWindow(QMainWindow):
                 "QPushButton:pressed{background-color: #b30707;border-style: inset;}"
             )
 
-    def justification(self):
-        dlg = QDialog()
-        b1 = QPushButton("submit", dlg)
-        b1.move(50, 50)
+    def getJustification(self):
+        justification = self.justify_entry.text()
+        self.filePath = justification
+        self.dlg.accept()
 
-        dlg.setWindowTitle("Dialog")
-        dlg.setWindowModality(Qt.ApplicationModal)
-        dlg.exec_()
-        pass
+    def justification(self, msg):
+        self.filePath = None
+        self.dlg = QDialog()
+        self.justify = QtWidgets.QLabel(self.dlg)
+        self.justify.setText(msg)
+        self.justify.setFont(QFont("Century Gothic", 10))
+        self.justify.move(10, 10)
+        self.justify_entry = QtWidgets.QLineEdit(self.dlg)
+        self.justify_entry.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.justify_entry.setFont(QFont("Century Gothic", 16))
+        self.justify_entry.setFixedSize(150, 17)
+        self.justify_entry.move(20, 30)
 
-    def submit_application(self, ids, cboxes):
+        self.b1 = QPushButton("submit", self.dlg)
+        self.b1.move(50, 60)
+        self.b1.clicked.connect(self.getJustification)
+        self.b1.show()
+        self.dlg.setWindowTitle("Dialog")
+        self.dlg.setWindowModality(Qt.ApplicationModal)
+        self.dlg.exec_()
+
+    def submit_application(self, ids, decisions):
+        decisions = list(map(lambda x: x.currentText(), decisions))
         global user
         conn = sqlite3.connect("gsz.db")
-        index = 0
-        for id in ids:
-            if user.is_valid_applicant(id) and (cboxes[index].currentText() == "deny"):
+        for id, decision in zip(ids, decisions):
+            if user.is_valid_applicant(id) and (decision == "deny"):
                 conn = sqlite3.connect("gsz.db")
                 c = conn.cursor()
                 sql = "SELECT first, last, GPA FROM applicants WHERE applicant_id = ?"
                 c.execute(sql, (id,))
                 app_info = c.fetchone()
-                # pop_up box
-                # print(f"Why? {app_info[0]} {app_info[1]}'s GPA is {app_info[2]}?")
-            index += 1
+                msg = f"Why? {app_info[0]} {app_info[1]}'s GPA is {app_info[2]}?"
+                self.justification(msg)
+                user.email_result(id, decision, self.justification)
+            else:
+                user.email_result(id, decision, None)
         self.mainpage_home_registrar()
 
     def applications(self):
@@ -3791,7 +4187,7 @@ class mainWindow(QMainWindow):
             index += 1
         self.view.resize(800, 600)
         self.view.show()
-
+#worning or deregister
         # self.logo = QtWidgets.QLabel(self.logoW)
         # self.logo.setFixedHeight(200)
         # self.logo.setFixedWidth(200)
@@ -3927,7 +4323,7 @@ class mainWindow(QMainWindow):
         self.startup_page()  # Aiman last change
 
     def login(self):
-        global user
+        global user, name, email, id
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
@@ -3935,6 +4331,9 @@ class mainWindow(QMainWindow):
             (self.idBOX.text(), self.passwordBOX.text()),
         )
         row = c.fetchone()
+        name=f"{row[1]} {row[2]}"
+        email = str(row[4])
+        id = str(row[3])
         if row != None:
             # checking if it is a first login
             if row[7] == 1:
@@ -4089,12 +4488,10 @@ c.execute(
         complaint_id integer PRIMARY KEY,
         complainant_id integer NOT NULL,
         complainee_id integer NOT NULL,
-        course_id integer NOT NULL,
         description text NOT NULL,
         complaint_type text,
         FOREIGN KEY ('complainant_id') REFERENCES users (user_id),
-        FOREIGN KEY ('complainee_id') REFERENCES users (user_id),
-        FOREIGN KEY ('course_id') REFERENCES courses (course_id)
+        FOREIGN KEY ('complainee_id') REFERENCES users (user_id)
         )"""
 )
 conn.commit()
