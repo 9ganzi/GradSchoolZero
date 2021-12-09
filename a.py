@@ -43,7 +43,20 @@ class Ui_Form(object):
         Form.setWindowTitle(_translate("Form", "Form"))
         self.pushButton.setText(_translate("Form", "Show warning"))
     def pressed(self):
-        self.pushButton.setText("You have less than 2 classes")
+        import sqlite3
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        c.execute(
+            "SELECT * FROM students where num_courses_taken>2"
+        )
+
+        a = c.fetchall()
+
+        if ((a[0][3]) < 2):
+            self.pushButton.setText("You have less than 2 classes")
+        else:
+            self.pushButton.setText("You have no warning")
+        conn.close()
 
     
 
