@@ -433,6 +433,20 @@ class Student(User):
         conn.commit()
         conn.close()
 
+        # check if a student have less than 2 classes.
+        def less_than_2_courses(self):
+            conn = sqlite3.connect("gsz.db")
+            c = conn.cursor()
+            c.execute(
+                "SELECT enrollment_id FROM enrollments WHERE student_id = ?",
+                (self.student_id,),
+            )
+            num_courses = len(c.fetchall())
+            conn.close()
+            if num_courses <= 1:
+
+                self.receive_warning()
+
     def enroll_course(self, course_id):
         if not (self.is_eligible(course_id)):
             return 0
@@ -635,7 +649,7 @@ class Instructor(User):
             conn.close()
             return True
         conn.close()
-        self.recieve_warning()
+        self.receive_warning()
         return False
 
     def complain(self, complainee_id, course_id, description, complaint_type):
@@ -786,21 +800,21 @@ class Instructor(User):
 #         complaint_id integer PRIMARY KEY,
 #         complainant_id integer NOT NULL,
 #         complainee_id integer NOT NULL,
-#         course_id integer NOT NULL,
+
 #         description text NOT NULL,
 #         complaint_type text,
 #         FOREIGN KEY ('complainant_id') REFERENCES users (user_id),
-#         FOREIGN KEY ('complainee_id') REFERENCES users (user_id),
-#         FOREIGN KEY ('course_id') REFERENCES courses (course_id)
+#         FOREIGN KEY ('complainee_id') REFERENCES users (user_id)
+
 #         )"""
 # )
 # many_complaints = [
-#     (9, 6, 3, "loud", "de-register"),
-#     (9, 7, 3, "loud", "de-register"),
-#     (9, 8, 3, "loud", "de-register"),
+#     (9, 6, "loud", "de-register"),
+#     (9, 7, "loud", "de-register"),
+#     (9, 8, "loud", "de-register"),
 # ]
 # c.executemany(
-#     """INSERT INTO complaints(complainant_id, complainee_id, course_id, description, complaint_type) VALUES(?, ?, ?, ?, ?)""",
+#     """INSERT INTO complaints(complainant_id, complainee_id, description, complaint_type) VALUES(?, ?, ?, ?)""",
 #     many_complaints,
 # )
 # conn.commit()
@@ -1063,8 +1077,16 @@ class Instructor(User):
 # conn.commit()
 # conn.close()
 
-# # delete a table
-# sql = "DROP TABLE schedule"
+# delete a table
+# sql = "DROP TABLE complaints"
+# conn = sqlite3.connect("gsz.db")
+# c = conn.cursor()
+# c.execute(sql)
+# conn.commit()
+# conn.close()
+
+# # delete a column
+# sql = "ALTER TABLE complaints DROP COLUMN course_id"
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(sql)

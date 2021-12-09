@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>860</width>
+    <height>507</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QTableWidget" name="tableWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>90</y>
+     <width>521</width>
+     <height>171</height>
+    </rect>
+   </property>
+   <row>
+    <property name="text">
+     <string>Mo</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Tu</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>We</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Th</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Fr</string>
+    </property>
+   </row>
+   <column>
+    <property name="text">
+     <string>start hour</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>start min</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>end hour</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>end min</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>start hour</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>start min</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>end hour</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>end min</string>
+    </property>
+   </column>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

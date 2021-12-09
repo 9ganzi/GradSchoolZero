@@ -369,45 +369,27 @@ class mainWindow(QMainWindow):
 
 
         
-        # self.check_taboo()
+        self.check_taboo(self.reviewBOX.text().upper())
         self.close()
 
-    def check_taboo(self):
-        conn = sqlite3.connect("gsz.db")
-        c = conn.cursor()
-        c.execute(
-            "SELECT Review FROM reviews WHERE Review=?",
-            (self.reviewBOX.text()),
-        )
-        row = c.fetchone()
-        if row != None:
-            ID = row[0]
-            Name = row[1]
-            Class = row[2]
-            Student_id = row[3]
-            Prof_name = row[3]
-            rating = row[4]
-            review = row[5]
-
-        conn.commit()
-        conn.close()
-
+    def check_taboo(review):
+        
         with open("taboolist.txt") as f:
             lines = f.readlines()
 
         for line in lines:
             for l in line:
                 if l in review:
-                    taboo_word = self.toAsterisk(l)
+                    taboo_word = toAsterisk(l)
                     conn = sqlite3.connect("reviews.db")
                     c = conn.cursor()
                     c.execute(
                         """
                                 UPDATE reviews
                                 SET Review = taboo_word
-                                WHERE ID = row[0]"""
+                                WHERE review_id = row[0]"""
                     )
-                    self.receive_warning_std(ID)
+                    
         conn.commit()
         conn.close()
 
