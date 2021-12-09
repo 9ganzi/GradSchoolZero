@@ -176,7 +176,12 @@ class mainWindow(QMainWindow):
         # -----------------------------------------#
         # self.justification()
         # -----------comment this line!!-----------#
-
+    # mike
+    def apply_graduation_student(self):
+        global user
+        user.apply_graduation()
+        self.mainpage_home_student()
+        
     # Joel
     def add_review_page(self):
         # setting background colour for the page
@@ -1576,7 +1581,7 @@ class mainWindow(QMainWindow):
 
         # Start
         self.sssssBTN = QtWidgets.QPushButton()
-        self.sssssBTN.setText("Submit")
+        self.sssssBTN.setText("Submit warning")
         self.sssssBTN.setFont(QFont("Century Gothic", 20))
         self.sssssBTN.setFixedSize(180, 60)
         self.sssssBTN.setCursor(QCursor(Qt.PointingHandCursor))
@@ -1588,6 +1593,36 @@ class mainWindow(QMainWindow):
         self.BTNSW.setLayout(self.BTNSL)
 
         # End
+        self.space = QWidget()
+        self.space.setFixedHeight(200)
+        self.boxesL.addWidget(self.space)
+
+        # Start mike
+        self.expelBTN = QtWidgets.QPushButton()
+        self.expelBTN.setText("expel")
+        self.expelBTN.setFont(QFont("Century Gothic", 20))
+        self.expelBTN.setFixedSize(180, 60)
+        self.expelBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.expelBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.BTNSL.addWidget(self.expelBTN)
+        self.BTNSW.setLayout(self.BTNSL)
+
+        self.graduateBTN = QtWidgets.QPushButton()
+        self.graduateBTN.setText("Graduate Student")
+        self.graduateBTN.setFont(QFont("Century Gothic", 20))
+        self.graduateBTN.setFixedSize(180, 60)
+        self.graduateBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.graduateBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.BTNSL.addWidget(self.expelBTN)
+        self.BTNSW.setLayout(self.BTNSL)
+
+        # mike End
 
         self.backToMainBTN = QtWidgets.QPushButton()
         self.backToMainBTN.setText("Back")
@@ -1600,6 +1635,9 @@ class mainWindow(QMainWindow):
         )
         self.btnsL.addWidget(self.backToMainBTN)
         self.mainL.addWidget(self.sssssBTN)  # Aiman
+        self.mainL.addWidget(self.expelBTN)
+        self.mainL.addWidget(self.graduateBTN)
+
 
         self.btnsW.setLayout(self.btnsL)
         self.boxesL.addWidget(self.btnsW)
@@ -1626,9 +1664,95 @@ class mainWindow(QMainWindow):
 
         # checking if any buttons is clicked
         self.backToMainBTN.clicked.connect(self.mainpage_home_registrar)
-        self.sssssBTN.clicked.connect(self.issuewarning_page_registrar)
+        self.sssssBTN.clicked.connect(self.issue_warning_user)
+        self.expelBTN.clicked.connect(self.expel_user)
+        self.graduateBTN.clicked.connect(self.graduate_student)
         # self.signUpBTN.clicked.connect(self.signup_page)
         # self.loginFBTN.clicked.connect(self.login)
+   
+    def graduate_student(self):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        user_type = c.execute(
+            "SELECT user_type From users where user_id = :user_id",
+            {"user_id": self.useridBOX.text()}, ).fetchone()[0]
+        if user_type == 'student':
+            c.execute(
+                """UPDATE students SET Degree = 'Masters'
+                                WHERE student_id = (SELECT student_id FROM students WHERE user_id =:user_id)""",
+                {"user_id": self.useridBOX.text()}
+            )
+            conn.commit()
+            conn.close()
+            self.mainpage_home_registrar()
+            return
+        print("cannot graduate non students")
+        self.mainpage_home_registrar()
+
+    def expel_user(self):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        # get user type
+        user_type = c.execute(
+            "SELECT user_type From users where user_id = :user_id",
+            {"user_id": self.useridBOX.text()}, ).fetchone()[0]
+        if user_type == 'Registrar':
+            print("cannot expel registrars")
+            self.mainpage_home_registrar()
+
+        c.execute(
+                "DELETE FROM users WHERE user_id=:user_id",
+                {"user_id": self.useridBOX.text()}, )
+        conn.commit()
+        conn.close()
+        self.mainpage_home_registrar()
+
+
+    def issue_warning_user(self):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        # get user type
+        user_type= c.execute(
+                "SELECT user_type From users where user_id = :user_id",
+                {"user_id": self.useridBOX.text()},).fetchone()[0]
+        if user_type == 'Registrar':
+            print("cannot warn registrars")
+            self.mainpage_home_registrar()
+        if user_type == 'instructor':
+            c.execute(
+                    "SELECT warning_count From instructors where user_id = :user_id",
+                    {"user_id": self.useridBOX.text()},)
+            new_warning_count = (
+                    c.fetchone()[0] + 1
+                )  # c.fetchone()[0] isolate variable from tuple
+                # print(new_warning_count)
+                # update student warning_count
+            c.execute(
+                    """UPDATE instructors SET warning_count = :new_warning_count
+                                    WHERE user_id =:user_id""",
+                    {"user_id": self.useridBOX.text(), "new_warning_count": new_warning_count}
+            )
+            conn.commit()
+            conn.close()
+            self.mainpage_home_registrar()
+        if user_type == 'student':
+            c.execute(
+                    "SELECT warning_count From students where user_id = :user_id",
+                    {"user_id": self.useridBOX.text()},)
+            new_warning_count = (
+                    c.fetchone()[0] + 1
+                )  # c.fetchone()[0] isolate variable from tuple
+                # print(new_warning_count)
+                # update student warning_count
+            c.execute(
+                    """UPDATE students SET warning_count = :new_warning_count
+                                    WHERE user_id =:user_id""",
+                    {"user_id": self.useridBOX.text(), "new_warning_count": new_warning_count}
+            )
+            conn.commit()
+            conn.close()
+            self.mainpage_home_registrar()
+            
         # Merge End
 
         # Merge Start?
