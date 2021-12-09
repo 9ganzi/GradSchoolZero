@@ -176,12 +176,13 @@ class mainWindow(QMainWindow):
         # -----------------------------------------#
         # self.justification()
         # -----------comment this line!!-----------#
+
     # mike
     def apply_graduation_student(self):
         global user
         user.apply_graduation()
         self.mainpage_home_student()
-        
+
     # Joel
     def add_review_page(self):
         # setting background colour for the page
@@ -1638,7 +1639,6 @@ class mainWindow(QMainWindow):
         self.mainL.addWidget(self.expelBTN)
         self.mainL.addWidget(self.graduateBTN)
 
-
         self.btnsW.setLayout(self.btnsL)
         self.boxesL.addWidget(self.btnsW)
 
@@ -1669,18 +1669,19 @@ class mainWindow(QMainWindow):
         self.graduateBTN.clicked.connect(self.graduate_student)
         # self.signUpBTN.clicked.connect(self.signup_page)
         # self.loginFBTN.clicked.connect(self.login)
-   
+
     def graduate_student(self):
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         user_type = c.execute(
             "SELECT user_type From users where user_id = :user_id",
-            {"user_id": self.useridBOX.text()}, ).fetchone()[0]
-        if user_type == 'student':
+            {"user_id": self.useridBOX.text()},
+        ).fetchone()[0]
+        if user_type == "student":
             c.execute(
                 """UPDATE students SET Degree = 'Masters'
                                 WHERE student_id = (SELECT student_id FROM students WHERE user_id =:user_id)""",
-                {"user_id": self.useridBOX.text()}
+                {"user_id": self.useridBOX.text()},
             )
             conn.commit()
             conn.close()
@@ -1695,64 +1696,74 @@ class mainWindow(QMainWindow):
         # get user type
         user_type = c.execute(
             "SELECT user_type From users where user_id = :user_id",
-            {"user_id": self.useridBOX.text()}, ).fetchone()[0]
-        if user_type == 'Registrar':
+            {"user_id": self.useridBOX.text()},
+        ).fetchone()[0]
+        if user_type == "Registrar":
             print("cannot expel registrars")
             self.mainpage_home_registrar()
 
         c.execute(
-                "DELETE FROM users WHERE user_id=:user_id",
-                {"user_id": self.useridBOX.text()}, )
+            "DELETE FROM users WHERE user_id=:user_id",
+            {"user_id": self.useridBOX.text()},
+        )
         conn.commit()
         conn.close()
         self.mainpage_home_registrar()
-
 
     def issue_warning_user(self):
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         # get user type
-        user_type= c.execute(
-                "SELECT user_type From users where user_id = :user_id",
-                {"user_id": self.useridBOX.text()},).fetchone()[0]
-        if user_type == 'Registrar':
+        user_type = c.execute(
+            "SELECT user_type From users where user_id = :user_id",
+            {"user_id": self.useridBOX.text()},
+        ).fetchone()[0]
+        if user_type == "Registrar":
             print("cannot warn registrars")
             self.mainpage_home_registrar()
-        if user_type == 'instructor':
+        if user_type == "instructor":
             c.execute(
-                    "SELECT warning_count From instructors where user_id = :user_id",
-                    {"user_id": self.useridBOX.text()},)
+                "SELECT warning_count From instructors where user_id = :user_id",
+                {"user_id": self.useridBOX.text()},
+            )
             new_warning_count = (
-                    c.fetchone()[0] + 1
-                )  # c.fetchone()[0] isolate variable from tuple
-                # print(new_warning_count)
-                # update student warning_count
+                c.fetchone()[0] + 1
+            )  # c.fetchone()[0] isolate variable from tuple
+            # print(new_warning_count)
+            # update student warning_count
             c.execute(
-                    """UPDATE instructors SET warning_count = :new_warning_count
+                """UPDATE instructors SET warning_count = :new_warning_count
                                     WHERE user_id =:user_id""",
-                    {"user_id": self.useridBOX.text(), "new_warning_count": new_warning_count}
+                {
+                    "user_id": self.useridBOX.text(),
+                    "new_warning_count": new_warning_count,
+                },
             )
             conn.commit()
             conn.close()
             self.mainpage_home_registrar()
-        if user_type == 'student':
+        if user_type == "student":
             c.execute(
-                    "SELECT warning_count From students where user_id = :user_id",
-                    {"user_id": self.useridBOX.text()},)
+                "SELECT warning_count From students where user_id = :user_id",
+                {"user_id": self.useridBOX.text()},
+            )
             new_warning_count = (
-                    c.fetchone()[0] + 1
-                )  # c.fetchone()[0] isolate variable from tuple
-                # print(new_warning_count)
-                # update student warning_count
+                c.fetchone()[0] + 1
+            )  # c.fetchone()[0] isolate variable from tuple
+            # print(new_warning_count)
+            # update student warning_count
             c.execute(
-                    """UPDATE students SET warning_count = :new_warning_count
+                """UPDATE students SET warning_count = :new_warning_count
                                     WHERE user_id =:user_id""",
-                    {"user_id": self.useridBOX.text(), "new_warning_count": new_warning_count}
+                {
+                    "user_id": self.useridBOX.text(),
+                    "new_warning_count": new_warning_count,
+                },
             )
             conn.commit()
             conn.close()
             self.mainpage_home_registrar()
-            
+
         # Merge End
 
         # Merge Start?
