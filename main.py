@@ -3567,10 +3567,39 @@ class mainWindow(QMainWindow):
     
     #Start
     def review_page_registrar(self):
-        self.setStyleSheet('background-color:#031926;')
+        # setting background colour for the page
+        self.setStyleSheet("background-color:#031926;")
+        # main layout and widget
+        self.scroll = QtWidgets.QScrollArea()
         self.mainW = QWidget()
-        self.mainL = QHBoxLayout()
-        self.mainL.setAlignment(Qt.AlignRight)
+        self.mainL = QVBoxLayout()
+
+        # ----------------Design-----------------
+
+        self.main_contentW = QWidget()
+        self.main_contentL = QVBoxLayout()
+        self.main_contentL.setAlignment(Qt.AlignTop)
+
+        self.logoW = QWidget()
+        self.logoL = QVBoxLayout()
+        self.logoL.setContentsMargins(0, 0, 0, 0)
+
+        
+
+        review = sqlite3.connect("gsz.db")
+        df = display_db.pd.read_sql_query("SELECT * FROM reviews", review)
+        
+        self.model = display_db.pandasModel(df)
+        self.view = QTableView()
+        self.view.setModel(self.model)
+        ids = []
+        cboxes = []
+        index = 0
+        
+        self.view.resize(800, 600)
+        self.view.show()
+
+        self.main_contentW.setLayout(self.main_contentL)
 
         self.back = QtWidgets.QPushButton()
         self.back.setText("Back")
@@ -3585,9 +3614,34 @@ class mainWindow(QMainWindow):
         self.mainW.setLayout(self.mainL)
         self.setCentralWidget(self.mainW)
 
-        self.back.clicked.connect(self.mainpage_home_registrar)
+        
 
-        #End
+        # -------------End of Design-------------
+
+        # applicant = sqlite3.connect("gsz.db")
+        # df = display_db.pd.read_sql_query("SELECT * FROM applicants", applicant)
+        # df = df.drop(["num_courses_taken", "applicant_id"], axis=1)
+
+        # model = display_db.pandasModel(df)
+        # view = QTableView()
+        # view.setModel(model)
+        # view.resize(800, 600)
+        # view.show()
+
+        # scroll settings
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.scroll.setWidget(self.mainW)
+        self.setCentralWidget(self.scroll)
+
+        
+        # checking if any buttons is clicked
+
+        self.back.clicked.connect(self.mainpage_home_registrar)
+        
 
     def mainpage_classes_registrar(self):
         global comboBox_stylesheet
