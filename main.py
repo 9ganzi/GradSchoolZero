@@ -1,5 +1,4 @@
 import sqlite3
-
 from pandas.core.indexing import _IndexSlice
 from datetime import datetime
 

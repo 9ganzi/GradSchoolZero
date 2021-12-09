@@ -716,51 +716,51 @@ class Instructor(User):
 
 # testing database
 
-# # applicants table
-# conn = sqlite3.connect("gsz.db")
-# c = conn.cursor()
-# c.execute(
-#     """CREATE TABLE IF NOT EXISTS applicants(
-#         applicant_id integer PRIMARY KEY,
-#         first text NOT NULL,
-#         last text NOT NULL,
-#         email text NOT NULL,
-#         gpa real,
-#         resume text,
-#         num_courses_taken integer,
-#         user_type text NOT NULL
-#         )"""
-# )
-# many_applicants = [
-#     ("Kevin", "Durant", "gutiday14@gmail.com", "3.7", "None", 6, "student"),
-#     ("Lebron", "James", "gutiday14@gmail.com", "2.7", "None", 6, "student"),
-#     ("John", "Doe", "gutiday14@gmail.com", "5", None, 3, "student"),
-#     (
-#         "Jane",
-#         "Doe",
-#         "gutiday14@gmail.com",
-#         None,
-#         "I'm a good teacher",
-#         None,
-#         "instructor",
-#     ),
-#     ("Kevin", "Hart", "gutiday14@gmail.com", "3.7", "None", 6, "student"),
-#     (
-#         "Ashley",
-#         "Doe",
-#         "gutiday14@gmail.com",
-#         None,
-#         "I'm a bad teacher",
-#         None,
-#         "instructor",
-#     ),
-# ]
-# c.executemany(
-#     """INSERT INTO applicants(first, last, email, gpa, resume, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)""",
-#     many_applicants,
-# )
-# conn.commit()
-# conn.close()
+# applicants table
+conn = sqlite3.connect("gsz.db")
+c = conn.cursor()
+c.execute(
+    """CREATE TABLE IF NOT EXISTS applicants(
+        applicant_id integer PRIMARY KEY,
+        first text NOT NULL,
+        last text NOT NULL,
+        email text NOT NULL,
+        gpa real,
+        resume text,
+        num_courses_taken integer,
+        user_type text NOT NULL
+        )"""
+)
+many_applicants = [
+    ("Kevin", "Durant", "gutiday14@gmail.com", "3.7", "None", 6, "student"),
+    ("Lebron", "James", "gutiday14@gmail.com", "2.7", "None", 6, "student"),
+    ("John", "Doe", "gutiday14@gmail.com", "5", None, 3, "student"),
+    (
+        "Jane",
+        "Doe",
+        "gutiday14@gmail.com",
+        None,
+        "I'm a good teacher",
+        None,
+        "instructor",
+    ),
+    ("Kevin", "Hart", "gutiday14@gmail.com", "3.7", "None", 6, "student"),
+    (
+        "Ashley",
+        "Doe",
+        "gutiday14@gmail.com",
+        None,
+        "I'm a bad teacher",
+        None,
+        "instructor",
+    ),
+]
+c.executemany(
+    """INSERT INTO applicants(first, last, email, gpa, resume, num_courses_taken, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+    many_applicants,
+)
+conn.commit()
+conn.close()
 
 
 # # users table
