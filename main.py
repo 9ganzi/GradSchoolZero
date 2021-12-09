@@ -2055,9 +2055,23 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.mainW)
 
         self.back.clicked.connect(self.mainpage_home_student)
+     
+        #EnD
+    def pressed(self):
+        import sqlite3
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        c.execute(
+            "SELECT * FROM students where num_courses_taken>2"
+        )
 
-        #End
+        a = c.fetchall()
 
+        if ((a[0][3]) < 2):
+            self.pushButton.setText("You have less than 2 classes")
+        else:
+            self.pushButton.setText("no warning")
+        conn.close()
     def mainpage_account(self):
         global id
         global acc_type
