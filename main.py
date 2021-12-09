@@ -2040,6 +2040,16 @@ class mainWindow(QMainWindow):
         self.mainW = QWidget()
         self.mainL = QHBoxLayout()
         self.mainL.setAlignment(Qt.AlignRight)
+        
+        self.back = QtWidgets.QPushButton()  #Aiman
+        self.back.setText("Warnings")
+        self.back.setFont(QFont("Century Gothic", 50))
+        self.back.setFixedSize(500, 70)
+        self.back.setCursor(QCursor(Qt.PointingHandCursor))
+        self.back.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.mainL.addWidget(self.back)    #Aiman
 
         self.back = QtWidgets.QPushButton()
         self.back.setText("Back")
