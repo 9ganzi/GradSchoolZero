@@ -92,7 +92,7 @@ def display_honor_roll():
     conn = sqlite3.connect("gsz.db")
     c = conn.cursor()
     honor_students_join = c.execute(
-        """SELECT first, last, gpa FROM users Inner Join students USING(user_id) LIMIT 5""",
+        """SELECT first, last, gpa FROM users Inner Join students USING(user_id) ORDER BY gpa DESC LIMIT 5""",
     ).fetchall()
     result2 = []
     final_result = "Highest Rated Students: \n\n"
@@ -1100,7 +1100,9 @@ class mainWindow(QMainWindow):
         )
 
         self.lowestRatedClassesTXT = QtWidgets.QLabel()
+
         self.lowestRatedClassesTXT.setText(display_lowest_classes())
+
         self.lowestRatedClassesTXT.setFont(QFont("Century Gothic", 20))
         self.lowestRatedClassesTXT.setStyleSheet("border:0;color:white;")
 
