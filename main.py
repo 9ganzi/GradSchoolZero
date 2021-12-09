@@ -2585,7 +2585,7 @@ class mainWindow(QMainWindow):
         self.accountDataL.addWidget(self.accountTypeTXT)
 
         self.accountType = QtWidgets.QLabel()
-        self.accountType.setText(acc_type)
+        self.accountType.setText("Instructor")
         self.accountType.setStyleSheet("color:#0583F2; border:0;")
         self.accountType.setFont(QFont("Century Gothic", 18))
 
@@ -3136,7 +3136,7 @@ class mainWindow(QMainWindow):
         self.accountDataL.addWidget(self.accountTypeTXT)
 
         self.accountType = QtWidgets.QLabel()
-        self.accountType.setText("Registrar)
+        self.accountType.setText("Registrar")
         self.accountType.setStyleSheet("color:#0583F2; border:0;")
         self.accountType.setFont(QFont("Century Gothic", 18))
 
