@@ -4,6 +4,7 @@ import sqlite3
 
 # import task5
 import display_db
+from PyQt5.uic import loadUi
 import sys
 import csv
 import os
@@ -21,6 +22,8 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QComboBox,
     QDialog,
+    QTableWidget,
+    QTableWidgetItem,
 )
 from PyQt5.QtCore import Qt, QRegExp
 from PyQt5.QtGui import QFont, QPixmap, QCursor, QRegExpValidator, QStandardItem
@@ -1323,9 +1326,9 @@ class mainWindow(QMainWindow):
         )
         conn.commit()
         conn.close()
-        
-    def compliant_page_registrar(self): #Aiman 11/8
-        self.setStyleSheet('background-color:#031926;')
+
+    def compliant_page_registrar(self):  # Aiman 11/8
+        self.setStyleSheet("background-color:#031926;")
         self.mainW = QWidget()
         self.mainL = QHBoxLayout()
         self.mainL.setAlignment(Qt.AlignRight)
@@ -1335,15 +1338,17 @@ class mainWindow(QMainWindow):
         self.back.setFont(QFont("Century Gothic", 20))
         self.back.setFixedSize(180, 60)
         self.back.setCursor(QCursor(Qt.PointingHandCursor))
-        self.back.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.back.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
 
         self.mainL.addWidget(self.back)
         # Connecting the main layout and widget
         self.mainW.setLayout(self.mainL)
         self.setCentralWidget(self.mainW)
 
-        self.back.clicked.connect(self.mainpage_home_registrar)#Aiman 11/8
+        self.back.clicked.connect(self.mainpage_home_registrar)  # Aiman 11/8
 
     def signup_page(self):
         # setting background colour for the page
@@ -3285,6 +3290,33 @@ class mainWindow(QMainWindow):
         self.classes.clicked.connect(self.mainpage_classes_registrar)
         # self.backToStartupBTN.clicked.connect(self.mainpage)
 
+    def add_classes(self, days):
+        global user
+        schedule = []
+        for day in days:
+            tmp = list(map(lambda x: x.currentText(), day[1:6]))
+            tmp.append(day[0])
+            # print(tmp)
+            if tmp[4] == "on":
+                schedule.append(tmp)
+        # print(schedule)
+        class_name = self.nameRegistrar.text()
+        instructor = self.instructor.currentText()
+        seats = self.seats.currentText()
+        time = list(
+            map(
+                lambda x: x[5] + " " + x[0] + ":" + x[1] + " - " + x[2] + ":" + x[3],
+                schedule,
+            )
+        )
+        time = str(time).strip("[]").replace("'", "")
+        user.course_set_up(class_name, time, 1, seats)
+        self.mainpage_classes_registrar()
+
+    # def course_set_up(self, name, time, instructor, size):
+    # instructor1 = Instructor(args[0])
+    # reg1.course_set_up("CSC 33500", "Tu 12:00 - 1:15, We 12:00 - 2:30", args[0], 25)
+
     def mainpage_classes_registrar(self):
         global comboBox_stylesheet
         # setting background colour for the page
@@ -3401,9 +3433,13 @@ class mainWindow(QMainWindow):
         self.instructor.setFont(QFont("Century Gothic", 16))
         self.instructor.setFixedSize(400, 40)
 
-        global instructors
-        for i in instructors:
-            self.instructor.addItem(str(f"  {i}"))
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        sql = "SELECT first, last FROM users WHERE user_type = ?"
+        c.execute(sql, ("instructor",))
+        instructor_names = c.fetchall()
+        for instructor_name in instructor_names:
+            self.instructor.addItem(instructor_name[0] + " " + instructor_name[1])
 
         self.seatsTXT = QtWidgets.QLabel()
         self.seatsTXT.setText("Seats :")
@@ -3419,285 +3455,55 @@ class mainWindow(QMainWindow):
         for i in range(11):
             self.seats.addItem(str(f"  {i+5}"))
 
-        self.scheduleTXT = QtWidgets.QLabel()
-        self.scheduleTXT.setText("Schedule :")
-        self.scheduleTXT.setStyleSheet("color:white;padding-bottom:10px;")
-        self.scheduleTXT.setFont(QFont("Century Gothic", 20))
+        # self.scheduleTXT = QtWidgets.QLabel()
+        # self.scheduleTXT.setText("Schedule :")
+        # self.scheduleTXT.setStyleSheet("color:white;padding-bottom:10px;")
+        # self.scheduleTXT.setFont(QFont("Century Gothic", 20))
 
-        self.mondayW = QWidget()
-        self.mondayL = QHBoxLayout()
+        schedule = sqlite3.connect("gsz.db")
+        df = display_db.pd.read_sql_query("SELECT * FROM schedule", schedule)
+        self.model = display_db.pandasModel(df)
+        self.view = QTableView()
+        self.view.setModel(self.model)
+        mo, tu, we, th, fr = ["Mo"], ["Tu"], ["We"], ["Th"], ["Fr"]
+        for index, row in df.iterrows():
+            # print(row)
+            for i in range(1, 5):
+                c = QComboBox()
+                if i % 2 == 1:
+                    c.addItems(list(map(lambda x: str(x), list(range(8, 21)))))
+                else:
+                    c.addItems(list(map(lambda x: str(x), list(range(15, 56, 15)))))
+                x = self.view.model().index(index, i)
+                self.view.setIndexWidget(x, c)
+                if row[0] == "Mo":
+                    mo.append(c)
+                elif row[0] == "Tu":
+                    tu.append(c)
+                elif row[0] == "We":
+                    we.append(c)
+                elif row[0] == "Th":
+                    th.append(c)
+                else:
+                    fr.append(c)
+            c = QComboBox()
+            if row[0] == "Mo":
+                mo.append(c)
+            elif row[0] == "Tu":
+                tu.append(c)
+            elif row[0] == "We":
+                we.append(c)
+            elif row[0] == "Th":
+                th.append(c)
+            else:
+                fr.append(c)
+            c.addItems(["off", "on"])
+            x = self.view.model().index(index, 5)
+            self.view.setIndexWidget(x, c)
+        self.view.resize(800, 600)
+        self.view.show()
 
-        self.mondayTXT = QtWidgets.QLabel()
-        self.mondayTXT.setText("Monday :")
-        self.mondayTXT.setStyleSheet("color:white;padding-bottom:10px;")
-        self.mondayTXT.setFont(QFont("Century Gothic", 18))
-
-        self.mondayHRS_min = QtWidgets.QComboBox()
-        self.mondayHRS_min.setStyleSheet(comboBox_stylesheet)
-        self.mondayHRS_min.setFont(QFont("Century Gothic", 16))
-        self.mondayHRS_min.setFixedSize(60, 45)
-        self.mondayHRS_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(24):
-            self.mondayHRS_min.addItem(str(i + 1))
-
-        self.mondayMIN_min = QtWidgets.QComboBox()
-        self.mondayMIN_min.setStyleSheet(comboBox_stylesheet)
-        self.mondayMIN_min.setFont(QFont("Century Gothic", 16))
-        self.mondayMIN_min.setFixedSize(60, 45)
-        self.mondayMIN_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(59):
-            self.mondayMIN_min.addItem(str(i + 1))
-
-        self.mondayHRS_max = QtWidgets.QComboBox()
-        self.mondayHRS_max.setStyleSheet(comboBox_stylesheet)
-        self.mondayHRS_max.setFont(QFont("Century Gothic", 16))
-        self.mondayHRS_max.setFixedSize(60, 45)
-        self.mondayHRS_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(24):
-            self.mondayHRS_max.addItem(str(i + 1))
-
-        self.mondayMIN_max = QtWidgets.QComboBox()
-        self.mondayMIN_max.setStyleSheet(comboBox_stylesheet)
-        self.mondayMIN_max.setFont(QFont("Century Gothic", 16))
-        self.mondayMIN_max.setFixedSize(60, 45)
-        self.mondayMIN_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(59):
-            self.mondayMIN_max.addItem(str(i + 1))
-
-        self.space = QWidget()
-        self.space.setFixedWidth(50)
-
-        self.mondayL.addWidget(self.mondayTXT)
-        self.mondayL.addWidget(self.mondayHRS_min)
-        self.mondayL.addWidget(self.mondayMIN_min)
-        self.mondayL.addWidget(self.space)
-        self.mondayL.addWidget(self.mondayHRS_max)
-        self.mondayL.addWidget(self.mondayMIN_max)
-        self.mondayW.setLayout(self.mondayL)
-
-        self.tuesdayW = QWidget()
-        self.tuesdayL = QHBoxLayout()
-
-        self.tuesdayTXT = QtWidgets.QLabel()
-        self.tuesdayTXT.setText("Tuesday :")
-        self.tuesdayTXT.setStyleSheet("color:white;padding-bottom:10px;")
-        self.tuesdayTXT.setFont(QFont("Century Gothic", 18))
-
-        self.tuesdayHRS_min = QtWidgets.QComboBox()
-        self.tuesdayHRS_min.setStyleSheet(comboBox_stylesheet)
-        self.tuesdayHRS_min.setFont(QFont("Century Gothic", 16))
-        self.tuesdayHRS_min.setFixedSize(60, 45)
-        self.tuesdayHRS_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(24):
-            self.tuesdayHRS_min.addItem(str(i + 1))
-
-        self.tuesdayMIN_min = QtWidgets.QComboBox()
-        self.tuesdayMIN_min.setStyleSheet(comboBox_stylesheet)
-        self.tuesdayMIN_min.setFont(QFont("Century Gothic", 16))
-        self.tuesdayMIN_min.setFixedSize(60, 45)
-        self.tuesdayMIN_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(59):
-            self.tuesdayMIN_min.addItem(str(i + 1))
-
-        self.tuesdayHRS_max = QtWidgets.QComboBox()
-        self.tuesdayHRS_max.setStyleSheet(comboBox_stylesheet)
-        self.tuesdayHRS_max.setFont(QFont("Century Gothic", 16))
-        self.tuesdayHRS_max.setFixedSize(60, 45)
-        self.tuesdayHRS_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(24):
-            self.tuesdayHRS_max.addItem(str(i + 1))
-
-        self.tuesdayMIN_max = QtWidgets.QComboBox()
-        self.tuesdayMIN_max.setStyleSheet(comboBox_stylesheet)
-        self.tuesdayMIN_max.setFont(QFont("Century Gothic", 16))
-        self.tuesdayMIN_max.setFixedSize(60, 45)
-        self.tuesdayMIN_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(59):
-            self.tuesdayMIN_max.addItem(str(i + 1))
-
-        self.space = QWidget()
-        self.space.setFixedWidth(50)
-
-        self.tuesdayL.addWidget(self.tuesdayTXT)
-        self.tuesdayL.addWidget(self.tuesdayHRS_min)
-        self.tuesdayL.addWidget(self.tuesdayMIN_min)
-        self.tuesdayL.addWidget(self.space)
-        self.tuesdayL.addWidget(self.tuesdayHRS_max)
-        self.tuesdayL.addWidget(self.tuesdayMIN_max)
-        self.tuesdayW.setLayout(self.tuesdayL)
-
-        self.wednesdayW = QWidget()
-        self.wednesdayL = QHBoxLayout()
-
-        self.wednesdayTXT = QtWidgets.QLabel()
-        self.wednesdayTXT.setText("wednesday :")
-        self.wednesdayTXT.setStyleSheet("color:white;padding-bottom:10px;")
-        self.wednesdayTXT.setFont(QFont("Century Gothic", 18))
-
-        self.wednesdayHRS_min = QtWidgets.QComboBox()
-        self.wednesdayHRS_min.setStyleSheet(comboBox_stylesheet)
-        self.wednesdayHRS_min.setFont(QFont("Century Gothic", 16))
-        self.wednesdayHRS_min.setFixedSize(60, 45)
-        self.wednesdayHRS_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(24):
-            self.wednesdayHRS_min.addItem(str(i + 1))
-
-        self.wednesdayMIN_min = QtWidgets.QComboBox()
-        self.wednesdayMIN_min.setStyleSheet(comboBox_stylesheet)
-        self.wednesdayMIN_min.setFont(QFont("Century Gothic", 16))
-        self.wednesdayMIN_min.setFixedSize(60, 45)
-        self.wednesdayMIN_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(59):
-            self.wednesdayMIN_min.addItem(str(i + 1))
-
-        self.wednesdayHRS_max = QtWidgets.QComboBox()
-        self.wednesdayHRS_max.setStyleSheet(comboBox_stylesheet)
-        self.wednesdayHRS_max.setFont(QFont("Century Gothic", 16))
-        self.wednesdayHRS_max.setFixedSize(60, 45)
-        self.wednesdayHRS_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(24):
-            self.wednesdayHRS_max.addItem(str(i + 1))
-
-        self.wednesdayMIN_max = QtWidgets.QComboBox()
-        self.wednesdayMIN_max.setStyleSheet(comboBox_stylesheet)
-        self.wednesdayMIN_max.setFont(QFont("Century Gothic", 16))
-        self.wednesdayMIN_max.setFixedSize(60, 45)
-        self.wednesdayMIN_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(59):
-            self.wednesdayMIN_max.addItem(str(i + 1))
-
-        self.space = QWidget()
-        self.space.setFixedWidth(50)
-
-        self.wednesdayL.addWidget(self.wednesdayTXT)
-        self.wednesdayL.addWidget(self.wednesdayHRS_min)
-        self.wednesdayL.addWidget(self.wednesdayMIN_min)
-        self.wednesdayL.addWidget(self.space)
-        self.wednesdayL.addWidget(self.wednesdayHRS_max)
-        self.wednesdayL.addWidget(self.wednesdayMIN_max)
-        self.wednesdayW.setLayout(self.wednesdayL)
-
-        self.thursdayW = QWidget()
-        self.thursdayL = QHBoxLayout()
-
-        self.thursdayTXT = QtWidgets.QLabel()
-        self.thursdayTXT.setText("Thursday :")
-        self.thursdayTXT.setStyleSheet("color:white;padding-bottom:10px;")
-        self.thursdayTXT.setFont(QFont("Century Gothic", 18))
-
-        self.thursdayHRS_min = QtWidgets.QComboBox()
-        self.thursdayHRS_min.setStyleSheet(comboBox_stylesheet)
-        self.thursdayHRS_min.setFont(QFont("Century Gothic", 16))
-        self.thursdayHRS_min.setFixedSize(60, 45)
-        self.thursdayHRS_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(24):
-            self.thursdayHRS_min.addItem(str(i + 1))
-
-        self.thursdayMIN_min = QtWidgets.QComboBox()
-        self.thursdayMIN_min.setStyleSheet(comboBox_stylesheet)
-        self.thursdayMIN_min.setFont(QFont("Century Gothic", 16))
-        self.thursdayMIN_min.setFixedSize(60, 45)
-        self.thursdayMIN_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(59):
-            self.thursdayMIN_min.addItem(str(i + 1))
-
-        self.thursdayHRS_max = QtWidgets.QComboBox()
-        self.thursdayHRS_max.setStyleSheet(comboBox_stylesheet)
-        self.thursdayHRS_max.setFont(QFont("Century Gothic", 16))
-        self.thursdayHRS_max.setFixedSize(60, 45)
-        self.thursdayHRS_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(24):
-            self.thursdayHRS_max.addItem(str(i + 1))
-
-        self.thursdayMIN_max = QtWidgets.QComboBox()
-        self.thursdayMIN_max.setStyleSheet(comboBox_stylesheet)
-        self.thursdayMIN_max.setFont(QFont("Century Gothic", 16))
-        self.thursdayMIN_max.setFixedSize(60, 45)
-        self.thursdayMIN_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(59):
-            self.thursdayMIN_max.addItem(str(i + 1))
-
-        self.space = QWidget()
-        self.space.setFixedWidth(50)
-
-        self.thursdayL.addWidget(self.thursdayTXT)
-        self.thursdayL.addWidget(self.thursdayHRS_min)
-        self.thursdayL.addWidget(self.thursdayMIN_min)
-        self.thursdayL.addWidget(self.space)
-        self.thursdayL.addWidget(self.thursdayHRS_max)
-        self.thursdayL.addWidget(self.thursdayMIN_max)
-        self.thursdayW.setLayout(self.thursdayL)
-
-        self.fridayW = QWidget()
-        self.fridayL = QHBoxLayout()
-
-        self.fridayTXT = QtWidgets.QLabel()
-        self.fridayTXT.setText("Friday :")
-        self.fridayTXT.setStyleSheet("color:white;padding-bottom:10px;")
-        self.fridayTXT.setFont(QFont("Century Gothic", 18))
-
-        self.fridayHRS_min = QtWidgets.QComboBox()
-        self.fridayHRS_min.setStyleSheet(comboBox_stylesheet)
-        self.fridayHRS_min.setFont(QFont("Century Gothic", 16))
-        self.fridayHRS_min.setFixedSize(60, 45)
-        self.fridayHRS_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(24):
-            self.fridayHRS_min.addItem(str(i + 1))
-
-        self.fridayMIN_min = QtWidgets.QComboBox()
-        self.fridayMIN_min.setStyleSheet(comboBox_stylesheet)
-        self.fridayMIN_min.setFont(QFont("Century Gothic", 16))
-        self.fridayMIN_min.setFixedSize(60, 45)
-        self.fridayMIN_min.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(59):
-            self.fridayMIN_min.addItem(str(i + 1))
-
-        self.fridayHRS_max = QtWidgets.QComboBox()
-        self.fridayHRS_max.setStyleSheet(comboBox_stylesheet)
-        self.fridayHRS_max.setFont(QFont("Century Gothic", 16))
-        self.fridayHRS_max.setFixedSize(60, 45)
-        self.fridayHRS_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(24):
-            self.fridayHRS_max.addItem(str(i + 1))
-
-        self.fridayMIN_max = QtWidgets.QComboBox()
-        self.fridayMIN_max.setStyleSheet(comboBox_stylesheet)
-        self.fridayMIN_max.setFont(QFont("Century Gothic", 16))
-        self.fridayMIN_max.setFixedSize(60, 45)
-        self.fridayMIN_max.view().setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        for i in range(59):
-            self.fridayMIN_max.addItem(str(i + 1))
-
-        self.space = QWidget()
-        self.space.setFixedWidth(50)
-
-        self.fridayL.addWidget(self.fridayTXT)
-        self.fridayL.addWidget(self.fridayHRS_min)
-        self.fridayL.addWidget(self.fridayMIN_min)
-        self.fridayL.addWidget(self.space)
-        self.fridayL.addWidget(self.fridayHRS_max)
-        self.fridayL.addWidget(self.fridayMIN_max)
-        self.fridayW.setLayout(self.fridayL)
+        days = [mo, tu, we, th, fr]
 
         self.registerBTN = QtWidgets.QPushButton()
         self.registerBTN.setText("Register")
@@ -3715,12 +3521,12 @@ class mainWindow(QMainWindow):
         self.main_contentL.addWidget(self.instructor)
         self.main_contentL.addWidget(self.seatsTXT)
         self.main_contentL.addWidget(self.seats)
-        self.main_contentL.addWidget(self.scheduleTXT)
-        self.main_contentL.addWidget(self.mondayW)
-        self.main_contentL.addWidget(self.tuesdayW)
-        self.main_contentL.addWidget(self.wednesdayW)
-        self.main_contentL.addWidget(self.thursdayW)
-        self.main_contentL.addWidget(self.fridayW)
+        # self.main_contentL.addWidget(self.scheduleTXT)
+        # self.main_contentL.addWidget(self.mondayW)
+        # self.main_contentL.addWidget(self.tuesdayW)
+        # self.main_contentL.addWidget(self.wednesdayW)
+        # self.main_contentL.addWidget(self.thursdayW)
+        # self.main_contentL.addWidget(self.fridayW)
         self.main_contentL.addWidget(self.registerBTN)
 
         self.mainW.setLayout(self.mainL)
@@ -3738,11 +3544,12 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.scroll)
 
         # checking if any buttons is clicked
-
         self.home.clicked.connect(self.mainpage_home_registrar)
         self.account.clicked.connect(self.mainpage_account_registrar)
         self.help.clicked.connect(self.mainpage_help_registrar)
         self.classes.clicked.connect(self.mainpage_classes_registrar)
+        self.registerBTN.clicked.connect(lambda: self.add_classes(days))
+
         # self.backToStartupBTN.clicked.connect(self.StartupStudent)
 
         # Aiman 11/6
@@ -3867,12 +3674,7 @@ class mainWindow(QMainWindow):
         for row in df["applicant_id"]:
             ids.append(row)
             c = QComboBox()
-            c.addItems(
-                [
-                    "deny",
-                    "approve",
-                ]
-            )
+            c.addItems(["deny", "approve"])
             x = self.view.model().index(index, 7)
             self.view.setIndexWidget(x, c)
             decisions.append(c)
@@ -4219,7 +4021,42 @@ c.execute(
         )"""
 )
 conn.commit()
+
+# schedule table
+c.execute(
+    """CREATE TABLE IF NOT EXISTS schedule(
+        date text NOT NULL,
+        start_hour text,
+        start_min text,
+        end_hour text,
+        end_min text,
+        'off/on' text
+        )"""
+)
+c.execute("SELECT date FROM schedule LIMIT 1")
+if c.fetchall() == []:
+    many_days = [
+        ("Mo",),
+        ("Tu",),
+        ("We",),
+        ("Th",),
+        ("Fr",),
+    ]
+    c.executemany(
+        "INSERT INTO schedule(date) VALUES(?)",
+        many_days,
+    )
+conn.commit()
 conn.close()
+
+##
+# # sql = """UPDATE applicants SET first = ?, last = ? WHERE applicant_id = ?"""
+# sql = "INSERT INTO schedule(date) VALUES(?)"
+# c.execute(sql, ("Mo",))
+# c.execute(sql, ("Tu",))
+# c.execute(sql, ("We",))
+# c.execute(sql, ("Th",))
+# c.execute(sql, ("Fr",))
 
 # Running the Gui with the run of application
 app = QApplication(sys.argv)

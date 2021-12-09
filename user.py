@@ -1056,7 +1056,7 @@ class Instructor(User):
 
 
 # # add a column
-# sql = "ALTER TABLE applicants ADD approval_status text"
+# sql = "ALTER TABLE schedule ADD 'off/on' text"
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(sql)
@@ -1064,9 +1064,42 @@ class Instructor(User):
 # conn.close()
 
 # # delete a table
-# sql = "DROP TABLE reviews"
+# sql = "DROP TABLE schedule"
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(sql)
 # conn.commit()
 # conn.close()
+
+
+# # applicants table
+# conn = sqlite3.connect("gsz.db")
+# c = conn.cursor()
+# c.execute(
+#     """CREATE TABLE IF NOT EXISTS schedule(
+#         date text NOT NULL,
+#         start_hour text,
+#         start_min text,
+#         end_hour text,
+#         end_min text
+#         )"""
+# )
+
+# # # sql = """UPDATE applicants SET first = ?, last = ? WHERE applicant_id = ?"""
+# sql = "INSERT INTO schedule(date) VALUES(?)"
+# c.execute(sql, ("Mo",))
+# c.execute(sql, ("Tu",))
+# c.execute(sql, ("We",))
+# c.execute(sql, ("Th",))
+# c.execute(sql, ("Fr",))
+# conn.commit()
+# conn.close()
+
+
+# tmp = [["8", "0", "8", "0", "on", "Mo"], ["8", "0", "13", "0", "on", "We"]]
+# tmp = list(
+#     map(lambda x: x[5] + " " + x[0] + ":" + x[1] + " - " + x[2] + ":" + x[3], tmp)
+# )
+# tmp = str(tmp).strip("[]").replace("'", "")
+# print(tmp)
+# # reg1.course_set_up("CSC 33500", "Tu 12:00 - 1:15, We 12:00 - 2:30", args[0], 25)
