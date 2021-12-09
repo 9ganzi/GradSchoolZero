@@ -444,7 +444,7 @@ class mainWindow(QMainWindow):
         c.execute(
             """CREATE TABLE IF NOT EXISTS reviews (
                 review_id integer PRIMARY KEY,
-                Rating text NOT NULL,
+                Rating real NOT NULL,
                 student_id integer NOT NULL,
                 course_id integer NOT NULL,
                 'Review' text NOT NULL,
@@ -458,7 +458,7 @@ class mainWindow(QMainWindow):
             (
                 self.studentidBOX.text(),
                 self.courseidBOX.text(),
-                str(self.ratingBOX.text()),
+                self.ratingBOX.text(),
                 str(self.reviewBOX.text().upper()),
             ),
         )
@@ -491,8 +491,9 @@ class mainWindow(QMainWindow):
         )
         course_rating = c.fetchone()[0]
         conn.close()
-        if course_rating < 2:
-            issue_warning_instructor(inst_id)
+        if course_rating != None:
+            if course_rating < 2:
+                issue_warning_instructor(inst_id)
 
         self.mainpage_home_student()
 

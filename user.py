@@ -910,17 +910,49 @@ class Instructor(User):
 # c.execute(
 #     """INSERT INTO enrollments(student_id, course_id, grade) VALUES (?, ?, ?)""",
 #     (
-#         6,
+#         1,
 #         3,
-#         None,
+#         2.5,
 #     ),
 # )
 # c.execute(
 #     """INSERT INTO enrollments(student_id, course_id, grade) VALUES (?, ?, ?)""",
 #     (
-#         7,
+#         1,
 #         3,
-#         None,
+#         3.5,
+#     ),
+# )
+# c.execute(
+#     """INSERT INTO enrollments(student_id, course_id, grade) VALUES (?, ?, ?)""",
+#     (
+#         2,
+#         3,
+#         2.5,
+#     ),
+# )
+# c.execute(
+#     """INSERT INTO enrollments(student_id, course_id, grade) VALUES (?, ?, ?)""",
+#     (
+#         3,
+#         3,
+#         3.5,
+#     ),
+# )
+# c.execute(
+#     """INSERT INTO enrollments(student_id, course_id, grade) VALUES (?, ?, ?)""",
+#     (
+#         4,
+#         6,
+#         2.5,
+#     ),
+# )
+# c.execute(
+#     """INSERT INTO enrollments(student_id, course_id, grade) VALUES (?, ?, ?)""",
+#     (
+#         1,
+#         3,
+#         3.5,
 #     ),
 # )
 # conn.commit()
@@ -1064,7 +1096,7 @@ class Instructor(User):
 # conn.close()
 
 # # delete a table
-# sql = "DROP TABLE schedule"
+# sql = "DROP TABLE reviews"
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(sql)
