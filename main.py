@@ -1835,17 +1835,17 @@ class mainWindow(QMainWindow):
         self.mainW.setLayout(self.mainL)
         self.setCentralWidget(self.mainW)
 
-        self.sssssBTN = QtWidgets.QPushButton()
-        self.sssssBTN.setText("Submit")
-        self.sssssBTN.setFont(QFont("Century Gothic", 20))
-        self.sssssBTN.setFixedSize(180, 60)
-        self.sssssBTN.setCursor(QCursor(Qt.PointingHandCursor))
-        self.sssssBTN.setStyleSheet(
-            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
-        )
-        self.BTNSL.addWidget(self.sssssBTN)
-        self.BTNSW.setLayout(self.BTNSL)
+        # self.sssssBTN = QtWidgets.QPushButton()
+        # self.sssssBTN.setText("Submit")
+        # self.sssssBTN.setFont(QFont("Century Gothic", 20))
+        # self.sssssBTN.setFixedSize(180, 60)
+        # self.sssssBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        # self.sssssBTN.setStyleSheet(
+        #     "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+        #     "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        # )
+        # self.BTNSL.addWidget(self.sssssBTN)
+        # self.BTNSW.setLayout(self.BTNSL)
 
         # -------------End of Design-------------
 
@@ -1869,7 +1869,7 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.scroll)
 
         # checking if any buttons is clicked
-        self.mainL.addWidget(self.sssssBTN)
+        # self.mainL.addWidget(self.sssssBTN)
 
         self.back.clicked.connect(self.mainpage_home_registrar)
 
