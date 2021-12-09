@@ -37,6 +37,11 @@ id = ""
 loginState = ""  # Aiman
 user = None
 
+class_set_up = 0
+course_registration = 1
+class_running = 2
+grading = 3
+
 # Aiman Start
 
 comboBox_stylesheet = (
@@ -3568,6 +3573,18 @@ class mainWindow(QMainWindow):
         self.logo.setPixmap(QPixmap("logo.png"))
         self.space = QWidget()
         self.space.setFixedHeight(385)
+
+        self.perids = QtWidgets.QComboBox()
+        self.perids.setStyleSheet(comboBox_stylesheet)
+        self.perids.setFont(QFont("Century Gothic", 16))
+        self.perids.setFixedSize(400, 40)
+        self.perids.addItem("class set up")
+        self.perids.addItem("course registration")
+        self.perids.addItem("class running")
+        self.perids.addItem("home registrar")
+
+        # self.main_contentW.addWidget(self.perids)
+        self.main_contentL.addWidget(self.perids)
 
         self.logoL.addWidget(self.logo)
         self.logoL.addWidget(self.space)
