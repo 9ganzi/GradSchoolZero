@@ -1117,11 +1117,24 @@ class Instructor(User):
 # conn.commit()
 # conn.close()
 
+times = [
+    ["0", "15", "8", "15", "on", "Mo"],
+    ["9", "15", "8", "15", "on", "Mo"],
+    ["10", "15", "8", "15", "on", "Mo"],
+]
+from datetime import datetime
 
-# tmp = [["8", "0", "8", "0", "on", "Mo"], ["8", "0", "13", "0", "on", "We"]]
-# tmp = list(
-#     map(lambda x: x[5] + " " + x[0] + ":" + x[1] + " - " + x[2] + ":" + x[3], tmp)
-# )
-# tmp = str(tmp).strip("[]").replace("'", "")
-# print(tmp)
-# # reg1.course_set_up("CSC 33500", "Tu 12:00 - 1:15, We 12:00 - 2:30", args[0], 25)
+start = [datetime.strptime(x[0] + ":" + x[1], "%H:%M") for x in times]
+end = [datetime.strptime(x[2] + ":" + x[3], "%H:%M") for x in times]
+# if start[0] >= start[1]:
+#     print(f"{start[0]} >= {start[1]}")
+# if start[0] >= start[2]:
+#     print(f"{start[0]} >= {start[2]}")
+# if start[1] >= start[0]:
+#     print(f"{start[1]} >= {start[0]}")
+# if start[1] >= start[2]:
+#     print(f"{start[1]} >= {start[2]}")
+# if start[2] >= start[0]:
+#     print(f"{start[2]} >= {start[0]}")
+# if start[2] >= start[1]:
+#     print(f"{start[2]} >= {start[1]}")

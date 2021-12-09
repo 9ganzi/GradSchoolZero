@@ -1,6 +1,7 @@
 import sqlite3
 
 from pandas.core.indexing import _IndexSlice
+from datetime import datetime
 
 # import task5
 import display_db
@@ -3661,7 +3662,24 @@ class mainWindow(QMainWindow):
             # print(tmp)
             if tmp[4] == "on":
                 schedule.append(tmp)
-        # print(schedule)
+        starts = [datetime.strptime(x[0] + ":" + x[1], "%H:%M") for x in schedule]
+        ends = [datetime.strptime(x[2] + ":" + x[3], "%H:%M") for x in schedule]
+        for start, end in zip(starts, ends):
+
+            if start >= end:
+                self.dlg = QDialog()
+                self.conflict = QtWidgets.QLabel(self.dlg)
+                self.conflict.setText("time conflict")
+                self.conflict.setFont(QFont("Century Gothic", 10))
+                self.conflict.move(10, 10)
+        self.b1 = QPushButton("ok", self.dlg)
+        self.b1.move(50, 60)
+        self.b1.clicked.connect(self.getJustification)
+        self.b1.show()
+        self.dlg.setWindowTitle("Dialog")
+        self.dlg.setWindowModality(Qt.ApplicationModal)
+        self.dlg.exec_()
+
         class_name = self.nameRegistrar.text()
         instructor = self.instructor.currentText()
         seats = self.seats.currentText()
@@ -3672,8 +3690,8 @@ class mainWindow(QMainWindow):
             )
         )
         time = str(time).strip("[]").replace("'", "")
-        user.course_set_up(class_name, time, 1, seats)
-        self.mainpage_classes_registrar()
+        user.course_set_up(class_name, time, self.ins[instructor], seats)
+        self.mainpage_home_registrar()
 
     # def course_set_up(self, name, time, instructor, size):
     # instructor1 = Instructor(args[0])
@@ -3797,9 +3815,24 @@ class mainWindow(QMainWindow):
 
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
-        sql = "SELECT first, last FROM users WHERE user_type = ?"
+        sql = "SELECT first, last, user_id FROM users WHERE user_type = ?"
         c.execute(sql, ("instructor",))
         instructor_names = c.fetchall()
+        # print(instructor_names)
+        self.ins = {
+            instructor_name[0] + " " + instructor_name[1]: instructor_name[2]
+            for instructor_name in instructor_names
+        }
+        # a = [
+        #     ("Michael", "Jordan", 9),
+        #     ("Jane", "Doe", 10),
+        #     ("Jane", "Doe", 14),
+        #     ("Jane", "Doe", 18),
+        #     ("James", "Milner", 19),
+        # ]
+        # dic = {ai[0] + " " + ai[1]: ai[2] for ai in a}
+        # print(dic)
+
         for instructor_name in instructor_names:
             self.instructor.addItem(instructor_name[0] + " " + instructor_name[1])
 
