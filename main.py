@@ -1358,8 +1358,8 @@ class mainWindow(QMainWindow):
 
         ).fetchone()[0]
 
-        complaint_type = self.reasonofcomplaintBOX.text()
-        description = self.complaintBOX.text()
+        complaint_type = " "
+        description = self.reasonofcomplaintBOX.text() + " " + self.complaintBOX.text()
 
         sql = "INSERT INTO complaints(complainant_id, complainee_id, description, complaint_type) VALUES(?, ?, ?, ?)"
         c.execute(
@@ -1523,19 +1523,31 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.mainW)
 
         self.back.clicked.connect(self.mainpage_home_instructor)
-        #self.submitFBTN.clicked.connect(self.complain)
+        self.submitFBTN.clicked.connect(self.inst_complain)
 
         #instructor complaint
 
-    # def complain(self, complainee_id, course_id, description, complaint_type):
-    #     conn = sqlite3.connect("gsz.db")
-    #     c = conn.cursor()
-    #     sql = "INSERT INTO complaints(complainant_id, course_id, complainee_id, description, complaint_type) VALUES(?, ?, ?, ?, ?)"
-    #     c.execute(
-    #         sql, (self.user_id, course_id, complainee_id, description, complaint_type)
-    #     )
-    #     conn.commit()
-    #     conn.close()
+    def inst_complain(self):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        # complainee
+        result = c.execute(
+                "SELECT user_id FROM users WHERE first=:first and last=:last ",
+                {"first": self.firstnameBOX.text(), "last": self.lastnameBOX.text()},
+
+        ).fetchone()[0]
+
+        complaint_type = self.complaintypeBOX.text()
+        description = self.complaintBOX.text()
+
+        sql = "INSERT INTO complaints(complainant_id, complainee_id, description, complaint_type) VALUES(?, ?, ?, ?)"
+        c.execute(
+            sql, (user.user_id, result, description, complaint_type)
+        )
+        conn.commit()
+        conn.close()
+
+        self.mainpage_home_student()
 
     def complaint_page_registrar(self):
         # setting background colour for the page
