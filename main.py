@@ -3,9 +3,9 @@ import sqlite3
 from pandas.core.indexing import _IndexSlice
 from datetime import datetime
 
+
 # import task5
 import display_db
-from PyQt5.uic import loadUi
 import sys
 import csv
 import os
@@ -1527,9 +1527,111 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.mainW)
 
         self.back.clicked.connect(self.mainpage_home_instructor)
-        self.submitFBTN.clicked.connect(self.inst_complain)
-
+        self.submitFBTN.clicked.connect(self.complain)
         # instructor complaint
+
+        # Start
+
+    def issuewarning_page_registrar(self):  # Merge Start
+        # setting background colour for the page
+        self.setStyleSheet("background-color:#031926;")
+        # main layout and widget
+        self.scroll = QtWidgets.QScrollArea()
+        self.mainW = QWidget()
+        self.mainL = QHBoxLayout()
+
+        # ----------------Design-----------------
+
+        self.boxesW = QWidget()
+        self.boxesL = QVBoxLayout()
+
+        self.useridTXT = QtWidgets.QLabel()
+        self.useridTXT.setText("User Id :")
+        self.useridTXT.setStyleSheet("color:white;")
+        self.useridTXT.setFont(QFont("Century Gothic", 20))
+        self.boxesL.addWidget(self.useridTXT)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(20)
+        self.boxesL.addWidget(self.space)
+
+        self.useridBOX = QtWidgets.QLineEdit()
+        self.useridBOX.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.useridBOX.setFont(QFont("Century Gothic", 20))
+        self.useridBOX.setFixedSize(600, 60)
+        self.boxesL.addWidget(self.useridBOX)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(20)
+        self.boxesL.addWidget(self.space)
+
+        self.btnsW = QWidget()
+        self.btnsL = QHBoxLayout()
+
+        self.space = QWidget()
+        self.space.setFixedWidth(30)
+        self.btnsL.addWidget(self.space)
+
+        # Start
+        self.sssssBTN = QtWidgets.QPushButton()
+        self.sssssBTN.setText("Submit")
+        self.sssssBTN.setFont(QFont("Century Gothic", 20))
+        self.sssssBTN.setFixedSize(180, 60)
+        self.sssssBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.sssssBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.BTNSL.addWidget(self.sssssBTN)
+        self.BTNSW.setLayout(self.BTNSL)
+
+        # End
+
+        self.backToMainBTN = QtWidgets.QPushButton()
+        self.backToMainBTN.setText("Back")
+        self.backToMainBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.backToMainBTN.setFont(QFont("Century Gothic", 20))
+        self.backToMainBTN.setFixedSize(180, 60)
+        self.backToMainBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.btnsL.addWidget(self.backToMainBTN)
+        self.mainL.addWidget(self.sssssBTN)  # Aiman
+
+        self.btnsW.setLayout(self.btnsL)
+        self.boxesL.addWidget(self.btnsW)
+
+        self.boxesW.setLayout(self.boxesL)
+        self.mainL.addWidget(self.boxesW)
+        self.mainW.setLayout(self.mainL)
+
+        self.space = QWidget()
+        self.space.setFixedWidth(180)
+
+        self.mainL.addWidget(self.space)
+
+        # -------------End of Design-------------
+
+        # scroll settings
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.scroll.setWidget(self.mainW)
+        self.setCentralWidget(self.scroll)
+
+        # checking if any buttons is clicked
+        self.backToMainBTN.clicked.connect(self.mainpage_home_registrar)
+        self.sssssBTN.clicked.connect(self.issuewarning_page_registrar)
+        # self.signUpBTN.clicked.connect(self.signup_page)
+        # self.loginFBTN.clicked.connect(self.login)
+        # Merge End
+
+        # Merge Start?
 
     def inst_complain(self):
         conn = sqlite3.connect("gsz.db")
@@ -1598,6 +1700,18 @@ class mainWindow(QMainWindow):
         self.mainW.setLayout(self.mainL)
         self.setCentralWidget(self.mainW)
 
+        self.sssssBTN = QtWidgets.QPushButton()
+        self.sssssBTN.setText("Submit")
+        self.sssssBTN.setFont(QFont("Century Gothic", 20))
+        self.sssssBTN.setFixedSize(180, 60)
+        self.sssssBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.sssssBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.BTNSL.addWidget(self.sssssBTN)
+        self.BTNSW.setLayout(self.BTNSL)
+
         # -------------End of Design-------------
 
         # applicant = sqlite3.connect("gsz.db")
@@ -1620,6 +1734,7 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.scroll)
 
         # checking if any buttons is clicked
+        self.mainL.addWidget(self.sssssBTN)
 
         self.back.clicked.connect(self.mainpage_home_registrar)
 
@@ -2054,6 +2169,26 @@ class mainWindow(QMainWindow):
         )
         self.BTNSL.addWidget(self.reviewBTN)
 
+        self.WarningsBTN = QtWidgets.QPushButton()  # Aiman test
+        self.WarningsBTN.setFont(QFont("Century Gothic", 20))
+        self.WarningsBTN.setFixedSize(180, 60)
+        self.WarningsBTN.setText("Warnings")
+        self.WarningsBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.BTNSL.addWidget(self.WarningsBTN)
+
+        self.graduationBTN = QtWidgets.QPushButton()  # Aiman test
+        self.graduationBTN.setFont(QFont("Century Gothic", 20))
+        self.graduationBTN.setFixedSize(180, 60)
+        self.graduationBTN.setText("Graduation")
+        self.graduationBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.BTNSL.addWidget(self.graduationBTN)  # Aiman
+
         self.logoutBTN = QtWidgets.QPushButton()
         self.logoutBTN.setText("Logout")
         self.logoutBTN.setFont(QFont("Century Gothic", 20))
@@ -2104,6 +2239,45 @@ class mainWindow(QMainWindow):
         self.ComplaintBTN.clicked.connect(self.student_complaint_page)
         self.classes.clicked.connect(self.mainpage_classes)
         self.reviewBTN.clicked.connect(self.add_review_page)  # Michael Test
+        self.WarningsBTN.clicked.connect(self.Warning_page_students)  # Aiman
+
+    # AIman
+    def Warning_page_students(self):
+        self.setStyleSheet("background-color:#031926;")
+        self.mainW = QWidget()
+        self.mainL = QHBoxLayout()
+        self.mainL.setAlignment(Qt.AlignRight)
+
+        self.back = QtWidgets.QPushButton()  # Aiman
+        self.back.setText("Warnings")
+        self.back.setFont(QFont("Century Gothic", 50))
+        self.back.setFixedSize(500, 70)
+        self.back.setCursor(QCursor(Qt.PointingHandCursor))
+        self.back.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+
+        self.mainL.addWidget(self.back)  # Aiman
+
+        self.back = QtWidgets.QPushButton()
+        self.back.setText("Back")
+        self.back.setFont(QFont("Century Gothic", 20))
+        self.back.setFixedSize(180, 60)
+        self.back.setCursor(QCursor(Qt.PointingHandCursor))
+        self.back.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+
+        self.mainL.addWidget(self.back)
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.setCentralWidget(self.mainW)
+
+        self.back.clicked.connect(self.mainpage_home_student)
+
+        # End
 
     def mainpage_account(self):
         global id
@@ -2468,16 +2642,16 @@ class mainWindow(QMainWindow):
         self.BTNSW = QWidget()
         self.BTNSL = QHBoxLayout()
 
-        self.backToStartupBTN = QtWidgets.QPushButton()
-        self.backToStartupBTN.setText("Back")
-        self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
-        self.backToStartupBTN.setFixedSize(180, 60)
-        self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
-        self.backToStartupBTN.setStyleSheet(
-            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
-        )
-        self.BTNSL.addWidget(self.backToStartupBTN)
+        # self.backToStartupBTN = QtWidgets.QPushButton()
+        # self.backToStartupBTN.setText("Back")
+        # self.backToStartupBTN.setFont(QFont("Century Gothic", 20))
+        # self.backToStartupBTN.setFixedSize(180, 60)
+        # self.backToStartupBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        # self.backToStartupBTN.setStyleSheet(
+        # "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+        # "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        # )
+        # self.BTNSL.addWidget(self.backToStartupBTN)
 
         self.BTNSW.setLayout(self.BTNSL)
 
@@ -2573,7 +2747,7 @@ class mainWindow(QMainWindow):
         self.account.clicked.connect(self.mainpage_account)
         self.help.clicked.connect(self.mainpage_help)
         self.classes.clicked.connect(self.mainpage_classes)
-        self.backToStartupBTN.clicked.connect(self.mainpage_home_student)
+        # self.backToStartupBTN.clicked.connect(self.mainpage_home_student)
 
     def mainpage_home_instructor(self):
         # setting background colour for the page
@@ -3228,6 +3402,19 @@ class mainWindow(QMainWindow):
         self.BTNSL.addWidget(self.ReviewRegistrarBTN)
         # End
 
+        # Start
+        self.issuewarningBTN = QtWidgets.QPushButton()
+        self.issuewarningBTN.setText("Issue Warning")
+        self.issuewarningBTN.setFont(QFont("Century Gothic", 20))
+        self.issuewarningBTN.setFixedSize(180, 60)
+        self.issuewarningBTN.setCursor(QCursor(Qt.PointingHandCursor))
+        self.issuewarningBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.BTNSL.addWidget(self.issuewarningBTN)
+        # End
+
         self.logoutBTN = QtWidgets.QPushButton()
         self.logoutBTN.setText("Logout")
         self.logoutBTN.setFont(QFont("Century Gothic", 20))
@@ -3279,6 +3466,10 @@ class mainWindow(QMainWindow):
         self.ComplaintBTN.clicked.connect(self.complaint_page_registrar)
         self.classes.clicked.connect(self.mainpage_classes_registrar)
         self.ReviewRegistrarBTN.clicked.connect(self.review_page_registrar)
+        self.issuewarningBTN.clicked.connect(self.issuewarning_page_registrar)
+        # self.sssssBTN.clicked.connect(self.issuewarning_page_registrar)
+
+    # Aiman test
 
     def mainpage_account_registrar(self):
         global id
@@ -3577,7 +3768,7 @@ class mainWindow(QMainWindow):
         self.classes.clicked.connect(self.mainpage_classes_registrar)
         # self.backToStartupBTN.clicked.connect(self.mainpage)
 
-    # Joel
+    # Start
     def review_page_registrar(self):
         # setting background colour for the page
         self.setStyleSheet("background-color:#031926;")
@@ -3939,6 +4130,7 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.scroll)
 
         # checking if any buttons is clicked
+
         self.home.clicked.connect(self.mainpage_home_registrar)
         self.account.clicked.connect(self.mainpage_account_registrar)
         self.help.clicked.connect(self.mainpage_help_registrar)
@@ -4250,7 +4442,7 @@ class mainWindow(QMainWindow):
         )
         row = c.fetchone()
         name = f"{row[1]} {row[2]}"
-        email = str(row[4])
+        email = str(row[5])
         id = str(row[3])
         if row != None:
             # checking if it is a first login
