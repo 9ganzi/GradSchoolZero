@@ -2041,13 +2041,14 @@ class mainWindow(QMainWindow):
         self.mainL = QHBoxLayout()
         self.mainL.setAlignment(Qt.AlignRight)
         
-        self.back = QtWidgets.QPushButton()  #Aiman
-        self.back.setText("Warnings")
-        self.back.setFont(QFont("Century Gothic", 50))
-        self.back.setFixedSize(500, 70)
-        self.back.setCursor(QCursor(Qt.PointingHandCursor))
-        self.back.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+        self.warning = QtWidgets.QPushButton()  #Aiman
+        self.warning.setText("Warnings")
+        self.warning.setFont(QFont("Century Gothic", 50))
+        self.warning.setFixedSize(500, 70)
+        self.warning.setCursor(QCursor(Qt.PointingHandCursor))
+        self.warning.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
                                             "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+        self.warning.clicked.connect(self.pressed)
 
         self.mainL.addWidget(self.back)    #Aiman
 
@@ -2078,9 +2079,9 @@ class mainWindow(QMainWindow):
         a = c.fetchall()
 
         if ((a[0][3]) < 2):
-            self.pushButton.setText("You have less than 2 classes")
+            self.warning.setText("You have less than 2 classes")
         else:
-            self.pushButton.setText("no warning")
+            self.warning.setText("no warning")
         conn.close()
     def mainpage_account(self):
         global id
