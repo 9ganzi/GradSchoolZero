@@ -390,6 +390,20 @@ class Student(User):
         if num_courses >= 4:
             return True
         return False
+    #check if a student have less than 2 classes.
+    def less_than_2_courses (self):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        c.execute(
+            "SELECT enrollment_id FROM enrollments WHERE student_id = ?",
+            (self.student_id,),
+        )
+        num_courses = len(c.fetchall())
+        conn.close()
+        if num_courses <= 1:
+
+            self.receive_warning()
+   
 
     def took_and_not_failed(self, course_id):
         conn = sqlite3.connect("gsz.db")
