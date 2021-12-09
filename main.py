@@ -512,10 +512,10 @@ class mainWindow(QMainWindow):
         # conn = sqlite3.connect("gsz.db")
         # c = conn.cursor()
         # c.execute(
-        #         '''SELECT instructor_id FROM courses
-        #                     WHERE course_id =: course_id''',
-        #         {"course_id": self.course_id},
-        #     )
+        #     """SELECT instructor_id FROM courses
+        #                     WHERE course_id =: course_id""",
+        #     {"course_id": self.course_id},
+        # )
         # instructor_id = c.fetchone[0]
 
         conn = sqlite3.connect("gsz.db")
@@ -4441,10 +4441,10 @@ class mainWindow(QMainWindow):
             (self.idBOX.text(), self.passwordBOX.text()),
         )
         row = c.fetchone()
-        name = f"{row[1]} {row[2]}"
-        email = str(row[5])
-        id = str(row[3])
         if row != None:
+            name = f"{row[1]} {row[2]}"
+            email = str(row[5])
+            id = str(row[3])
             # checking if it is a first login
             if row[7] == 1:
                 # pop up window for setting up a new password
