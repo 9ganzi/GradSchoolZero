@@ -1323,6 +1323,27 @@ class mainWindow(QMainWindow):
         )
         conn.commit()
         conn.close()
+        
+    def compliant_page_registrar(self): #Aiman 11/8
+        self.setStyleSheet('background-color:#031926;')
+        self.mainW = QWidget()
+        self.mainL = QHBoxLayout()
+        self.mainL.setAlignment(Qt.AlignRight)
+
+        self.back = QtWidgets.QPushButton()
+        self.back.setText("Back")
+        self.back.setFont(QFont("Century Gothic", 20))
+        self.back.setFixedSize(180, 60)
+        self.back.setCursor(QCursor(Qt.PointingHandCursor))
+        self.back.setStyleSheet("QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                                            "QPushButton:pressed{background-color: #03469e;border-style: inset;}")
+
+        self.mainL.addWidget(self.back)
+        # Connecting the main layout and widget
+        self.mainW.setLayout(self.mainL)
+        self.setCentralWidget(self.mainW)
+
+        self.back.clicked.connect(self.mainpage_home_registrar)#Aiman 11/8
 
     def signup_page(self):
         # setting background colour for the page
@@ -1954,7 +1975,7 @@ class mainWindow(QMainWindow):
         self.accountDataL.addWidget(self.accountTypeTXT)
 
         self.accountType = QtWidgets.QLabel()
-        self.accountType.setText(acc_type)
+        self.accountType.setText("Student")
         self.accountType.setStyleSheet("color:#0583F2; border:0;")
         self.accountType.setFont(QFont("Century Gothic", 18))
 
@@ -2564,7 +2585,7 @@ class mainWindow(QMainWindow):
         self.accountDataL.addWidget(self.accountTypeTXT)
 
         self.accountType = QtWidgets.QLabel()
-        self.accountType.setText(acc_type)
+        self.accountType.setText("Instructor")
         self.accountType.setStyleSheet("color:#0583F2; border:0;")
         self.accountType.setFont(QFont("Century Gothic", 18))
 
@@ -2964,7 +2985,7 @@ class mainWindow(QMainWindow):
         self.account.clicked.connect(self.mainpage_account_registrar)
         self.logoutBTN.clicked.connect(self.startup_page)
         self.help.clicked.connect(self.mainpage_help_registrar)
-        # self.ComplaintBTN.clicked.connect(self.student_compliant_page)
+        self.ComplaintBTN.clicked.connect(self.compliant_page_registrar)
         self.classes.clicked.connect(self.mainpage_classes_registrar)
 
     def mainpage_account_registrar(self):
@@ -3115,7 +3136,7 @@ class mainWindow(QMainWindow):
         self.accountDataL.addWidget(self.accountTypeTXT)
 
         self.accountType = QtWidgets.QLabel()
-        self.accountType.setText(acc_type)
+        self.accountType.setText("Registrar")
         self.accountType.setStyleSheet("color:#0583F2; border:0;")
         self.accountType.setFont(QFont("Century Gothic", 18))
 
