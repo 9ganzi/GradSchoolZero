@@ -1973,7 +1973,7 @@ class mainWindow(QMainWindow):
         )
         self.BTNSL.addWidget(self.reviewBTN)
 
-        self.WarningsBTN = QtWidgets.QPushButton()  # Aiman test
+        self.WarningsBTN = QtWidgets.QPushButton()  # Aiman
         self.WarningsBTN.setFont(QFont("Century Gothic", 20))
         self.WarningsBTN.setFixedSize(180, 60)
         self.WarningsBTN.setText("Warnings")
@@ -1982,6 +1982,16 @@ class mainWindow(QMainWindow):
             "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
         )
         self.BTNSL.addWidget(self.WarningsBTN)
+        
+        self.graduationBTN = QtWidgets.QPushButton()  # Aiman
+        self.graduationBTN.setFont(QFont("Century Gothic", 20))
+        self.graduationBTN.setFixedSize(180, 60)
+        self.graduationBTN.setText("Graduation")
+        self.graduationBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
+        self.BTNSL.addWidget(self.graduationBTN)    #Aiman
 
         self.logoutBTN = QtWidgets.QPushButton()
         self.logoutBTN.setText("Logout")
