@@ -104,6 +104,37 @@ def display_honor_roll():
         final_result += "\n"
     return final_result
 
+def display_highest_classes():
+    conn = sqlite3.connect("gsz.db")
+    c = conn.cursor()
+    honor_students_join = c.execute(
+        """SELECT course_name, course_rating FROM courses WHERE course_rating IS NOT NULL ORDER BY course_rating DESC LIMIT 5""",
+    ).fetchall()
+    result2 = []
+    final_result = "Highest Rated Courses: \n\n"
+    for col in zip(*honor_students_join):
+        result2.append(max([len(str(item)) for item in col]))
+    format = "  ".join(["{:<" + str(l) + "}" for l in result2])
+    for row in honor_students_join:
+        final_result += format.format(*row)
+        final_result += "\n"
+    return final_result
+
+def display_lowest_classes():
+    conn = sqlite3.connect("gsz.db")
+    c = conn.cursor()
+    honor_students_join = c.execute(
+        """SELECT course_name, course_rating FROM courses WHERE course_rating IS NOT NULL AND course_rating ORDER BY course_rating ASC LIMIT 5""",
+    ).fetchall()
+    result2 = []
+    final_result = "Lowest Rated Courses: \n\n"
+    for col in zip(*honor_students_join):
+        result2.append(max([len(str(item)) for item in col]))
+    format = "  ".join(["{:<" + str(l) + "}" for l in result2])
+    for row in honor_students_join:
+        final_result += format.format(*row)
+        final_result += "\n"
+    return final_result
 
 def issue_warning_instructor(instructor_id):
     conn = sqlite3.connect("gsz.db")
@@ -1048,7 +1079,7 @@ class mainWindow(QMainWindow):
         )
 
         self.highestRatedClassesTXT = QtWidgets.QLabel()
-        self.highestRatedClassesTXT.setText("Highest rated classes")
+        self.highestRatedClassesTXT.setText(display_highest_classes())
         self.highestRatedClassesTXT.setFont(QFont("Century Gothic", 20))
         self.highestRatedClassesTXT.setStyleSheet("border:0;color:white;")
 
@@ -1069,7 +1100,7 @@ class mainWindow(QMainWindow):
         )
 
         self.lowestRatedClassesTXT = QtWidgets.QLabel()
-        self.lowestRatedClassesTXT.setText("Lowest rated classes")
+        self.lowestRatedClassesTXT.setText(display_lowest_classess())
         self.lowestRatedClassesTXT.setFont(QFont("Century Gothic", 20))
         self.lowestRatedClassesTXT.setStyleSheet("border:0;color:white;")
 
