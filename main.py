@@ -1345,15 +1345,29 @@ class mainWindow(QMainWindow):
         self.back.clicked.connect(self.mainpage_home_student)
         self.submitFBTN.clicked.connect(self.complain)
 
-    def complain(self, complainee_id, course_id, description, complaint_type):
+   #Joel
+    def complain(self):
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
-        sql = "INSERT INTO complaints(complainant_id, course_id, complainee_id, description, complaint_type) VALUES(?, ?, ?, ?, ?)"
+        # complainee
+        result = c.execute(
+                "SELECT user_id FROM users WHERE first=:first and last=:last ",
+                {"first": self.firstnameBOX.text(), "last": self.lastnameBOX.text()},
+
+        ).fetchone()[0]
+
+        complaint_type = self.reasonofcomplaintBOX.text()
+        description = self.complaintBOX.text()
+
+        sql = "INSERT INTO complaints(complainant_id, complainee_id, description, complaint_type) VALUES(?, ?, ?, ?)"
         c.execute(
-            sql, (self.user_id, course_id, complainee_id, description, complaint_type)
+            sql, (user.user_id, result, description, complaint_type)
         )
         conn.commit()
         conn.close()
+
+        self.mainpage_home_student()
+
 #instructor_complaint
     def instructor_complaint_page(self):
         self.setStyleSheet("background-color:#031926;")
@@ -4538,12 +4552,10 @@ c.execute(
         complaint_id integer PRIMARY KEY,
         complainant_id integer NOT NULL,
         complainee_id integer NOT NULL,
-        course_id integer NOT NULL,
         description text NOT NULL,
         complaint_type text,
         FOREIGN KEY ('complainant_id') REFERENCES users (user_id),
-        FOREIGN KEY ('complainee_id') REFERENCES users (user_id),
-        FOREIGN KEY ('course_id') REFERENCES courses (course_id)
+        FOREIGN KEY ('complainee_id') REFERENCES users (user_id)
         )"""
 )
 conn.commit()
