@@ -37,6 +37,14 @@ class User:
         conn.commit()
         conn.close()
 
+    def update_first_login(self):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        sql = "UPDATE users SET first_login = ?"
+        c.execute(sql, (0,))
+        conn.commit()
+        conn.close()
+
 
 # fire an instructor ( can only be accessed by registrar on their page)
 # input a specfic instructor_id, deletes instructor from database

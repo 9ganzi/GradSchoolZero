@@ -7,7 +7,7 @@ import display_db
 import sys
 import csv
 import os
-from user import Registrar, Student, Instructor
+from user import Registrar, Student, Instructor, User
 import random
 import string
 from PyQt5 import QtWidgets
@@ -3993,6 +3993,35 @@ class mainWindow(QMainWindow):
         id = ""
         self.startup_page()  # Aiman last change
 
+    def getNewPass(self):
+        global user
+        newPassword = self.newPassword_entry.text()
+        user.update_first_login()
+        user.change_password(newPassword)
+        self.dlg.accept()
+
+    def newPass(self):
+        self.filePath = None
+        self.dlg = QDialog()
+        self.newPassword = QtWidgets.QLabel(self.dlg)
+        self.newPassword.setText("type your new password")
+        self.newPassword.setFont(QFont("Century Gothic", 10))
+        self.newPassword.move(10, 10)
+        self.newPassword_entry = QtWidgets.QLineEdit(self.dlg)
+        self.newPassword_entry.setStyleSheet(
+            "color:black;background-color:white;padding-left:20;border-radius:10px;"
+        )
+        self.newPassword_entry.setFont(QFont("Century Gothic", 16))
+        self.newPassword_entry.setFixedSize(150, 17)
+        self.newPassword_entry.move(20, 30)
+        self.b1 = QPushButton("confirm", self.dlg)
+        self.b1.move(50, 60)
+        self.b1.clicked.connect(self.getNewPass)
+        self.b1.show()
+        self.dlg.setWindowTitle("new password")
+        self.dlg.setWindowModality(Qt.ApplicationModal)
+        self.dlg.exec_()
+
     def login(self):
         global user
         conn = sqlite3.connect("gsz.db")
@@ -4008,7 +4037,8 @@ class mainWindow(QMainWindow):
                 # pop up window for setting up a new password
                 # new_password = get from gui
                 # user.change_password(new_password)
-                pass
+                user = User(row[0])
+                self.newPass()
             # create instance of user
             if row[6] == "student":
                 user = Student(row[0])
