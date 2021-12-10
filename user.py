@@ -379,10 +379,13 @@ class Student(User):
         new_course = c.fetchone()
         new_course = new_course.split(",")
         new_course = [x.strip().replace(" - ", " ").split(" ") for x in new_course]
+        print(new_course)
+        print(schedule)
         for day in schedule:
             for new_day in new_course:
                 if day[0] == new_day[0]:
                     if (not (day[1] > new_day[1])) and (not (day[2] < new_day[2])):
+                        print("there is time conflict")
                         return True
         return False
 
@@ -396,6 +399,7 @@ class Student(User):
         num_courses = len(c.fetchall())
         conn.close()
         if num_courses >= 4:
+            print("too many courses")
             return True
         return False
 
@@ -411,9 +415,13 @@ class Student(User):
             grade = grade[0]
         if (grade == None) or (grade.lower() == "f"):
             return False
+        print("took and not failed")
         return True
 
     def is_eligible(self, course_id):
+        print(self.is_time_conflict(course_id))
+        print(self.is_too_many_courses())
+        print(self.took_and_not_failed(course_id))
         return (
             (not self.is_time_conflict(course_id))
             and (not self.is_too_many_courses())
@@ -430,22 +438,23 @@ class Student(User):
                 course_id,
             ),
         )
+        print("waitlist applied")
         conn.commit()
         conn.close()
 
-        # check if a student have less than 2 classes.
-        def less_than_2_courses(self):
-            conn = sqlite3.connect("gsz.db")
-            c = conn.cursor()
-            c.execute(
-                "SELECT enrollment_id FROM enrollments WHERE student_id = ?",
-                (self.student_id,),
-            )
-            num_courses = len(c.fetchall())
-            conn.close()
-            if num_courses <= 1:
+    # check if a student have less than 2 classes.
+    def less_than_2_courses(self):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        c.execute(
+            "SELECT enrollment_id FROM enrollments WHERE student_id = ?",
+            (self.student_id,),
+        )
+        num_courses = len(c.fetchall())
+        conn.close()
+        if num_courses <= 1:
 
-                self.receive_warning()
+            self.receive_warning()
 
     def enroll_course(self, course_id):
         if not (self.is_eligible(course_id)):

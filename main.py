@@ -2837,6 +2837,7 @@ class mainWindow(QMainWindow):
         sql = "SELECT course_name, course_time, instructor_id, course_size, enroll_count FROM courses"
         c.execute(sql)
         classes = c.fetchall()
+        print(classes)
 
         if classes != None:
             for i in classes:
@@ -2856,7 +2857,7 @@ class mainWindow(QMainWindow):
 
                 self.className = QtWidgets.QLabel()
                 self.className.setFixedWidth(180)
-                self.className.setText(f"Name:\n\n{i[0]}")
+                self.className.setText(i[0])
                 self.className.setFont(QFont("Century Gothic", 14))
 
                 self.classTime = QtWidgets.QLabel()
@@ -2892,10 +2893,9 @@ class mainWindow(QMainWindow):
                 self.addBTN.clicked.connect(
                     partial(self.addClass, self.addBTN)
                 )  # Aiman 11/6
-
-        self.classesW.setLayout(self.classesL)
-        self.main_contentL.addWidget(self.classesW)
-        self.main_contentL.addWidget(self.BTNSW)
+                self.classesW.setLayout(self.classesL)
+                self.main_contentL.addWidget(self.classesW)
+                self.main_contentL.addWidget(self.BTNSW)
 
         # -------------------------end------------------------------
 
@@ -4366,7 +4366,16 @@ class mainWindow(QMainWindow):
 
     def addClass(self, addBtn):
         # change this if statement to If the class is actually added or not
-        if True:
+        global user
+        class_name = self.className.text()
+        print(class_name)
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        sql = "SELECT course_id from courses WHERE course_name = ?"
+        c.execute(sql, (class_name,))
+        course_id = c.fetchone()[0]
+        result = user.enroll_course(course_id)
+        if result == 1:
             addBtn.setText("Added")
             addBtn.setStyleSheet(
                 "QPushButton{background-color:#4FE80C;border-radius: 10px;color: white;}"
