@@ -115,7 +115,7 @@ class Period:
             self.class_set_up = new_grading
 
 
-# for testing
+# # for testing
 # p1 = [datetime.date(2022, 9, 1), datetime.date(2022, 9, 2)]
 # p2 = [datetime.date(2022, 9, 2), datetime.date(2022, 9, 4)]
 # p3 = [datetime.date(2022, 9, 5), datetime.date(2022, 9, 6)]
