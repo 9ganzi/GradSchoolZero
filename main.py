@@ -1607,7 +1607,7 @@ class mainWindow(QMainWindow):
 
         # Start
         self.sssssBTN = QtWidgets.QPushButton()
-        self.sssssBTN.setText("Submit warning")
+        self.sssssBTN.setText("Warn")
         self.sssssBTN.setFont(QFont("Century Gothic", 20))
         self.sssssBTN.setFixedSize(180, 60)
         self.sssssBTN.setCursor(QCursor(Qt.PointingHandCursor))
@@ -1625,7 +1625,7 @@ class mainWindow(QMainWindow):
 
         # Start mike
         self.expelBTN = QtWidgets.QPushButton()
-        self.expelBTN.setText("expel")
+        self.expelBTN.setText("Expel")
         self.expelBTN.setFont(QFont("Century Gothic", 20))
         self.expelBTN.setFixedSize(180, 60)
         self.expelBTN.setCursor(QCursor(Qt.PointingHandCursor))
@@ -1637,7 +1637,7 @@ class mainWindow(QMainWindow):
         self.BTNSW.setLayout(self.BTNSL)
 
         self.graduateBTN = QtWidgets.QPushButton()
-        self.graduateBTN.setText("Graduate Student")
+        self.graduateBTN.setText("Graduate")
         self.graduateBTN.setFont(QFont("Century Gothic", 20))
         self.graduateBTN.setFixedSize(180, 60)
         self.graduateBTN.setCursor(QCursor(Qt.PointingHandCursor))
@@ -3601,7 +3601,7 @@ class mainWindow(QMainWindow):
 
         # Start
         self.issuewarningBTN = QtWidgets.QPushButton()
-        self.issuewarningBTN.setText("Issue Warning")
+        self.issuewarningBTN.setText("Manage")
         self.issuewarningBTN.setFont(QFont("Century Gothic", 20))
         self.issuewarningBTN.setFixedSize(180, 60)
         self.issuewarningBTN.setCursor(QCursor(Qt.PointingHandCursor))
@@ -4687,9 +4687,13 @@ class mainWindow(QMainWindow):
             # create instance of user
             if row[6] == "student":
                 user = Student(row[0])
+                if get_current_period()==4: # period is poast grade
+                    user.end_of_year_student()
                 self.mainpage_home_student()
             elif row[6] == "instructor":
                 user = Instructor(row[0])
+                if get_current_period()==4:
+                    user.end_of_year_instructor()              
                 self.mainpage_home_instructor()
             else:
                 user = Registrar(row[0])
@@ -4755,6 +4759,10 @@ c.execute(
         num_courses_taken integer NOT NULL,
         honor_count integer NOT NULL,
         warning_count integer NOT NULL,
+        semester_gpa real,
+        is_suspended text DEFAULT False,
+        apply_graduate text DEFAULT False,
+        degree text DEFAULT Undergrads,
         FOREIGN KEY ('user_id') REFERENCES users (user_id)
         )"""
 )
@@ -4783,6 +4791,7 @@ c.execute(
         course_size integer NOT NULL,
         enroll_count integer,
         course_gpa real,
+        is_fair text DEFAULT True,
         FOREIGN KEY ('instructor_id') REFERENCES users (user_id)
         )"""
 )
