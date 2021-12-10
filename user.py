@@ -362,7 +362,7 @@ class Student(User):
         self.is_struggling()
         self.is_failing()
         # self.failed_twice(self)  # technically, dont need to call failed_twice hear, as its called in is failing
-        self.is_honor_roll(self)
+        self.is_honor_roll()
         
     def is_time_conflict(self, course_id):
         conn = sqlite3.connect("gsz.db")
@@ -487,7 +487,7 @@ class Student(User):
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
-            """UPDATE student SET warning_count = :new_warning_count
+            """UPDATE students SET warning_count = :new_warning_count
                         WHERE student_id = student_id""",
             {"student_id": self.student_id, "new_warning_count": new_warning_count},
         )
@@ -532,7 +532,7 @@ class Student(User):
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
-            """SELECT course_id FROM course_history WHERE grade <= :failing_grade
+            """SELECT course_id FROM course_historys WHERE grade <= :failing_grade
                                     AND student_id =:student_id """,
             ({"failing_grade": failing_grade, "student_id": self.student_id}),
         )
@@ -848,13 +848,12 @@ conn.close()
 #         user_type text NOT NULL)
 #         """
 # )
-# many_users = [
-#     ("Jane", "Doe", "ida5", "password", "email5@emgail.com", "instructor", 1),
-#     ("Michael", "Jordan", "ida4", "password", "email4@email.com", "instructor", 1),
-#     ("Apple", "Bee", "id13", "password", "email3@email.com", "student", 1),
-#     ("John", "Doe", "idv2", "password", "email2@email.com", "student", 1),
+# # many_users = [
 #     ("David", "Beckham", "id1a", "password", "email1@email.com", "student", 1),
-#     ("Kevin", "Durant", "Kevin_Durant@email.com", "3.7", "None", 6, "student"),
+#     ("John", "Doe", "idv2", "password", "email2@email.com", "student", 1),
+#     ("Apple", "Bee", "id13", "password", "email3@email.com", "student", 1),
+#     ("Michael", "Jordan", "ida4", "password", "email4@email.com", "instructor", 1),
+#     ("Jane", "Doe", "ida5", "password", "email5@emgail.com", "instructor", 1),
 # ]
 # c.executemany(
 #     """INSERT INTO users(first, last, id, password, email, user_type, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)""",
@@ -903,8 +902,9 @@ conn.close()
 #         honor_count integer NOT NULL,
 #         warning_count integer NOT NULL,
 #         semester_gpa real,
-#         is_suspended integer NOT NULL,
-#         degree text,
+#         is_suspended text DEFAULT False,
+#         apply_graduate text DEFAULT False,
+#         degree text DEFAULT Undergrads,
 #         FOREIGN KEY ('user_id') REFERENCES users (user_id)
 #         )"""
 # )
