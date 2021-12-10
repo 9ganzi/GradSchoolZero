@@ -170,11 +170,10 @@ class mainWindow(QMainWindow):
         super(mainWindow, self).__init__()
         self.setWindowTitle("Collage App")
         self.setFixedSize(1260, 800)
-        self.startup_page()
-
         # -----------------------------------------#
-        # self.justification()
+        self.mainpage_home_registrar()
         # -----------comment this line!!-----------#
+        # self.startup_page()
 
     # mike
     def apply_graduation_student(self):
@@ -3566,10 +3565,30 @@ class mainWindow(QMainWindow):
         self.logo.setFixedHeight(200)
         self.logo.setFixedWidth(200)
         self.logo.setPixmap(QPixmap("logo.png"))
+
+        self.periods = QtWidgets.QComboBox()
+        self.periods.setFont(QFont("Century Gohic", 16))
+        self.periods.setFixedSize(400, 40)
+        self.periods.addItem("class_set_up")
+        self.periods.addItem("course_registration")
+        self.periods.addItem("class_running")
+        self.periods.addItem("grading")
+        self.periods.setStyleSheet(comboBox_stylesheet)
         self.space = QWidget()
-        self.space.setFixedHeight(385)
+        self.space.setFixedHeight(310)
+
+        self.confirmBTN = QtWidgets.QPushButton()
+        self.confirmBTN.setFont(QFont("Century Gothic", 20))
+        self.confirmBTN.setFixedSize(180, 60)
+        self.confirmBTN.setText("Confirm")
+        self.confirmBTN.setStyleSheet(
+            "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+            "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+        )
 
         self.logoL.addWidget(self.logo)
+        self.logoL.addWidget(self.periods)
+        self.logoL.addWidget(self.confirmBTN)
         self.logoL.addWidget(self.space)
         self.logoL.addWidget(self.BTNSW)
 
@@ -3693,6 +3712,10 @@ class mainWindow(QMainWindow):
 
         self.logoW.setLayout(self.logoL)
         self.main_contentL.addWidget(self.logoW)
+
+        self.space = QWidget()
+        self.space.setFixedHeight(30)
+        self.main_contentL.addWidget(self.space)
 
         self.accountDataW = QWidget()
         self.accountDataL = QVBoxLayout()

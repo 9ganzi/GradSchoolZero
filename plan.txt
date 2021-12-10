@@ -1,1 +1,4 @@
-check whether the day is off
+class_set_up
+course_registration
+class_running
+grading
