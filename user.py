@@ -351,10 +351,19 @@ class Student(User):
         self.num_courses_taken = student_info[3]
         self.honor_count = student_info[4]
         self.warning_count = student_info[5]
-        # self.semester_gpa = student_info[6]
-        # self.is_suspended = student_info[7]
-        # self.degree = student_info[8]
+        self.semester_gpa = student_info[6]
+        self.is_suspended = student_info[7]
+        self.apply_graduate= student_info[8]
+        self.degree = student_info[9]
 
+    def end_of_year_student(self):
+        # check if grading period over
+        self.finalize_grade()
+        self.is_struggling()
+        self.is_failing()
+        # self.failed_twice(self)  # technically, dont need to call failed_twice hear, as its called in is failing
+        self.is_honor_roll(self)
+        
     def is_time_conflict(self, course_id):
         conn = sqlite3.connect("gsz.db")
         # to get a list of values instead of a list of tuples
@@ -494,8 +503,8 @@ class Student(User):
     def is_struggling(self):
         if 2 <= self.gpa <= 2.25:
             self.receive_warning()
-            return True
-        return False
+            return 
+        return 
 
     # if GPA < 2 or failed a course twice, if true then terminate
     def is_failing(self):
@@ -505,8 +514,8 @@ class Student(User):
             c.execute("DELETE * FROM student WHERE student_id = ?", (self.student_id,))
             conn.commit()
             conn.close()
-            return True
-        return False
+            return 
+        return 
 
     # check to see if student failed class twice
     def failed_twice(self):
@@ -514,7 +523,7 @@ class Student(User):
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
-            """SELECT course_id FROM course_history WHERE grade < :failing_grade
+            """SELECT course_id FROM course_history WHERE grade <= :failing_grade
                                     AND student_id =:student_id """,
             ({"failing_grade": failing_grade, "student_id": self.student_id}),
         )
@@ -526,9 +535,9 @@ class Student(User):
     def is_honor_roll(self):
         if self.gpa > 3.5 or self.semester_gpa > 3.75:
             self.remove_warning()
-            self.place_honor_roll()
-            return True
-        return False
+#             self.place_honor_roll()
+            return 
+        return 
 
         # place honor_roll student on home page
 
@@ -545,10 +554,15 @@ class Student(User):
 
     # apply for graduation, let registrar review
     def apply_graduation(self):
-        # registrar needs to check if required courses passed
-        # want to give some notification to registrar
-        # print(self.first, '? applied to graduate')
-        pass
+        if self.can_graduate():
+            conn = sqlite3.connect("gsz.db")
+            c = conn.cursor()
+            c.execute(
+                """UPDATE students SET apply_graduate = :True """)
+            conn.commit()
+            conn.close()
+            return
+        return
 
     # reset semester grades (for end of period)
     @classmethod
@@ -572,6 +586,20 @@ class Student(User):
         conn.commit()
         conn.close()
 
+    def finalize_grade(self):
+        if not self.semester_gpa:  # if semester rgade aint posted, do nothing
+            print("grade isnt posted")
+            return
+        result = (self.gpa * self.num_courses_taken + self.semester_gpa) / (self.num_courses_taken + 1)
+        self.gpa = result
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        c.execute(
+            """UPDATE students SET gpa =:gpa """,
+            {"gpa": result},
+        )
+        conn.commit()
+        conn.close()
 
 class Instructor(User):
     def __init__(self, user_id):
@@ -584,6 +612,13 @@ class Instructor(User):
         self.instructor_id = instructor_info[0]
         self.warning_count = instructor_info[2]
         self.is_suspended = instructor_info[3]
+        
+    def end_of_year_instructor(self):
+            # if get_current_period() == 4: chek on outside
+            # check if grading period ends
+        is_all_graded(self.instructor_id)  # check if all grades posted, warn otherwise
+        is_fair()  # check if all course r fair (ie course gpa btwn 2.5 & 3.5
+        is_good(self.instructor_id)  # check if teacher should get a warning based on course grades        
 
     # suspend instructor automatically if warning count >=3
     def suspend(self):
@@ -600,8 +635,20 @@ class Instructor(User):
             # should warning_count be reset at start of semester?
             # how should is_suspended be reset
 
+    def is_good(self):  # new
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        result = c.execute(
+            "SELECT is_fair FROM courses WHERE instructor_id = :instructor_id and is_fair = False ",
+            {"instructor_id": self.instructor_id},
+        ).fetchall()
+        conn.commit()
+        conn.close()
+        if not result:
+            return
+        self.receive_warning()
+            
         # issue warning
-
     def receive_warning(self):
         new_warning_count = self.warning_count + 1
         conn = sqlite3.connect("gsz.db")
@@ -638,19 +685,17 @@ class Instructor(User):
     def is_all_graded(self):
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
-        c.execute(
-            """SELECT grade FROM enrollments
-                        WHERE instructor_id =: instructor_id
-                        AND grade IS NULL """,
+        result = c.execute(
+            "SELECT grade FROM enrollments WHERE course_id= (SELECT course_id FROM courses WHERE instructor_id =:instructor_id) IS NULL ",
             {"instructor_id": self.instructor_id},
-        )
+        ).fetchall()
         conn.commit()
-        if c.fetchall() == {}:
-            conn.close()
-            return True
         conn.close()
+        if not result:
+            # print(" list empty so everything graded")
+            return
         self.receive_warning()
-        return False
+        # print("missing a grading")
 
     def complain(self, complainee_id, course_id, description, complaint_type):
         conn = sqlite3.connect("gsz.db")
@@ -662,7 +707,24 @@ class Instructor(User):
         conn.commit()
         conn.close()
 
-
+    def receive_warning(self):
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        c.execute(
+            """UPDATE instructors SET warning_count = :new_warning_count
+                            WHERE instructor_id =:instructor_id""",
+            {"instructor_id": self.instructor_id, "new_warning_count": self.warning_count + 1}
+        )
+        conn.commit()
+        conn.close()
+        
+#check if course grades are btwn 2.5 and 3.5        
+def is_fair():
+    conn = sqlite3.connect("gsz.db")
+    c = conn.cursor()  # assume all classes are fair at start
+    c.execute(""" UPDATE courses SET is_fair = False WHERE course_gpa NOT BETWEEN 2.5 AND 3.5 """)
+    conn.commit()
+    conn.close()        
 # std1 = Student(6)
 # std1.complain(7, 3, "too noisy")
 # reg1 = Registrar(1)
