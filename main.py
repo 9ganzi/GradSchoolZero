@@ -176,9 +176,9 @@ class mainWindow(QMainWindow):
         self.setWindowTitle("Collage App")
         self.setFixedSize(1260, 800)
         # -----------------------------------------#
-        self.mainpage_home_registrar()
+        # self.mainpage_home_registrar()
         # -----------comment this line!!-----------#
-        # self.startup_page()
+        self.startup_page()
 
     # mike
     def apply_graduation_student(self):
@@ -3580,7 +3580,7 @@ class mainWindow(QMainWindow):
         self.periods.addItem("grading")
         self.periods.setStyleSheet(comboBox_stylesheet)
         self.space = QWidget()
-        self.space.setFixedHeight(310)
+        self.space.setFixedHeight(260)
 
         self.confirmBTN = QtWidgets.QPushButton()
         self.confirmBTN.setFont(QFont("Century Gothic", 20))
@@ -3590,18 +3590,6 @@ class mainWindow(QMainWindow):
             "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
             "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
         )
-
-        self.perids = QtWidgets.QComboBox()
-        self.perids.setStyleSheet(comboBox_stylesheet)
-        self.perids.setFont(QFont("Century Gothic", 16))
-        self.perids.setFixedSize(400, 40)
-        self.perids.addItem("class set up")
-        self.perids.addItem("course registration")
-        self.perids.addItem("class running")
-        self.perids.addItem("home registrar")
-
-        # self.main_contentW.addWidget(self.perids)
-        self.main_contentL.addWidget(self.perids)
 
         self.logoL.addWidget(self.logo)
         self.logoL.addWidget(self.periods)
