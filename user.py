@@ -1077,8 +1077,8 @@ conn.close()
 # conn.commit()
 # conn.close()
 
-# delete a table
-# sql = "DROP TABLE complaints"
+# # delete a table
+# sql = "DROP TABLE periods"
 # conn = sqlite3.connect("gsz.db")
 # c = conn.cursor()
 # c.execute(sql)

@@ -146,6 +146,7 @@ def display_lowest_classes():
         final_result += "\n"
     return final_result
 
+
 def get_current_period():
     conn = sqlite3.connect("gsz.db")
     c = conn.cursor()
@@ -162,7 +163,8 @@ def go_next_period():
     c = conn.cursor()
     c.execute(
         """UPDATE periods SET current_period=:next_period""",
-        {"next_period": next_period})
+        {"next_period": next_period},
+    )
     conn.commit()
     conn.close()
 
@@ -3472,7 +3474,29 @@ class mainWindow(QMainWindow):
         # self.backToStartupBTN.clicked.connect(self.StartupStudent)
 
     def set_period(self):
-        period = self.periods.currentText()
+        period_name = self.periods.currentText()
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        if period_name == "class_set_up":
+            c.execute("UPDATE periods SET current_period = 0")
+            conn.commit()
+            conn.close()
+        elif period_name == "course_registration":
+            c.execute("UPDATE periods SET current_period = 1")
+            conn.commit()
+            conn.close()
+        elif period_name == "class_running":
+            c.execute("UPDATE periods SET current_period = 2")
+            conn.commit()
+            conn.close()
+        elif period_name == "grading":
+            c.execute("UPDATE periods SET current_period = 3")
+            conn.commit()
+            conn.close()
+        elif period_name == "post-grading":
+            c.execute("UPDATE periods SET current_period = 4")
+            conn.commit()
+            conn.close()
 
     def mainpage_home_registrar(self):
         # setting background colour for the page
@@ -4831,14 +4855,15 @@ if c.fetchall() == []:
         many_days,
     )
 conn.commit()
-conn.close()
 
 # periods table
 c.execute(
     """CREATE TABLE IF NOT EXISTS periods(
         period_id integer PRIMARY KEY,
-        current_period integer NOT NULL )""")
-c.execute("INSERT into periods (current_period) VALUES (0) ")
+        current_period integer NOT NULL )"""
+)
+if c.fetchone() == None:
+    c.execute("INSERT into periods (current_period) VALUES (0) ")
 conn.commit()
 conn.close()
 
