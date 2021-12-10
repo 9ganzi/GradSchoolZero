@@ -504,7 +504,11 @@ class mainWindow(QMainWindow):
         # global acc_type
         # global name
         # global email
-
+        
+        if get_current_period()== 4: # in post grading session, studenst cant do review
+#             print("Its after grading season, cant post reviews")
+            self.mainpage_home_student()
+            return
         conn = sqlite3.connect("gsz.db")
         c = conn.cursor()
         c.execute(
@@ -524,7 +528,7 @@ class mainWindow(QMainWindow):
             (
                 self.studentidBOX.text(),
                 self.courseidBOX.text(),
-                str(self.ratingBOX.text()),
+                self.ratingBOX.text(),
                 str(self.reviewBOX.text().upper()),
             ),
         )
