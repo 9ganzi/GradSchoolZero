@@ -2809,55 +2809,67 @@ class mainWindow(QMainWindow):
 
         # ------------------------start-----------------------------
 
-        global classes
-        self.classesW = QWidget()
-        self.classesL = QVBoxLayout()
+        # global classes
+        conn = sqlite3.connect("gsz.db")
+        c = conn.cursor()
+        sql = "SELECT course_name, course_time, instructor_id, course_size, enroll_count FROM courses"
+        c.execute(sql)
+        classes = c.fetchall()
 
-        for i in classes:
-            self.StudentClassW = QtWidgets.QWidget()
-            self.StudentClassW.setStyleSheet(
-                "background-color:white;border-radius:15px;"
-            )
-            self.StudentClassL = QHBoxLayout()
+        if classes != None:
+            for i in classes:
+                sql = "SELECT user_id FROM instructors WHERE instructor_id = ?"
+                i = list(i)
+                c.execute(sql, (i[2],))
+                user_id = c.fetchone()[0]
+                ins = Instructor(user_id)
+                i[2] = ins.first + " " + ins.last
+                self.classesW = QWidget()
+                self.classesL = QVBoxLayout()
+                self.StudentClassW = QtWidgets.QWidget()
+                self.StudentClassW.setStyleSheet(
+                    "background-color:white;border-radius:15px;"
+                )
+                self.StudentClassL = QHBoxLayout()
 
-            self.className = QtWidgets.QLabel()
-            self.className.setFixedWidth(180)
-            self.className.setText(f"Name:\n\n{i[0]}")
-            self.className.setFont(QFont("Century Gothic", 14))
+                self.className = QtWidgets.QLabel()
+                self.className.setFixedWidth(180)
+                self.className.setText(f"Name:\n\n{i[0]}")
+                self.className.setFont(QFont("Century Gothic", 14))
 
-            self.classTime = QtWidgets.QLabel()
-            self.classTime.setText(f"Time:\n\n{i[1]}")
-            self.classTime.setFont(QFont("Century Gothic", 14))
+                self.classTime = QtWidgets.QLabel()
+                self.classTime.setText(f"Time:\n\n{i[1]}")
+                self.classTime.setFont(QFont("Century Gothic", 14))
 
-            self.instructorName = QtWidgets.QLabel()
-            self.instructorName.setText(f"Instructor:\n\n{i[2]}")
-            self.instructorName.setFont(QFont("Century Gothic", 14))
+                self.instructorName = QtWidgets.QLabel()
+                self.instructorName.setText(f"Instructor:\n\n{i[2]}")
+                self.instructorName.setFont(QFont("Century Gothic", 14))
 
-            self.seats = QtWidgets.QLabel()
-            self.seats.setText(f"Seats:\n\n{i[3]}")
-            self.seats.setFont(QFont("Century Gothic", 14))
+                self.seats = QtWidgets.QLabel()
+                self.seats.setText(f"Seats:\n\n{i[3]}")
+                self.seats.setFont(QFont("Century Gothic", 14))
 
-            self.addBTN = QtWidgets.QPushButton()
-            self.addBTN.setText("Add")
-            self.addBTN.setFont(QFont("Century Gothic", 14))
-            self.addBTN.setFixedSize(100, 60)
-            self.addBTN.setStyleSheet(
-                "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
-                "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
-            )
+                self.addBTN = QtWidgets.QPushButton()
+                self.addBTN.setText("Add")
+                self.addBTN.setFont(QFont("Century Gothic", 14))
+                self.addBTN.setFixedSize(100, 60)
+                self.addBTN.setStyleSheet(
+                    "QPushButton{background-color:#076DF2;border-radius: 10px;color: white;}"
+                    "QPushButton:pressed{background-color: #03469e;border-style: inset;}"
+                )
 
-            self.StudentClassL.addWidget(self.className)
-            self.StudentClassL.addWidget(self.classTime)
-            self.StudentClassL.addWidget(self.instructorName)
-            self.StudentClassL.addWidget(self.seats)
-            self.StudentClassL.addWidget(self.addBTN)
+                self.StudentClassL.addWidget(self.className)
+                self.StudentClassL.addWidget(self.classTime)
+                self.StudentClassL.addWidget(self.instructorName)
+                self.StudentClassL.addWidget(self.seats)
+                self.StudentClassL.addWidget(self.addBTN)
 
-            self.StudentClassW.setLayout(self.StudentClassL)
-            self.classesL.addWidget(self.StudentClassW)
+                self.StudentClassW.setLayout(self.StudentClassL)
+                self.classesL.addWidget(self.StudentClassW)
 
-            self.addBTN.clicked.connect(
-                partial(self.addClass, self.addBTN)
-            )  # Aiman 11/6
+                self.addBTN.clicked.connect(
+                    partial(self.addClass, self.addBTN)
+                )  # Aiman 11/6
 
         self.classesW.setLayout(self.classesL)
         self.main_contentL.addWidget(self.classesW)
@@ -3439,6 +3451,9 @@ class mainWindow(QMainWindow):
         self.classes.clicked.connect(self.mainpage_classes_instructor)
         # self.backToStartupBTN.clicked.connect(self.StartupStudent)
 
+    def set_period(self):
+        period = self.periods.currentText()
+
     def mainpage_home_registrar(self):
         # setting background colour for the page
         self.setStyleSheet("background-color:#031926;")
@@ -3578,6 +3593,7 @@ class mainWindow(QMainWindow):
         self.periods.addItem("course_registration")
         self.periods.addItem("class_running")
         self.periods.addItem("grading")
+        self.periods.addItem("post-grading")
         self.periods.setStyleSheet(comboBox_stylesheet)
         self.space = QWidget()
         self.space.setFixedHeight(260)
@@ -3625,6 +3641,7 @@ class mainWindow(QMainWindow):
         self.classes.clicked.connect(self.mainpage_classes_registrar)
         self.ReviewRegistrarBTN.clicked.connect(self.review_page_registrar)
         self.issuewarningBTN.clicked.connect(self.issuewarning_page_registrar)
+        self.confirmBTN.clicked.connect(self.set_period)
         # self.sssssBTN.clicked.connect(self.issuewarning_page_registrar)
 
     # Aiman test
