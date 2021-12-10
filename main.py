@@ -146,6 +146,26 @@ def display_lowest_classes():
         final_result += "\n"
     return final_result
 
+def get_current_period():
+    conn = sqlite3.connect("gsz.db")
+    c = conn.cursor()
+    curr_period = c.execute("Select current_period FROM periods ").fetchone()[0]
+    conn.commit()
+    conn.close()
+    return curr_period
+
+
+def go_next_period():
+    next_period = (get_current_period() + 1) % 5
+    print(next_period)
+    conn = sqlite3.connect("gsz.db")
+    c = conn.cursor()
+    c.execute(
+        """UPDATE periods SET current_period=:next_period""",
+        {"next_period": next_period})
+    conn.commit()
+    conn.close()
+
 
 def issue_warning_instructor(instructor_id):
     conn = sqlite3.connect("gsz.db")
@@ -4810,6 +4830,15 @@ if c.fetchall() == []:
         "INSERT INTO schedule(date) VALUES(?)",
         many_days,
     )
+conn.commit()
+conn.close()
+
+# periods table
+c.execute(
+    """CREATE TABLE IF NOT EXISTS periods(
+        period_id integer PRIMARY KEY,
+        current_period integer NOT NULL )""")
+c.execute("INSERT into periods (current_period) VALUES (0) ")
 conn.commit()
 conn.close()
 
