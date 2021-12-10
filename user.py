@@ -614,11 +614,11 @@ class Instructor(User):
         self.is_suspended = instructor_info[3]
         
     def end_of_year_instructor(self):
-            # if get_current_period() == 4: chek on outside
+             # if get_current_period() == 4: chek on outside
             # check if grading period ends
-        is_all_graded(self.instructor_id)  # check if all grades posted, warn otherwise
+        self.is_all_graded()  # check if all grades posted, warn otherwise
         is_fair()  # check if all course r fair (ie course gpa btwn 2.5 & 3.5
-        is_good(self.instructor_id)  # check if teacher should get a warning based on course grades        
+        self.is_good()  # check if teacher should get a warning based on course grades      
 
     # suspend instructor automatically if warning count >=3
     def suspend(self):
